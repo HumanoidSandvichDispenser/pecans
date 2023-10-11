@@ -1,0 +1,12 @@
+# Exclude jsii outdir and build output
+dist
+*.js
+*.d.ts
+
+.jsii
+
+node_modules
+obj/
+
+tsconfig.json
+tsconfig.tsbuildinfo

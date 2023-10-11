@@ -1,0 +1,43 @@
+{
+  "name": "pewcans",
+  "version": "1.0.0",
+  "description": "Pretty easy wrapper for Two Cans & String API",
+  "scripts": {
+    "build": "jsii --strict",
+    "dist": "jsii --strict && jsii-pacmak",
+    "clean": "rm -r dist obj || true",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "repository": {
+    "url": "https://github.com/humanoidsandvichdispenser/pew.git"
+  },
+  "main": "obj/index.js",
+  "types": "obj/index.d.ts",
+  "author": {
+    "name": "HumanoidSandvichDispenser",
+    "email": "humanoidsandvichdispenser@gmail.com"
+  },
+  "license": "GPL-3.0-only",
+  "jsii": {
+    "excludeTypescript": ["*.test.ts"],
+    "versionFormat": "full",
+    "outdir": "dist",
+    "tsc": {
+      "outDir": "obj",
+      "rootDir": "src"
+    },
+    "targets": {
+      "python": {
+        "distName": "pewcans",
+        "module": "pewcans"
+      }
+    }
+  },
+  "stability": "experimental",
+  "devDependencies": {
+    "@types/node": "^20.8.4",
+    "jsii": "^5.2.14",
+    "jsii-pacmak": "^1.90.0"
+  }
+}
