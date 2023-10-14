@@ -1,7 +1,7 @@
 {
-  "name": "pewcans",
+  "name": "pecans",
   "version": "1.0.0",
-  "description": "Pretty easy wrapper for Two Cans & String API",
+  "description": "Pretty easy Two Cans & String API wrapper",
   "scripts": {
     "build": "jsii --strict",
     "dist": "jsii --strict && jsii-pacmak",
@@ -29,8 +29,12 @@
     },
     "targets": {
       "python": {
-        "distName": "pewcans",
-        "module": "pewcans"
+        "distName": "pecans",
+        "module": "pecans"
+      },
+      "dotnet": {
+        "namespace": "Pecans",
+        "packageId": "Pecans"
       }
     }
   },
