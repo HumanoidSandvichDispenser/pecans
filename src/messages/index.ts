@@ -4,7 +4,8 @@ import { FolderListResponse, FolderViewResponse, MessageViewResponse } from "./t
 
 export class MessagesModule extends Module {
     public async folderView(folder = "inbox", page = 1) {
-        return await this.client.call<FolderViewResponse>(
+        return await this.client._call(
+            FolderViewResponse,
             "messages.folderview",
             {
                 folder,
@@ -19,7 +20,8 @@ export class MessagesModule extends Module {
         markAsRead = true,
         page = 1
     ) {
-        return await this.client.call<MessageViewResponse>(
+        return await this.client._call(
+            MessageViewResponse,
             "messages.view",
             {
                 conversationId,
@@ -35,7 +37,8 @@ export class MessagesModule extends Module {
         text: string,
         unanonymize = false
     ) {
-        return await this.client.call<TCResponse>(
+        return await this.client._call(
+            TCResponse,
             "messages.reply",
             {
                 conversationId,
@@ -46,7 +49,8 @@ export class MessagesModule extends Module {
     }
 
     public async folderList() {
-        return await this.client.call<FolderListResponse>(
+        return await this.client._call(
+            FolderListResponse,
             "messages.folderlist",
             { }
         );

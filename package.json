@@ -20,7 +20,9 @@
   },
   "license": "GPL-3.0-only",
   "jsii": {
-    "excludeTypescript": ["*.test.ts"],
+    "excludeTypescript": [
+      "**/*.test.ts"
+    ],
     "versionFormat": "full",
     "outdir": "dist",
     "tsc": {
@@ -42,6 +44,7 @@
   "devDependencies": {
     "@types/node": "^20.8.4",
     "jsii": "^5.2.14",
-    "jsii-pacmak": "^1.90.0"
+    "jsii-pacmak": "^1.90.0",
+    "vitest": "^0.34.6"
   }
 }

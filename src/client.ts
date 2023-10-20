@@ -1,35 +1,52 @@
+import { AskModule } from "./ask";
 import { MessagesModule } from "./messages";
-import { MethodCall, TCJSONResponse, TCResponse } from "./types";
+import { MethodCall, TCJSONResponse, TCResponse, TCResponseRaw } from "./types";
 
 /**
  * Client for Two Cans & String API.
  */
 export class Client {
     static readonly BASE_URI = "https://twocansandstring.com/api";
-    static readonly VERSION = "1.68"
+    static readonly VERSION = "1.68";
 
     #messages: MessagesModule;
+    #ask: AskModule;
+
+    /** @internal */
+    public _cache: { [key: string]: any; } = { };
+
+    public auth?: string;
 
     public get messages(): MessagesModule {
         return this.#messages;
     }
 
-    public auth: string;
+    public get ask(): AskModule {
+        return this.#ask;
+    }
 
-    public constructor(auth: string) {
+    public constructor(auth?: string) {
         this.auth = auth;
 
         // init modules
         this.#messages = new MessagesModule(this);
+        this.#ask = new AskModule(this);
     }
+
+    //public login(username: string, password: string) {
+    //    this.call();
+    //}
 
     /**
      * Calls an API method.
      * @param methodName The name of the API method to call.
      * @param args The arguments to pass to the API method.
+     * @internal
      */
-    public async call<T extends TCResponse>(
-        methodName: string, args: { [key: string]: any }
+    public async _call<T extends TCResponse>(
+        creator: new(r: TCResponseRaw) => T,
+        methodName: string,
+        args: { [key: string]: any }
     ): Promise<T>
     {
         const methodCall: MethodCall = {
@@ -39,15 +56,17 @@ export class Client {
 
         const body = {
             auth: this.auth,
-            requests: [ methodCall ],
+            requests: [methodCall],
         };
 
         const res = await this.fetch(body);
 
-        return {
+        const rawResponse: TCResponseRaw = {
             ok: res?.ok ?? false,
             ...res?.responses[0],
         } as T;
+        
+        return new creator(rawResponse);
     }
 
     private async fetch(body: any): Promise<TCJSONResponse | undefined> {

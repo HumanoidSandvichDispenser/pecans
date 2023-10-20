@@ -1,14 +1,27 @@
-import { TCResponse, TCUser } from "../types";
+import { TCResponse, TCResponseRaw, TCUser } from "../types";
 
-export interface FolderViewResponse extends TCResponse {
-    readonly hasMore: boolean;
-    readonly hasPrevious: boolean;
-    readonly messages: MessagePreview[];
+export class FolderViewResponse extends TCResponse {
+    hasMore: boolean;
+    hasPrevious: boolean;
+    messages: MessagePreview[];
+
+    public constructor(response: TCResponseRaw) {
+        super(response);
+        this.hasMore = response["hasMore"] ?? false;
+        this.hasPrevious = response["hasPrevious"] ?? false;
+        this.messages = response["messages"] ?? [];
+    }
 }
 
-export interface MessageViewResponse extends TCResponse {
-    readonly messages: Message[];
-    readonly header: MessageThreadHeader;
+export class MessageViewResponse extends TCResponse {
+    messages: Message[];
+    header: MessageThreadHeader;
+
+    public constructor(response: TCResponseRaw) {
+        super(response);
+        this.messages = response["messages"] ?? [];
+        this.header = response["header"];
+    }
 }
 
 export interface MessagePreview {
@@ -46,8 +59,13 @@ export interface MessageFolder {
     readonly name: string;
 }
 
-export interface FolderListResponse extends TCResponse {
-    readonly folders: Folder[];
+export class FolderListResponse extends TCResponse {
+    folders: Folder[];
+
+    public constructor(response: TCResponseRaw) {
+        super(response);
+        this.folders = response["folders"];
+    }
 }
 
 export interface Folder {

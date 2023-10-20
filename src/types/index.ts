@@ -6,15 +6,31 @@ export interface MethodCall {
 export interface TCJSONResponse {
     readonly ok: boolean;
     readonly loginId: string;
-    readonly responses: TCResponse[];
+    readonly responses: TCResponseRaw[];
     readonly profiles?: TCProfile[];
     readonly auth: string;
     readonly ver: string;
 }
 
-export interface TCResponse {
-    readonly ok: boolean;
-    readonly profiles?: TCProfile[];
+export interface TCResponseRaw {
+    /** @internal */
+    [key: string]: any;
+}
+
+export class TCResponse {
+    public ok: boolean = false;
+    public error?: string;
+    public profiles?: TCProfile[] = [];
+
+    public constructor(response: TCResponseRaw) {
+        this.ok = response.ok;
+        this.error = response.error;
+        this.profiles = response.profiles;
+    }
+}
+
+export interface TCResponseConstructor {
+    new(response: TCJSONResponse): TCResponse;
 }
 
 // TODO: move this to another file
