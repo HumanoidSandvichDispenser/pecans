@@ -17,6 +17,8 @@ export class Client {
 
     public auth?: string;
 
+    public agent: string = "pecans";
+
     public get messages(): MessagesModule {
         return this.#messages;
     }
@@ -75,7 +77,7 @@ export class Client {
             headers: {
                 "Content-Type": "application/json",
                 "Cookie": "twocansandstring_com_auth2=" + this.auth,
-                "User-Agent": "pecans",
+                "User-Agent": this.agent,
             },
             body: JSON.stringify(body),
         };
