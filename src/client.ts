@@ -41,6 +41,7 @@ export class Client {
 
     /**
      * Calls an API method.
+     * @param creator The type that should be constructed from the response.
      * @param methodName The name of the API method to call.
      * @param args The arguments to pass to the API method.
      * @internal
