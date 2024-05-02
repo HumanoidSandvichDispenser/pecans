@@ -1,5 +1,6 @@
 import { AskModule } from "./ask";
 import { MessagesModule } from "./messages";
+import { ForumModule } from "./forum";
 import { MethodCall, TCJSONResponse, TCResponse, TCResponseRaw } from "./types";
 
 /**
@@ -11,6 +12,7 @@ export class Client {
 
     #messages: MessagesModule;
     #ask: AskModule;
+    #forum: ForumModule;
 
     /** @internal */
     public _cache: { [key: string]: any; } = { };
@@ -27,12 +29,17 @@ export class Client {
         return this.#ask;
     }
 
+    public get forum(): ForumModule {
+        return this.#forum;
+    }
+
     public constructor(auth?: string) {
         this.auth = auth;
 
         // init modules
         this.#messages = new MessagesModule(this);
         this.#ask = new AskModule(this);
+        this.#forum = new ForumModule(this);
     }
 
     //public login(username: string, password: string) {
