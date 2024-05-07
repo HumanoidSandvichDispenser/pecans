@@ -15,6 +15,7 @@ export class ForumModule extends Module {
             "forum.viewposts",
             {
                 getSomeBackscroll: reverse,
+                includeThreadMetadata: true,
                 includePost,
                 threadId,
                 postId,
@@ -31,6 +32,28 @@ export class ForumModule extends Module {
                 text,
                 threadId,
             }
-        )
+        );
+    }
+
+    public async readThread(postId: number, threadId: number) {
+        return await this.client._call(
+            TCResponse,
+            "forum.readthread",
+            {
+                postId,
+                threadId,
+            }
+        );
+    }
+
+    public async editPost(postId: number, text: string) {
+        return await this.client._call(
+            TCResponse,
+            "forum.editpost",
+            {
+                postId,
+                text,
+            }
+        );
     }
 }
