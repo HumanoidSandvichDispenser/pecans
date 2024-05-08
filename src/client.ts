@@ -1,7 +1,15 @@
+import { MethodCall, TCJSONResponse, TCResponse, TCResponseRaw } from "./types";
 import { AskModule } from "./ask";
 import { MessagesModule } from "./messages";
 import { ForumModule } from "./forum";
-import { MethodCall, TCJSONResponse, TCResponse, TCResponseRaw } from "./types";
+import { DrawingModule } from "./drawing";
+
+interface QueuedCall {
+    methodCall: MethodCall;
+    creator: new(r: TCResponseRaw) => TCResponse;
+    resolve: (value: any) => void;
+    reject: (reason: any) => void;
+}
 
 /**
  * Client for Two Cans & String API.
@@ -13,6 +21,10 @@ export class Client {
     #messages: MessagesModule;
     #ask: AskModule;
     #forum: ForumModule;
+    #drawing: DrawingModule;
+
+    #requestQueue: QueuedCall[] = [];
+    #isBatching: boolean = false;
 
     /** @internal */
     public _cache: { [key: string]: any; } = { };
@@ -33,6 +45,22 @@ export class Client {
         return this.#forum;
     }
 
+    public get drawing(): DrawingModule {
+        return this.#drawing;
+    }
+
+    public get isBatching(): boolean {
+        return this.#isBatching;
+    }
+
+    public set isBatching(value: boolean) {
+        if (value) {
+            this.beginBatch();
+        } else {
+            this.endBatch();
+        }
+    }
+
     public constructor(auth?: string) {
         this.auth = auth;
 
@@ -40,6 +68,7 @@ export class Client {
         this.#messages = new MessagesModule(this);
         this.#ask = new AskModule(this);
         this.#forum = new ForumModule(this);
+        this.#drawing = new DrawingModule(this);
     }
 
     //public login(username: string, password: string) {
@@ -53,7 +82,7 @@ export class Client {
      * @param args The arguments to pass to the API method.
      * @internal
      */
-    public async _call<T extends TCResponse>(
+    public _call<T extends TCResponse>(
         creator: new(r: TCResponseRaw) => T,
         methodName: string,
         args: { [key: string]: any }
@@ -64,19 +93,82 @@ export class Client {
             payload: args,
         };
 
+        if (this.#isBatching) {
+            return new Promise((resolve, reject) => {
+                this.#requestQueue.push({
+                    methodCall,
+                    creator,
+                    resolve,
+                    reject,
+                });
+            });
+        }
+
         const body = {
             auth: this.auth,
             requests: [methodCall],
         };
 
+        return new Promise((resolve, reject) => {
+            this.fetch(body)
+                .then((res) => {
+                    const rawResponse: TCResponseRaw = {
+                        ok: res?.ok ?? false,
+                        ...res?.responses[0],
+                    };
+
+                    resolve(new creator(rawResponse));
+                })
+                .catch((reason) => reject(reason));
+        });
+        /*
         const res = await this.fetch(body);
 
         const rawResponse: TCResponseRaw = {
             ok: res?.ok ?? false,
             ...res?.responses[0],
         } as T;
-        
+
         return new creator(rawResponse);
+            */
+    }
+
+    public beginBatch(): void {
+        this.#isBatching = true;
+    }
+
+    public endBatch(process = true): void {
+        this.#isBatching = false;
+        if (process) {
+            this.processBatch();
+        }
+    }
+
+    public processBatch(): void {
+        const methodCalls = this.#requestQueue.map((c) => c.methodCall);
+
+        const body = {
+            auth: this.auth,
+            requests: methodCalls,
+        };
+
+        this.fetch(body)
+            .then((res) => {
+                this.#requestQueue.forEach((c, index) => {
+                    const individualResponse: TCResponseRaw = {
+                        ok: res?.ok ?? false,
+                        ...res?.responses[index],
+                    };
+
+                    c.resolve(new c.creator(individualResponse));
+                });
+            })
+            .catch((reason) => {
+                this.#requestQueue.forEach((c) => c.reject(reason));
+            })
+            .finally(() => {
+                this.#requestQueue.length = 0;
+            });
     }
 
     private async fetch(body: any): Promise<TCJSONResponse | undefined> {
@@ -93,7 +185,7 @@ export class Client {
         const res = await fetch(Client.BASE_URI, req);
 
         if (!res.ok) {
-            return;
+            return Promise.reject();
         }
 
         return await res.json() as TCJSONResponse;
