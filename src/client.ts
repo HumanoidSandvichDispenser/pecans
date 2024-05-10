@@ -3,6 +3,7 @@ import { AskModule } from "./ask";
 import { MessagesModule } from "./messages";
 import { ForumModule } from "./forum";
 import { DrawingModule } from "./drawing";
+import { AnswerModule } from "./answer";
 
 interface QueuedCall {
     methodCall: MethodCall;
@@ -22,6 +23,7 @@ export class Client {
     #ask: AskModule;
     #forum: ForumModule;
     #drawing: DrawingModule;
+    #answer: AnswerModule;
 
     #requestQueue: QueuedCall[] = [];
     #isBatching: boolean = false;
@@ -49,6 +51,10 @@ export class Client {
         return this.#drawing;
     }
 
+    public get answer(): AnswerModule {
+        return this.#answer;
+    }
+
     public get isBatching(): boolean {
         return this.#isBatching;
     }
@@ -69,11 +75,8 @@ export class Client {
         this.#ask = new AskModule(this);
         this.#forum = new ForumModule(this);
         this.#drawing = new DrawingModule(this);
+        this.#answer = new AnswerModule(this);
     }
-
-    //public login(username: string, password: string) {
-    //    this.call();
-    //}
 
     /**
      * Calls an API method.

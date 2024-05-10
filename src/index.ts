@@ -7,3 +7,7 @@ export * from "./ask";
 export * as ask from "./ask/types";
 export * from "./forum";
 export * as forum from "./forum/types";
+export * from "./drawing";
+export * as drawings from "./drawing/types";
+export * from "./answer";
+export * as answer from "./answer/types";
