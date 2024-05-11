@@ -17,6 +17,16 @@ export class ViewPostsResponse extends TCResponse {
     }
 }
 
+export class ForumSearchResponse extends TCResponse {
+    results: SearchResult[];
+
+    public constructor(response: TCResponseRaw) {
+        super(response);
+
+        this.results = response["results"];
+    }
+}
+
 export interface Post {
     readonly id: number;
     readonly user: string;
@@ -31,4 +41,13 @@ export interface Thread {
     readonly locked: boolean;
     // TODO: add category
     //readonly category
+}
+
+export interface SearchResult {
+    readonly id: number;
+    readonly author: string;
+    readonly text: string;
+    readonly time: number;
+    readonly category: string;
+    readonly thread: number;
 }

@@ -56,4 +56,14 @@ export class ForumModule extends Module {
             }
         );
     }
+
+    public async search(query: string) {
+        return await this.client._call(
+            TCResponse,
+            "forum.search",
+            {
+                query,
+            }
+        );
+    }
 }
