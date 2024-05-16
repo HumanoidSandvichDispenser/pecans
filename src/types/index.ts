@@ -27,6 +27,10 @@ export class TCResponse {
         this.error = response.error;
         this.profiles = response.profiles;
     }
+
+    public toObject(): {[key: string]: any} {
+        return { ...this };
+    }
 }
 
 export interface TCResponseConstructor {
@@ -45,5 +49,9 @@ export interface TCProfile {
     readonly name: string;
     readonly online: number;
     readonly avatar: string;
+    readonly subs: {
+        readonly in: number;
+        readonly out: number;
+    }
 }
 

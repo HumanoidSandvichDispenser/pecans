@@ -1,4 +1,4 @@
-import { MethodCall, TCJSONResponse, TCResponse, TCResponseRaw } from "./types";
+import { MethodCall, TCJSONResponse, TCProfile, TCResponse, TCResponseRaw } from "./types";
 import { AskModule } from "./ask";
 import { MessagesModule } from "./messages";
 import { ForumModule } from "./forum";
@@ -30,6 +30,8 @@ export class Client {
 
     /** @internal */
     public _cache: { [key: string]: any; } = { };
+
+    public profileCache: { [key: string]: TCProfile } = { };
 
     public auth?: string;
 
@@ -121,6 +123,10 @@ export class Client {
                         profiles: res?.profiles,
                     };
 
+                    res?.profiles?.forEach((profile) => {
+                        this.profileCache[profile.id] = profile;
+                    });
+
                     resolve(new creator(rawResponse));
                 })
                 .catch((reason) => reject(reason));
@@ -164,6 +170,10 @@ export class Client {
                         ...res?.responses[index],
                         profiles: res?.profiles,
                     };
+
+                    res?.profiles?.forEach((profile) => {
+                        this.profileCache[profile.id] = profile;
+                    });
 
                     c.resolve(new c.creator(individualResponse));
                 });
