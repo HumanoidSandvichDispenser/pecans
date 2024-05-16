@@ -118,6 +118,7 @@ export class Client {
                     const rawResponse: TCResponseRaw = {
                         ok: res?.ok ?? false,
                         ...res?.responses[0],
+                        profiles: res?.profiles,
                     };
 
                     resolve(new creator(rawResponse));
@@ -161,6 +162,7 @@ export class Client {
                     const individualResponse: TCResponseRaw = {
                         ok: res?.ok ?? false,
                         ...res?.responses[index],
+                        profiles: res?.profiles,
                     };
 
                     c.resolve(new c.creator(individualResponse));
