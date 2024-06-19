@@ -37,7 +37,7 @@ export class Client {
 
     public profileCache: { [key: string]: TCProfile } = { };
 
-    public auth?: string;
+    public authToken?: string;
 
     public agent: string = "pecans";
 
@@ -82,7 +82,7 @@ export class Client {
     }
 
     public constructor(auth?: string) {
-        this.auth = auth;
+        this.authToken = auth;
 
         // init modules
         this.#messages = new MessagesModule(this);
@@ -124,7 +124,7 @@ export class Client {
         }
 
         const body = {
-            auth: this.auth,
+            auth: this.authToken,
             requests: [methodCall],
         };
 
@@ -172,7 +172,7 @@ export class Client {
         const methodCalls = this.#requestQueue.map((c) => c.methodCall);
 
         const body = {
-            auth: this.auth,
+            auth: this.authToken,
             requests: methodCalls,
         };
 
@@ -201,13 +201,18 @@ export class Client {
     }
 
     private async fetch(body: any): Promise<TCJSONResponse | undefined> {
+        const headers: { [key: string]: string } = {
+            "Content-Type": "application/json",
+            "User-Agent": this.agent,
+        };
+
+        if (this.authToken != undefined) {
+            headers["Cookie"] = "twocansandstring_com_auth2=" + this.authToken;
+        }
+
         const req = {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Cookie": "twocansandstring_com_auth2=" + this.auth,
-                "User-Agent": this.agent,
-            },
+            headers,
             body: JSON.stringify(body),
         };
 
