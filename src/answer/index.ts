@@ -19,6 +19,17 @@ export class AnswerModule extends Module {
                 questionId,
                 action: action as string,
             }
-        )
+        );
+    }
+
+    public async pollVote(questionId: number, optionNum: number) {
+        return await this.client._call(
+            TCResponse,
+            "answer.pollvote",
+            {
+                questionId,
+                optionNum,
+            }
+        );
     }
 }
