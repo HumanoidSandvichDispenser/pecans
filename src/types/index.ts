@@ -49,9 +49,10 @@ export interface TCProfile {
     readonly name: string;
     readonly online: number;
     readonly avatar: string;
-    readonly subs: {
-        readonly in: number;
-        readonly out: number;
-    }
+    readonly subs: TCFollowInfo;
 }
 
+export interface TCFollowInfo {
+    readonly in: number;
+    readonly out: number;
+}
