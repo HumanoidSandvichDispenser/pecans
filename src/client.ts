@@ -4,6 +4,7 @@ import { MessagesModule } from "./messages";
 import { ForumModule } from "./forum";
 import { DrawingModule } from "./drawing";
 import { AnswerModule } from "./answer";
+import { NotifyModule } from "./notify";
 
 interface QueuedCall {
     methodCall: MethodCall;
@@ -24,6 +25,7 @@ export class Client {
     #forum: ForumModule;
     #drawing: DrawingModule;
     #answer: AnswerModule;
+    #notify: NotifyModule;
 
     #requestQueue: QueuedCall[] = [];
     #isBatching: boolean = false;
@@ -57,6 +59,10 @@ export class Client {
         return this.#answer;
     }
 
+    public get notify(): NotifyModule {
+        return this.#notify;
+    }
+
     public get isBatching(): boolean {
         return this.#isBatching;
     }
@@ -78,6 +84,7 @@ export class Client {
         this.#forum = new ForumModule(this);
         this.#drawing = new DrawingModule(this);
         this.#answer = new AnswerModule(this);
+        this.#notify = new NotifyModule(this);
     }
 
     /**

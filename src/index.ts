@@ -11,3 +11,5 @@ export * from "./drawing";
 export * as drawings from "./drawing/types";
 export * from "./answer";
 export * as answer from "./answer/types";
+export * from "./notify";
+export * as notify from "./notify/types";
