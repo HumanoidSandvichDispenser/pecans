@@ -1,7 +1,20 @@
 import { Module } from "../module";
-import { Feature, WhosOnlineResponse } from "./types";
+import { Feature, NotifySyncResponse, WhosOnlineResponse } from "./types";
 
 export class NotifyModule extends Module {
+    /**
+     * Fetches unread counts for a feature.
+     */
+    public async sync(feature: Feature) {
+        return this.client._call(
+            NotifySyncResponse,
+            "notify.sync",
+            {
+                feature: feature as string,
+            }
+        );
+    }
+
     public async fetchOnlineUsers(feature: Feature) {
         return this.client._call(
             WhosOnlineResponse,
