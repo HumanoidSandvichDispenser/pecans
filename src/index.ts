@@ -14,3 +14,5 @@ export * as answer from "./answer/types";
 export * from "./notify";
 export * as notify from "./notify/types";
 export * from "./account";
+export * from "./auth";
+export * as auth from "./auth/types";

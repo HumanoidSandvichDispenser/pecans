@@ -5,7 +5,7 @@ import { ViewPostsResponse } from "./types";
 export class ForumModule extends Module {
     public async viewPosts(
         threadId: number,
-        fetchType: string,
+        fetchType: string, // TODO: make this an enum
         postId = 0,
         reverse = false,
         includePost = true,

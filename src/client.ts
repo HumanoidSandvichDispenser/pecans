@@ -6,6 +6,7 @@ import { DrawingModule } from "./drawing";
 import { AnswerModule } from "./answer";
 import { NotifyModule } from "./notify";
 import { AccountModule } from "./account";
+import { AuthModule } from "./auth";
 
 interface QueuedCall {
     methodCall: MethodCall;
@@ -28,6 +29,7 @@ export class Client {
     #answer: AnswerModule;
     #notify: NotifyModule;
     #account: AccountModule;
+    #auth: AuthModule;
 
     #requestQueue: QueuedCall[] = [];
     #isBatching: boolean = false;
@@ -40,6 +42,8 @@ export class Client {
     public authToken?: string;
 
     public agent: string = "pecans";
+
+    public shouldTrimErrors: boolean = true;
 
     public get messages(): MessagesModule {
         return this.#messages;
@@ -69,6 +73,10 @@ export class Client {
         return this.#account;
     }
 
+    public get auth(): AuthModule {
+        return this.#auth;
+    }
+
     public get isBatching(): boolean {
         return this.#isBatching;
     }
@@ -92,6 +100,7 @@ export class Client {
         this.#answer = new AnswerModule(this);
         this.#notify = new NotifyModule(this);
         this.#account = new AccountModule(this);
+        this.#auth = new AuthModule(this);
     }
 
     /**
@@ -222,6 +231,12 @@ export class Client {
             return Promise.reject();
         }
 
-        return await res.json() as TCJSONResponse;
+        if (this.shouldTrimErrors) {
+            let text = await res.text();
+            text = text.replace(/^(?:.*\n)*{/, "{");
+            return JSON.parse(text) as TCJSONResponse;
+        } else {
+            return await res.json() as TCJSONResponse;
+        }
     }
 }

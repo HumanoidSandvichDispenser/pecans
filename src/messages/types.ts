@@ -52,6 +52,8 @@ export interface MessageThreadMember {
     readonly mid: number;
     readonly anon?: boolean;
     readonly readTo: number;
+    readonly id?: string;
+    readonly you?: boolean;
 }
 
 export interface MessageFolder {
