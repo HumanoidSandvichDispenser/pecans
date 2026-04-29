@@ -43,7 +43,7 @@
   "stability": "experimental",
   "devDependencies": {
     "@types/node": "^20.8.4",
-    "jsii": "^5.2.14",
+    "jsii": "^5.9.0",
     "jsii-pacmak": "^1.90.0",
     "vitest": "^0.34.6"
   }
