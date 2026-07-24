@@ -9,9 +9,8 @@
     "sdks/typescript"
   ],
   "scripts": {
-    "build": "npm run build --workspace pecans && npm run build --workspace pecans-mcp",
-    "build:lib": "npm run build --workspace pecans",
-    "build:mcp": "npm run build --workspace pecans-mcp",
-    "clean": "npm run clean --workspace pecans"
+    "compile:spec": "bun run --filter pecans-spec compile",
+    "build": "bun run --filter pecans build",
+    "clean": "bun run --filter pecans clean && bun run --filter pecans-spec clean"
   }
 }

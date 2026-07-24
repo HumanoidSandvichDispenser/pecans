@@ -24,14 +24,11 @@ export class ResponseParseError {
 
 interface QueuedCall {
     methodCall: MethodCall;
-    creator: new(r: TCResponseRaw) => TCResponse;
-    resolve: (value: any) => void;
-    reject: (reason: any) => void;
+    creator: (new (r: TCResponseRaw) => unknown) | null;
+    resolve: (value: unknown) => void;
+    reject: (reason: unknown) => void;
 }
 
-/**
- * Client for Two Cans & String API.
- */
 export class Client {
     static readonly BASE_URI = "https://api.twocansandstring.com/api";
     static readonly VERSION = "1.68";
@@ -45,10 +42,8 @@ export class Client {
     #account: AccountModule;
     #auth: AuthModule;
 
-    #requestQueue: QueuedCall[] = [];
-    #isBatching: boolean = false;
+    #activeBatch: QueuedCall[] | null = null;
 
-    /** @internal */
     public _cache: { [key: string]: any; } = { };
 
     public profileCache: { [key: string]: TCProfile } = { };
@@ -59,54 +54,22 @@ export class Client {
 
     public shouldTrimErrors: boolean = true;
 
-    public get messages(): MessagesModule {
-        return this.#messages;
-    }
-
-    public get ask(): AskModule {
-        return this.#ask;
-    }
-
-    public get forum(): ForumModule {
-        return this.#forum;
-    }
-
-    public get drawing(): DrawingModule {
-        return this.#drawing;
-    }
-
-    public get answer(): AnswerModule {
-        return this.#answer;
-    }
-
-    public get notify(): NotifyModule {
-        return this.#notify;
-    }
-
-    public get account(): AccountModule {
-        return this.#account;
-    }
-
-    public get auth(): AuthModule {
-        return this.#auth;
-    }
+    public get messages(): MessagesModule { return this.#messages; }
+    public get ask(): AskModule { return this.#ask; }
+    public get forum(): ForumModule { return this.#forum; }
+    public get drawing(): DrawingModule { return this.#drawing; }
+    public get answer(): AnswerModule { return this.#answer; }
+    public get notify(): NotifyModule { return this.#notify; }
+    public get account(): AccountModule { return this.#account; }
+    public get auth(): AuthModule { return this.#auth; }
 
     public get isBatching(): boolean {
-        return this.#isBatching;
-    }
-
-    public set isBatching(value: boolean) {
-        if (value) {
-            this.beginBatch();
-        } else {
-            this.endBatch();
-        }
+        return this.#activeBatch !== null;
     }
 
     public constructor(auth?: string) {
         this.authToken = auth;
 
-        // init modules
         this.#messages = new MessagesModule(this);
         this.#ask = new AskModule(this);
         this.#forum = new ForumModule(this);
@@ -117,113 +80,80 @@ export class Client {
         this.#auth = new AuthModule(this);
     }
 
-    /**
-     * Calls an API method.
-     * @param creator The type that should be constructed from the response.
-     * @param methodName The name of the API method to call.
-     * @param args The arguments to pass to the API method.
-     * @internal
-     */
+    /** @internal */
     public _call<T extends TCResponse>(
-        creator: new(r: TCResponseRaw) => T,
+        creator: new (r: TCResponseRaw) => T,
         methodName: string,
-        args: { [key: string]: any }
-    ): Promise<T>
-    {
-        const methodCall: MethodCall = {
-            fn: methodName,
-            payload: args,
-        };
+        args: { [key: string]: any },
+    ): Promise<T>;
+    /** @internal */
+    public _call<T>(methodName: string, args: { [key: string]: any }): Promise<T>;
+    public _call(a: unknown, b: unknown, c?: unknown): Promise<unknown> {
+        let creator: (new (r: TCResponseRaw) => unknown) | null;
+        let methodName: string;
+        let args: { [key: string]: any };
 
-        if (this.#isBatching) {
+        if (typeof a === "string") {
+            creator = null;
+            methodName = a;
+            args = b as { [key: string]: any };
+        } else {
+            creator = a as new (r: TCResponseRaw) => unknown;
+            methodName = b as string;
+            args = c as { [key: string]: any };
+        }
+
+        const methodCall: MethodCall = { fn: methodName, payload: args };
+
+        if (this.#activeBatch !== null) {
+            const batch = this.#activeBatch;
             return new Promise((resolve, reject) => {
-                this.#requestQueue.push({
-                    methodCall,
-                    creator,
-                    resolve,
-                    reject,
-                });
+                batch.push({ methodCall, creator, resolve, reject });
             });
         }
 
-        const body = {
-            auth: this.authToken,
-            requests: [methodCall],
-        };
-
-        return new Promise((resolve, reject) => {
-            this.fetch(body)
-                .then((res) => {
-                    const rawResponse: TCResponseRaw = {
-                        ok: res?.ok ?? false,
-                        ...res?.responses[0],
-                        profiles: res?.profiles,
-                    };
-
-                    res?.profiles?.forEach((profile) => {
-                        this.profileCache[profile.id] = profile;
-                    });
-
-                    resolve(new creator(rawResponse));
-                })
-                .catch((reason) => reject(reason));
-        });
-        /*
-        const res = await this.fetch(body);
-
-        const rawResponse: TCResponseRaw = {
-            ok: res?.ok ?? false,
-            ...res?.responses[0],
-        } as T;
-
-        return new creator(rawResponse);
-            */
+        return this.#send([methodCall]).then((res) => this.#build(res, 0, creator));
     }
 
     public beginBatch(): void {
-        this.#isBatching = true;
+        this.#activeBatch ??= [];
     }
 
-    public endBatch(process = true): void {
-        this.#isBatching = false;
-        if (process) {
-            this.processBatch();
+    public async endBatch(): Promise<void> {
+        const batch = this.#activeBatch;
+        this.#activeBatch = null;
+
+        if (batch === null || batch.length === 0) {
+            return;
+        }
+
+        try {
+            const res = await this.#send(batch.map((c) => c.methodCall));
+            batch.forEach((c, index) => c.resolve(this.#build(res, index, c.creator)));
+        } catch (reason) {
+            batch.forEach((c) => c.reject(reason));
         }
     }
 
-    public processBatch(): void {
-        const methodCalls = this.#requestQueue.map((c) => c.methodCall);
+    #build(
+        res: TCJSONResponse | undefined,
+        index: number,
+        creator: (new (r: TCResponseRaw) => unknown) | null,
+    ): unknown {
+        res?.profiles?.forEach((profile) => {
+            this.profileCache[profile.id] = profile;
+        });
 
-        const body = {
-            auth: this.authToken,
-            requests: methodCalls,
+        const merged: TCResponseRaw = {
+            ok: res?.ok ?? false,
+            ...(res?.responses?.[index] ?? {}),
+            profiles: res?.profiles,
         };
 
-        this.fetch(body)
-            .then((res) => {
-                this.#requestQueue.forEach((c, index) => {
-                    const individualResponse: TCResponseRaw = {
-                        ok: res?.ok ?? false,
-                        ...res?.responses[index],
-                        profiles: res?.profiles,
-                    };
-
-                    res?.profiles?.forEach((profile) => {
-                        this.profileCache[profile.id] = profile;
-                    });
-
-                    c.resolve(new c.creator(individualResponse));
-                });
-            })
-            .catch((reason) => {
-                this.#requestQueue.forEach((c) => c.reject(reason));
-            })
-            .finally(() => {
-                this.#requestQueue.length = 0;
-            });
+        return creator ? new creator(merged) : merged;
     }
 
-    private async fetch(body: any): Promise<TCJSONResponse | undefined> {
+    async #send(requests: MethodCall[]): Promise<TCJSONResponse | undefined> {
         const headers: { [key: string]: string } = {
             "Content-Type": "application/json",
             "User-Agent": this.agent,
@@ -233,13 +163,11 @@ export class Client {
             headers["Cookie"] = "twocansandstring_com_auth2=" + this.authToken;
         }
 
-        const req = {
+        const res = await fetch(Client.BASE_URI, {
             method: "POST",
             headers,
-            body: JSON.stringify(body),
-        };
-
-        const res = await fetch(Client.BASE_URI, req);
+            body: JSON.stringify({ auth: this.authToken, requests }),
+        });
 
         if (!res.ok) {
             return Promise.reject();
@@ -253,8 +181,8 @@ export class Client {
             } catch (cause) {
                 throw new ResponseParseError(text, cause);
             }
-        } else {
-            return await res.json() as TCJSONResponse;
         }
+
+        return await res.json() as TCJSONResponse;
     }
 }

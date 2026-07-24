@@ -1,17 +1,16 @@
 import { Module } from "../module";
-import { TCResponse } from "../types";
+import { TCResponse } from "../generated/types";
 import { ForumSearchResponse, ViewPostsResponse } from "./types";
 
 export class ForumModule extends Module {
     public async viewPosts(
         threadId: number,
-        fetchType: string, // TODO: make this an enum
+        fetchType: string,
         postId = 0,
         reverse = false,
         includePost = true,
-    ) {
-        return await this.client._call(
-            ViewPostsResponse,
+    ): Promise<ViewPostsResponse> {
+        return await this.client._call<ViewPostsResponse>(
             "forum.viewposts",
             {
                 getSomeBackscroll: reverse,
@@ -20,50 +19,35 @@ export class ForumModule extends Module {
                 threadId,
                 postId,
                 type: fetchType,
-            }
+            },
         );
     }
 
-    public async replyThread(text: string, threadId: number) {
-        return await this.client._call(
-            TCResponse,
+    public async replyThread(text: string, threadId: number): Promise<TCResponse> {
+        return await this.client._call<TCResponse>(
             "forum.replythread",
-            {
-                text,
-                threadId,
-            }
+            { text, threadId },
         );
     }
 
-    public async readThread(postId: number, threadId: number) {
-        return await this.client._call(
-            TCResponse,
+    public async readThread(postId: number, threadId: number): Promise<TCResponse> {
+        return await this.client._call<TCResponse>(
             "forum.readthread",
-            {
-                postId,
-                threadId,
-            }
+            { postId, threadId },
         );
     }
 
-    public async editPost(postId: number, text: string) {
-        return await this.client._call(
-            TCResponse,
+    public async editPost(postId: number, text: string): Promise<TCResponse> {
+        return await this.client._call<TCResponse>(
             "forum.editpost",
-            {
-                postId,
-                text,
-            }
+            { postId, text },
         );
     }
 
-    public async search(query: string) {
-        return await this.client._call(
-            ForumSearchResponse,
+    public async search(query: string): Promise<ForumSearchResponse> {
+        return await this.client._call<ForumSearchResponse>(
             "forum.search",
-            {
-                query,
-            }
+            { query },
         );
     }
 }
