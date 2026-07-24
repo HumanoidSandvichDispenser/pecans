@@ -47,7 +47,7 @@ TCUser = TypedDict(
 ForumCategory = TypedDict(
     "ForumCategory",
     {
-        "id": "int",
+        "id": "str",
         "name": "str",
         "description": "str",
         "threads": "int",

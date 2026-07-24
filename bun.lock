@@ -8,10 +8,6 @@
         "@biomejs/biome": "^2.5.5",
       },
     },
-    "packages/pecans-mcp": {
-      "name": "pecans-mcp",
-      "version": "0.1.0",
-    },
     "packages/pecans-spec": {
       "name": "pecans-spec",
       "version": "1.0.0",
@@ -341,8 +337,6 @@
     "pathval": ["pathval@1.1.1", "", {}, "sha512-Dp6zGqpTdETdR63lehJYPeIOqpiNBNtc7BpWSLrOje7UaIsE5aY92r/AunQA7rsXvet3lrJ3JnZX29UPTKXyKQ=="],
 
     "pecans": ["pecans@workspace:sdks/typescript"],
-
-    "pecans-mcp": ["pecans-mcp@workspace:packages/pecans-mcp"],
 
     "pecans-spec": ["pecans-spec@workspace:packages/pecans-spec"],
 

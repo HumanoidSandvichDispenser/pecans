@@ -2,7 +2,13 @@
 from __future__ import annotations
 
 from ...runtime import Call, MethodCall, Module
-from ..types import ForumSearchResponse, TCResponse, ViewPostsResponse
+from ..types import (
+    ForumCategoriesResponse,
+    ForumSearchResponse,
+    TCResponse,
+    ThreadListResponse,
+    ViewPostsResponse,
+)
 
 
 class ForumModule(Module):
@@ -72,6 +78,27 @@ class ForumModule(Module):
                 fn="forum.search",
                 payload={
                     "query": query,
+                },
+            ),
+        )
+
+    def categoriesGet(self) -> Call[ForumCategoriesResponse]:
+        return Call(
+            self.client,
+            MethodCall(
+                fn="forum.categoriesget",
+                payload={},
+            ),
+        )
+
+    def threadList(self, category: str, offset: int = 0) -> Call[ThreadListResponse]:
+        return Call(
+            self.client,
+            MethodCall(
+                fn="forum.threadlist",
+                payload={
+                    "category": category,
+                    "offset": offset,
                 },
             ),
         )

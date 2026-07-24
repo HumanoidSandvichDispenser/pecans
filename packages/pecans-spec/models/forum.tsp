@@ -3,7 +3,7 @@ import "../lib/main.tsp";
 namespace Pecans;
 
 model ForumCategory {
-  id: int32;
+  id: string;
   name: string;
   description: string;
   threads: int32;
@@ -103,4 +103,10 @@ interface Forum {
 
   @rpc("forum.search")
   search(query: string): ForumSearchResponse;
+
+  @rpc("forum.categoriesget")
+  categoriesGet(): ForumCategoriesResponse;
+
+  @rpc("forum.threadlist")
+  threadList(category: string, offset?: safeint = 0): ThreadListResponse;
 }

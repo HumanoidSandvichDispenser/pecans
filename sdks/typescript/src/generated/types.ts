@@ -108,7 +108,7 @@ export interface TCUser {
     anon?: boolean;
 }
 export interface ForumCategory {
-    id: number;
+    id: string;
     name: string;
     description: string;
     threads: number;
