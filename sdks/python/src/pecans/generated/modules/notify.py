@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from ...runtime import Call, MethodCall, Module
-from ..types import NotifySyncResponse, WhosOnlineResponse
+from ..types import NotifySyncResponse, TCResponse, WhosOnlineResponse
 from ..enums import Feature
 
 
@@ -25,6 +25,22 @@ class NotifyModule(Module):
                 fn="notify.whosonline",
                 payload={
                     "feature": feature,
+                },
+            ),
+        )
+
+    def activity(self, url: str) -> Call[TCResponse]:
+        """Register that you're viewing a page, for presence and read-tracking.
+
+        Args:
+            url: Path of the page being viewed, e.g. `/forum/general`.
+        """
+        return Call(
+            self.client,
+            MethodCall(
+                fn="notify.activity",
+                payload={
+                    "url": url,
                 },
             ),
         )

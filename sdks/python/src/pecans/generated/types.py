@@ -172,6 +172,18 @@ ForumSearchResponse = TypedDict(
 )
 
 
+GetQuoteTextResponse = TypedDict(
+    "GetQuoteTextResponse",
+    {
+        "ok": "bool",
+        "error": NotRequired["str"],
+        "profiles": NotRequired["list[TCProfile]"],
+        "originalText": "str",
+        "user": "str",
+    },
+)
+
+
 FeedItemBase = TypedDict(
     "FeedItemBase",
     {
@@ -614,5 +626,83 @@ QuestionData = TypedDict(
     {
         "body": "str",
         "header": "QuestionMetadata",
+    },
+)
+
+
+ProfileGetResponse = TypedDict(
+    "ProfileGetResponse",
+    {
+        "ok": "bool",
+        "error": NotRequired["str"],
+        "profiles": NotRequired["list[TCProfile]"],
+        "id": "str",
+    },
+)
+
+
+ProfileDetailsResponse = TypedDict(
+    "ProfileDetailsResponse",
+    {
+        "ok": "bool",
+        "error": NotRequired["str"],
+        "profiles": NotRequired["list[TCProfile]"],
+        "type": "str",
+        "value": "Any",
+    },
+)
+
+
+QaGetPinnedResponse = TypedDict(
+    "QaGetPinnedResponse",
+    {
+        "ok": "bool",
+        "error": NotRequired["str"],
+        "profiles": NotRequired["list[TCProfile]"],
+        "pinned": "list[Any]",
+    },
+)
+
+
+NavItem = TypedDict(
+    "NavItem",
+    {
+        "id": "str",
+        "url": "str",
+        "label": "str",
+        "icon": "str",
+        "notify": NotRequired["str"],
+    },
+)
+
+
+NavbarGetResponse = TypedDict(
+    "NavbarGetResponse",
+    {
+        "ok": "bool",
+        "error": NotRequired["str"],
+        "profiles": NotRequired["list[TCProfile]"],
+        "nav": "list[NavItem]",
+    },
+)
+
+
+DashboardQuestion = TypedDict(
+    "DashboardQuestion",
+    {
+        "id": "int",
+        "time": "int",
+        "preview": "str",
+    },
+)
+
+
+DashboardResponse = TypedDict(
+    "DashboardResponse",
+    {
+        "ok": "bool",
+        "error": NotRequired["str"],
+        "profiles": NotRequired["list[TCProfile]"],
+        "recentQuestions": "list[DashboardQuestion]",
     },
 )

@@ -11,6 +11,10 @@ import "./models/auth.tsp";
 import "./models/account.tsp";
 import "./models/answer.tsp";
 import "./models/ask.tsp";
+import "./models/profile.tsp";
+import "./models/qa.tsp";
+import "./models/navbar.tsp";
+import "./models/dashboard.tsp";
 
 using TypeSpec.JsonSchema;
 

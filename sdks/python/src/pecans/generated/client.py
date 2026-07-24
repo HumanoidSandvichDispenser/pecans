@@ -6,12 +6,16 @@ from .modules.account import AccountModule
 from .modules.answer import AnswerModule
 from .modules.ask import AskModule
 from .modules.auth import AuthModule
+from .modules.dashboard import DashboardModule
 from .modules.drawing import DrawingModule
 from .modules.feed import FeedModule
 from .modules.forum import ForumModule
 from .modules.images import ImagesModule
 from .modules.messages import MessagesModule
+from .modules.navbar import NavbarModule
 from .modules.notify import NotifyModule
+from .modules.profile import ProfileModule
+from .modules.qa import QaModule
 
 
 class Client(BaseClient):
@@ -22,12 +26,16 @@ class Client(BaseClient):
         self._answer = AnswerModule(self)
         self._ask = AskModule(self)
         self._auth = AuthModule(self)
+        self._dashboard = DashboardModule(self)
         self._drawing = DrawingModule(self)
         self._feed = FeedModule(self)
         self._forum = ForumModule(self)
         self._images = ImagesModule(self)
         self._messages = MessagesModule(self)
+        self._navbar = NavbarModule(self)
         self._notify = NotifyModule(self)
+        self._profile = ProfileModule(self)
+        self._qa = QaModule(self)
 
     @property
     def account(self) -> AccountModule:
@@ -44,6 +52,10 @@ class Client(BaseClient):
     @property
     def auth(self) -> AuthModule:
         return self._auth
+
+    @property
+    def dashboard(self) -> DashboardModule:
+        return self._dashboard
 
     @property
     def drawing(self) -> DrawingModule:
@@ -66,5 +78,17 @@ class Client(BaseClient):
         return self._messages
 
     @property
+    def navbar(self) -> NavbarModule:
+        return self._navbar
+
+    @property
     def notify(self) -> NotifyModule:
         return self._notify
+
+    @property
+    def profile(self) -> ProfileModule:
+        return self._profile
+
+    @property
+    def qa(self) -> QaModule:
+        return self._qa

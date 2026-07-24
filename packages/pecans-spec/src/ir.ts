@@ -217,6 +217,17 @@ function irType(type: any, enumsUsed: Set<string>): IrType {
     }
 }
 
+/** Names of every named model referenced by a type, recursing arrays/nullables. */
+function modelNamesIn(type: IrType, out: Set<string>): void {
+    if (type.kind === "model") {
+        out.add(type.name);
+    } else if (type.kind === "array") {
+        modelNamesIn(type.element, out);
+    } else if (type.kind === "nullable") {
+        modelNamesIn(type.inner, out);
+    }
+}
+
 /** All properties of a model, own plus inherited, base-first. */
 function collectProps(model: any): any[] {
     const props: any[] = [];
@@ -355,6 +366,11 @@ export async function buildIr(specPath: string): Promise<IrProgram> {
                     doc: getDoc(program, prm),
                 };
             });
+
+            // Param model types must be imported by the generated module too.
+            for (const prm of params) {
+                modelNamesIn(prm.type, responses);
+            }
 
             if (zipCfg) {
                 const cfg = jsValue(program, zipCfg) as Record<string, string>;

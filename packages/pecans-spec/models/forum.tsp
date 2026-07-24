@@ -81,6 +81,14 @@ model ForumSearchResponse extends TCResponse {
   results: ForumSearchResult[];
 }
 
+model GetQuoteTextResponse extends TCResponse {
+  /** The raw text of the post being quoted. */
+  originalText: string;
+
+  /** Username of the post's author. */
+  user: string;
+}
+
 interface Forum {
   @rpc("forum.viewposts")
   @constant(#{ includeThreadMetadata: true })
@@ -109,4 +117,22 @@ interface Forum {
 
   @rpc("forum.threadlist")
   threadList(category: string, offset?: safeint = 0): ThreadListResponse;
+
+  /**
+   * Fetch a post's text and author, for building a quote reply.
+   *
+   * @param id Id of the post to quote.
+   * @returns The post's original text and author.
+   */
+  @rpc("forum.getquotetext")
+  getQuoteText(id: safeint): GetQuoteTextResponse;
+
+  /**
+   * Follow or unfollow a thread to control notifications for new replies.
+   *
+   * @param threadId Thread to follow or unfollow.
+   * @param follow True to follow, false to unfollow.
+   */
+  @rpc("forum.followthread")
+  followThread(threadId: safeint, follow: boolean): TCResponse;
 }

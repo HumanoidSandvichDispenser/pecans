@@ -5,6 +5,7 @@ from ...runtime import Call, MethodCall, Module
 from ..types import (
     ForumCategoriesResponse,
     ForumSearchResponse,
+    GetQuoteTextResponse,
     TCResponse,
     ThreadListResponse,
     ViewPostsResponse,
@@ -99,6 +100,43 @@ class ForumModule(Module):
                 payload={
                     "category": category,
                     "offset": offset,
+                },
+            ),
+        )
+
+    def getQuoteText(self, id: int) -> Call[GetQuoteTextResponse]:
+        """Fetch a post's text and author, for building a quote reply.
+
+        Args:
+            id: Id of the post to quote.
+
+        Returns:
+            The post's original text and author.
+        """
+        return Call(
+            self.client,
+            MethodCall(
+                fn="forum.getquotetext",
+                payload={
+                    "id": id,
+                },
+            ),
+        )
+
+    def followThread(self, threadId: int, follow: bool) -> Call[TCResponse]:
+        """Follow or unfollow a thread to control notifications for new replies.
+
+        Args:
+            threadId: Thread to follow or unfollow.
+            follow: True to follow, false to unfollow.
+        """
+        return Call(
+            self.client,
+            MethodCall(
+                fn="forum.followthread",
+                payload={
+                    "threadId": threadId,
+                    "follow": follow,
                 },
             ),
         )

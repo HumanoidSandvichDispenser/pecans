@@ -27,4 +27,12 @@ interface Notify {
 
   @rpc("notify.whosonline")
   fetchOnlineUsers(feature: Feature): WhosOnlineResponse;
+
+  /**
+   * Register that you're viewing a page, for presence and read-tracking.
+   *
+   * @param url Path of the page being viewed, e.g. `/forum/general`.
+   */
+  @rpc("notify.activity")
+  activity(url: string): TCResponse;
 }

@@ -4,24 +4,32 @@ import { AccountModule } from "./modules/account";
 import { AnswerModule } from "./modules/answer";
 import { AskModule } from "./modules/ask";
 import { AuthModule } from "./modules/auth";
+import { DashboardModule } from "./modules/dashboard";
 import { DrawingModule } from "./modules/drawing";
 import { FeedModule } from "./modules/feed";
 import { ForumModule } from "./modules/forum";
 import { ImagesModule } from "./modules/images";
 import { MessagesModule } from "./modules/messages";
+import { NavbarModule } from "./modules/navbar";
 import { NotifyModule } from "./modules/notify";
+import { ProfileModule } from "./modules/profile";
+import { QaModule } from "./modules/qa";
 
 export class Client extends BaseClient {
     #account: AccountModule;
     #answer: AnswerModule;
     #ask: AskModule;
     #auth: AuthModule;
+    #dashboard: DashboardModule;
     #drawing: DrawingModule;
     #feed: FeedModule;
     #forum: ForumModule;
     #images: ImagesModule;
     #messages: MessagesModule;
+    #navbar: NavbarModule;
     #notify: NotifyModule;
+    #profile: ProfileModule;
+    #qa: QaModule;
 
     public constructor(auth?: string) {
         super(auth);
@@ -29,12 +37,16 @@ export class Client extends BaseClient {
         this.#answer = new AnswerModule(this);
         this.#ask = new AskModule(this);
         this.#auth = new AuthModule(this);
+        this.#dashboard = new DashboardModule(this);
         this.#drawing = new DrawingModule(this);
         this.#feed = new FeedModule(this);
         this.#forum = new ForumModule(this);
         this.#images = new ImagesModule(this);
         this.#messages = new MessagesModule(this);
+        this.#navbar = new NavbarModule(this);
         this.#notify = new NotifyModule(this);
+        this.#profile = new ProfileModule(this);
+        this.#qa = new QaModule(this);
     }
 
     public get account(): AccountModule {
@@ -51,6 +63,10 @@ export class Client extends BaseClient {
 
     public get auth(): AuthModule {
         return this.#auth;
+    }
+
+    public get dashboard(): DashboardModule {
+        return this.#dashboard;
     }
 
     public get drawing(): DrawingModule {
@@ -73,7 +89,19 @@ export class Client extends BaseClient {
         return this.#messages;
     }
 
+    public get navbar(): NavbarModule {
+        return this.#navbar;
+    }
+
     public get notify(): NotifyModule {
         return this.#notify;
+    }
+
+    public get profile(): ProfileModule {
+        return this.#profile;
+    }
+
+    public get qa(): QaModule {
+        return this.#qa;
     }
 }

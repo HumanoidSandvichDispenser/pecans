@@ -7,9 +7,13 @@ from .modules.account import AccountModule
 from .modules.answer import AnswerModule
 from .modules.ask import AskModule
 from .modules.auth import AuthModule
+from .modules.dashboard import DashboardModule
 from .modules.drawing import DrawingModule
 from .modules.feed import FeedModule
 from .modules.forum import ForumModule
 from .modules.images import ImagesModule
 from .modules.messages import MessagesModule
+from .modules.navbar import NavbarModule
 from .modules.notify import NotifyModule
+from .modules.profile import ProfileModule
+from .modules.qa import QaModule

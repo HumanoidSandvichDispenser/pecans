@@ -17,6 +17,16 @@ export type ViewPostsResponse = TCResponse & {
 export type ForumSearchResponse = TCResponse & {
     results: ForumSearchResult[];
 };
+export type GetQuoteTextResponse = TCResponse & {
+    /**
+     * The raw text of the post being quoted.
+     */
+    originalText: string;
+    /**
+     * Username of the post's author.
+     */
+    user: string;
+};
 /**
  * A newly-created forum thread.
  */
@@ -165,6 +175,42 @@ export type QuestionTextResponse = TCResponse & {
      * Question bodies, keyed by id.
      */
     questions: QuestionText[];
+};
+export type ProfileGetResponse = TCResponse & {
+    /**
+     * The looked-up user's id. `ok` is false with error `NOT_FOUND` if no such user.
+     */
+    id: string;
+};
+export type ProfileDetailsResponse = TCResponse & {
+    /**
+     * Echoes back the requested field name.
+     */
+    type: string;
+    /**
+     * The field's value; a string for text fields, a number for counts like `followers`.
+     */
+    value: {
+        [k: string]: unknown;
+    };
+};
+export type QaGetPinnedResponse = TCResponse & {
+    /**
+     * The questions the user has pinned to their profile.
+     */
+    pinned: unknown[];
+};
+export type NavbarGetResponse = TCResponse & {
+    /**
+     * The navigation items, in display order.
+     */
+    nav: NavItem[];
+};
+export type DashboardResponse = TCResponse & {
+    /**
+     * The most recently asked questions across the site.
+     */
+    recentQuestions: DashboardQuestion[];
 };
 
 export interface TCFollowInfo {
@@ -423,4 +469,37 @@ export interface QuestionMetadata1 {
      * Whether this is a free-text question or a poll.
      */
     questionType: "text" | "poll";
+}
+export interface NavItem {
+    /**
+     * Stable id for the destination, e.g. `feed`, `forum`.
+     */
+    id: string;
+    /**
+     * Path the item links to, e.g. `/forum`.
+     */
+    url: string;
+    /**
+     * Human-readable label, e.g. `Home Feed`.
+     */
+    label: string;
+    /**
+     * Image id for the item's icon.
+     */
+    icon: string;
+    /**
+     * Notification feature key to badge this item against, if any.
+     */
+    notify?: string;
+}
+export interface DashboardQuestion {
+    id: number;
+    /**
+     * Unix time the question was asked.
+     */
+    time: number;
+    /**
+     * First line(s) of the question body.
+     */
+    preview: string;
 }

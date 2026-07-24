@@ -3,6 +3,7 @@ import { Call, Module } from "../../runtime";
 import {
     ForumCategoriesResponse,
     ForumSearchResponse,
+    GetQuoteTextResponse,
     TCResponse,
     ThreadListResponse,
     ViewPostsResponse,
@@ -81,6 +82,37 @@ export class ForumModule extends Module {
             payload: {
                 category: category,
                 offset: offset,
+            },
+        });
+    }
+
+    /**
+     * Fetch a post's text and author, for building a quote reply.
+     *
+     * @param id - Id of the post to quote.
+     * @returns The post's original text and author.
+     */
+    public getQuoteText(id: number): Call<GetQuoteTextResponse> {
+        return new Call<GetQuoteTextResponse>(this.client, {
+            fn: "forum.getquotetext",
+            payload: {
+                id: id,
+            },
+        });
+    }
+
+    /**
+     * Follow or unfollow a thread to control notifications for new replies.
+     *
+     * @param threadId - Thread to follow or unfollow.
+     * @param follow - True to follow, false to unfollow.
+     */
+    public followThread(threadId: number, follow: boolean): Call<TCResponse> {
+        return new Call<TCResponse>(this.client, {
+            fn: "forum.followthread",
+            payload: {
+                threadId: threadId,
+                follow: follow,
             },
         });
     }
