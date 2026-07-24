@@ -9,5 +9,6 @@ from .modules.ask import AskModule
 from .modules.auth import AuthModule
 from .modules.drawing import DrawingModule
 from .modules.forum import ForumModule
+from .modules.images import ImagesModule
 from .modules.messages import MessagesModule
 from .modules.notify import NotifyModule

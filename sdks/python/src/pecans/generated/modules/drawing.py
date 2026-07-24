@@ -42,3 +42,14 @@ class DrawingModule(Module):
                 },
             ),
         )
+
+    def setActive(self, imageId: str) -> Call[TCResponse]:
+        return Call(
+            self.client,
+            MethodCall(
+                fn="drawing.setactive",
+                payload={
+                    "imageId": imageId,
+                },
+            ),
+        )

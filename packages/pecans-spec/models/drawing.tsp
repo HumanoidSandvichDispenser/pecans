@@ -21,4 +21,7 @@ interface Drawing {
 
   @rpc("drawing.send")
   sendDrawing(imageId: string, receiver: string): TCResponse;
+
+  @rpc("drawing.setactive")
+  setActive(imageId: string): TCResponse;
 }

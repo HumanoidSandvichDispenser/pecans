@@ -33,4 +33,13 @@ export class DrawingModule extends Module {
             },
         });
     }
+
+    public setActive(imageId: string): Call<TCResponse> {
+        return new Call<TCResponse>(this.client, {
+            fn: "drawing.setactive",
+            payload: {
+                imageId: imageId,
+            },
+        });
+    }
 }

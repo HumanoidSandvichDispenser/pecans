@@ -50,6 +50,18 @@ export type SaveDrawingResponse = TCResponse & {
 export type ViewDrawingDataResponse = TCResponse & {
     data: string;
 };
+export type ImageBatchGetResponse = TCResponse & {
+    items: ImageData[];
+};
+export type ImageGalleryListResponse = TCResponse & {
+    images: ImageRef[];
+    hasMore: boolean;
+};
+export type ImageInfoResponse = TCResponse & {
+    imageId: string;
+    owner: string;
+    isYours: boolean;
+};
 export type NotifySyncResponse = TCResponse & {
     count: number;
 };
@@ -201,6 +213,13 @@ export interface MessageThreadHeader {
 export interface Folder {
     id: string;
     name: string;
+}
+export interface ImageData {
+    id: string;
+    data: string;
+}
+export interface ImageRef {
+    id: string;
 }
 export interface TruncatedUser {
     id: string;

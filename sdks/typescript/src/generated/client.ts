@@ -6,6 +6,7 @@ import { AskModule } from "./modules/ask";
 import { AuthModule } from "./modules/auth";
 import { DrawingModule } from "./modules/drawing";
 import { ForumModule } from "./modules/forum";
+import { ImagesModule } from "./modules/images";
 import { MessagesModule } from "./modules/messages";
 import { NotifyModule } from "./modules/notify";
 
@@ -16,6 +17,7 @@ export class Client extends BaseClient {
     #auth: AuthModule;
     #drawing: DrawingModule;
     #forum: ForumModule;
+    #images: ImagesModule;
     #messages: MessagesModule;
     #notify: NotifyModule;
 
@@ -27,6 +29,7 @@ export class Client extends BaseClient {
         this.#auth = new AuthModule(this);
         this.#drawing = new DrawingModule(this);
         this.#forum = new ForumModule(this);
+        this.#images = new ImagesModule(this);
         this.#messages = new MessagesModule(this);
         this.#notify = new NotifyModule(this);
     }
@@ -53,6 +56,10 @@ export class Client extends BaseClient {
 
     public get forum(): ForumModule {
         return this.#forum;
+    }
+
+    public get images(): ImagesModule {
+        return this.#images;
     }
 
     public get messages(): MessagesModule {

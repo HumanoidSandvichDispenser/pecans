@@ -348,6 +348,59 @@ ViewDrawingDataResponse = TypedDict(
 )
 
 
+ImageData = TypedDict(
+    "ImageData",
+    {
+        "id": "str",
+        "data": "str",
+    },
+)
+
+
+ImageBatchGetResponse = TypedDict(
+    "ImageBatchGetResponse",
+    {
+        "ok": "bool",
+        "error": NotRequired["str"],
+        "profiles": NotRequired["list[TCProfile]"],
+        "items": "list[ImageData]",
+    },
+)
+
+
+ImageRef = TypedDict(
+    "ImageRef",
+    {
+        "id": "str",
+    },
+)
+
+
+ImageGalleryListResponse = TypedDict(
+    "ImageGalleryListResponse",
+    {
+        "ok": "bool",
+        "error": NotRequired["str"],
+        "profiles": NotRequired["list[TCProfile]"],
+        "images": "list[ImageRef]",
+        "hasMore": "bool",
+    },
+)
+
+
+ImageInfoResponse = TypedDict(
+    "ImageInfoResponse",
+    {
+        "ok": "bool",
+        "error": NotRequired["str"],
+        "profiles": NotRequired["list[TCProfile]"],
+        "imageId": "str",
+        "owner": "str",
+        "isYours": "bool",
+    },
+)
+
+
 TruncatedUser = TypedDict(
     "TruncatedUser",
     {
