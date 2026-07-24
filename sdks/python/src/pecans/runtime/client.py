@@ -67,7 +67,7 @@ class BaseClient:
         }
 
         if self.auth_token is not None:
-            headers["Cookie"] = "twocansandstring_com_auth2=" + self.auth_token
+            headers["Cookie"] = "tc_auth_v3=" + self.auth_token
 
         body = {
             "auth": self.auth_token,

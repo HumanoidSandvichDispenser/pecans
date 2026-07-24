@@ -70,7 +70,7 @@ export abstract class BaseClient {
         };
 
         if (this.authToken != undefined) {
-            headers["Cookie"] = "twocansandstring_com_auth2=" + this.authToken;
+            headers["Cookie"] = "tc_auth_v3=" + this.authToken;
         }
 
         const res = await fetch(BaseClient.BASE_URI, {
