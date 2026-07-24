@@ -23,7 +23,7 @@ export class ForumSearchResponse extends TCResponse {
     public constructor(response: TCResponseRaw) {
         super(response);
 
-        this.results = response["results"];
+        this.results = response["results"] ?? [];
     }
 }
 

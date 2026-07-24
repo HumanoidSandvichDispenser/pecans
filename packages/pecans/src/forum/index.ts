@@ -1,6 +1,6 @@
 import { Module } from "../module";
 import { TCResponse } from "../types";
-import { ViewPostsResponse } from "./types";
+import { ForumSearchResponse, ViewPostsResponse } from "./types";
 
 export class ForumModule extends Module {
     public async viewPosts(
@@ -59,7 +59,7 @@ export class ForumModule extends Module {
 
     public async search(query: string) {
         return await this.client._call(
-            TCResponse,
+            ForumSearchResponse,
             "forum.search",
             {
                 query,
