@@ -4,7 +4,7 @@
     "description": "TypeSpec source of truth + SDK generator for the Two Cans & String API",
     "private": true,
     "type": "module",
-    "license": "GPL-3.0-only",
+    "license": "AGPL-3.0-only",
     "scripts": {
         "compile": "tsp compile .",
         "watch": "tsp compile . --watch",

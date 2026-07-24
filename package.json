@@ -3,7 +3,7 @@
     "version": "1.0.0",
     "description": "Pecans Two Cans & String API wrapper and MCP server",
     "private": true,
-    "license": "GPL-3.0-only",
+    "license": "AGPL-3.0-only",
     "workspaces": [
         "packages/*",
         "sdks/typescript"
