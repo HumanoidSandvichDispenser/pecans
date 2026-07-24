@@ -10,7 +10,7 @@ export class FeedModule extends Module {
      * @param size - Number of items to return on this first page.
      * @returns A cursor (`feedId`) and the first page of items.
      */
-    public start(user: any, size: number = 10): Call<FeedResponse> {
+    public start(user: string | null, size: number = 10): Call<FeedResponse> {
         return new Call<FeedResponse>(this.client, {
             fn: "feed.start",
             payload: {

@@ -6,7 +6,7 @@ from ..types import FeedResponse, FeedScrollResponse
 
 
 class FeedModule(Module):
-    def start(self, user: Any, size: int = 10) -> Call[FeedResponse]:
+    def start(self, user: str | None, size: int = 10) -> Call[FeedResponse]:
         """Open a feed and return its first page.
 
         Args:

@@ -27,6 +27,9 @@ function tsType(type: IrType): string {
         case "array":
             return `${tsType(type.element)}[]`;
 
+        case "nullable":
+            return `${tsType(type.inner)} | null`;
+
         default:
             return "any";
     }

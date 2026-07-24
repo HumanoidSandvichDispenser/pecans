@@ -27,6 +27,9 @@ function pyType(type: IrType): string {
         case "array":
             return `list[${pyType(type.element)}]`;
 
+        case "nullable":
+            return `${pyType(type.inner)} | None`;
+
         case "dict":
             return "dict[str, Any]";
 
@@ -72,6 +75,10 @@ function enumsInType(type: IrType, out: Set<string>): void {
 
     if (type.kind === "array") {
         enumsInType(type.element, out);
+    }
+
+    if (type.kind === "nullable") {
+        enumsInType(type.inner, out);
     }
 }
 

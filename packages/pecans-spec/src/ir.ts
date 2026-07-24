@@ -42,6 +42,7 @@ export type IrType =
     | { kind: "enum"; name: string }
     | { kind: "model"; name: string }
     | { kind: "array"; element: IrType }
+    | { kind: "nullable"; inner: IrType }
     | { kind: "dict" }
     | { kind: "unknown" };
 
@@ -173,9 +174,19 @@ function irType(type: any, enumsUsed: Set<string>): IrType {
 
         case "Union": {
             const variants = [...type.variants.values()];
+            const isNull = (v: any) => v.type.kind === "Intrinsic" && v.type.name === "null";
+            const nonNull = variants.filter((v: any) => !isNull(v));
+            const hasNull = nonNull.length !== variants.length;
+            const wrap = (t: IrType): IrType => (hasNull ? { kind: "nullable", inner: t } : t);
 
-            if (variants.every((v: any) => v.type.kind === "String")) {
-                return { kind: "string" };
+            // A union of string literals (used as an inline enum) collapses to string.
+            if (nonNull.every((v: any) => v.type.kind === "String")) {
+                return wrap({ kind: "string" });
+            }
+
+            // `T | null` (a single underlying type, optionally nullable) unwraps to T.
+            if (nonNull.length === 1) {
+                return wrap(irType(nonNull[0].type, enumsUsed));
             }
 
             return { kind: "unknown" };
