@@ -7,6 +7,7 @@ from .modules.answer import AnswerModule
 from .modules.ask import AskModule
 from .modules.auth import AuthModule
 from .modules.drawing import DrawingModule
+from .modules.feed import FeedModule
 from .modules.forum import ForumModule
 from .modules.images import ImagesModule
 from .modules.messages import MessagesModule
@@ -22,6 +23,7 @@ class Client(BaseClient):
         self._ask = AskModule(self)
         self._auth = AuthModule(self)
         self._drawing = DrawingModule(self)
+        self._feed = FeedModule(self)
         self._forum = ForumModule(self)
         self._images = ImagesModule(self)
         self._messages = MessagesModule(self)
@@ -46,6 +48,10 @@ class Client(BaseClient):
     @property
     def drawing(self) -> DrawingModule:
         return self._drawing
+
+    @property
+    def feed(self) -> FeedModule:
+        return self._feed
 
     @property
     def forum(self) -> ForumModule:

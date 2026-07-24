@@ -17,21 +17,58 @@ export type ViewPostsResponse = TCResponse & {
 export type ForumSearchResponse = TCResponse & {
     results: ForumSearchResult[];
 };
+/**
+ * A newly-created forum thread.
+ */
 export type ForumThreadFeedItem = FeedItemBase & {
     type: "forum.thread";
     data: {
+        /**
+         * First line(s) of the thread's opening post.
+         */
         preview: string;
     };
 };
+/**
+ * A newly-asked Q&A question.
+ */
+export type QaNewQuestionFeedItem = FeedItemBase & {
+    type: "qa.newquestion";
+    data: {
+        /**
+         * First line(s) of the question body.
+         */
+        preview: string;
+    };
+};
+/**
+ * An account being registered.
+ */
 export type AccountRegisterFeedItem = FeedItemBase & {
     type: "account.register";
     data: unknown[];
 };
 export type FeedResponse = TCResponse & {
+    /**
+     * Server-side cursor for pagination.
+     */
     feedId: string;
+    /**
+     * The first page of feed items, newest first.
+     */
     items: FeedItem[];
 };
-export type FeedItem = ForumThreadFeedItem | AccountRegisterFeedItem;
+export type FeedItem = ForumThreadFeedItem | QaNewQuestionFeedItem | AccountRegisterFeedItem;
+export type FeedScrollResponse = TCResponse & {
+    /**
+     * The next page of items; absent once the feed is exhausted.
+     */
+    items?: FeedItem[];
+    /**
+     * True when there are no more items to load.
+     */
+    end?: boolean;
+};
 export type FolderViewResponse = TCResponse & {
     hasMore: boolean;
     hasPrevious: boolean;
@@ -204,9 +241,21 @@ export interface ForumSearchResult {
 }
 export interface FeedItemBase {
     id: number;
+    /**
+     * Unix time the activity happened.
+     */
     time: number;
+    /**
+     * Username of the account the item belongs to.
+     */
     owner: string;
+    /**
+     * Relative path to the item on the site, e.g. `/forum/blogs/11894`.
+     */
     url: string;
+    /**
+     * Display title for the item (may be empty for questions).
+     */
     title: string;
 }
 export interface MessagePreview {

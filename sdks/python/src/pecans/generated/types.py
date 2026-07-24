@@ -198,6 +198,20 @@ ForumThreadFeedItem = TypedDict(
 )
 
 
+QaNewQuestionFeedItem = TypedDict(
+    "QaNewQuestionFeedItem",
+    {
+        "id": "int",
+        "time": "int",
+        "owner": "str",
+        "url": "str",
+        "title": "str",
+        "type": "str",
+        "data": "dict[str, Any]",
+    },
+)
+
+
 AccountRegisterFeedItem = TypedDict(
     "AccountRegisterFeedItem",
     {
@@ -220,6 +234,18 @@ FeedResponse = TypedDict(
         "profiles": NotRequired["list[TCProfile]"],
         "feedId": "str",
         "items": "list[Any]",
+    },
+)
+
+
+FeedScrollResponse = TypedDict(
+    "FeedScrollResponse",
+    {
+        "ok": "bool",
+        "error": NotRequired["str"],
+        "profiles": NotRequired["list[TCProfile]"],
+        "items": NotRequired["list[Any]"],
+        "end": NotRequired["bool"],
     },
 )
 

@@ -5,6 +5,7 @@ import { AnswerModule } from "./modules/answer";
 import { AskModule } from "./modules/ask";
 import { AuthModule } from "./modules/auth";
 import { DrawingModule } from "./modules/drawing";
+import { FeedModule } from "./modules/feed";
 import { ForumModule } from "./modules/forum";
 import { ImagesModule } from "./modules/images";
 import { MessagesModule } from "./modules/messages";
@@ -16,6 +17,7 @@ export class Client extends BaseClient {
     #ask: AskModule;
     #auth: AuthModule;
     #drawing: DrawingModule;
+    #feed: FeedModule;
     #forum: ForumModule;
     #images: ImagesModule;
     #messages: MessagesModule;
@@ -28,6 +30,7 @@ export class Client extends BaseClient {
         this.#ask = new AskModule(this);
         this.#auth = new AuthModule(this);
         this.#drawing = new DrawingModule(this);
+        this.#feed = new FeedModule(this);
         this.#forum = new ForumModule(this);
         this.#images = new ImagesModule(this);
         this.#messages = new MessagesModule(this);
@@ -52,6 +55,10 @@ export class Client extends BaseClient {
 
     public get drawing(): DrawingModule {
         return this.#drawing;
+    }
+
+    public get feed(): FeedModule {
+        return this.#feed;
     }
 
     public get forum(): ForumModule {

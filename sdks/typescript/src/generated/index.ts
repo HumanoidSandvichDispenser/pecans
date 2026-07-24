@@ -8,6 +8,7 @@ export * from "./modules/answer";
 export * from "./modules/ask";
 export * from "./modules/auth";
 export * from "./modules/drawing";
+export * from "./modules/feed";
 export * from "./modules/forum";
 export * from "./modules/images";
 export * from "./modules/messages";
