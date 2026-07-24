@@ -44,7 +44,7 @@ async def main():
 asyncio.run(main())
 ```
 
-Batching:
+Batching, supporting Typed responses of up to 8 requests, untyped beyond that:
 
 ```py
 inbox, search = await client.batch(

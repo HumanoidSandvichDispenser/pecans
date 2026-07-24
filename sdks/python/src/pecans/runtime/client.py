@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 import re
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, TypeVar, overload
 
 import httpx
 
@@ -10,6 +10,15 @@ from .types import MethodCall
 
 if TYPE_CHECKING:
     from .call import Call
+
+_T1 = TypeVar("_T1")
+_T2 = TypeVar("_T2")
+_T3 = TypeVar("_T3")
+_T4 = TypeVar("_T4")
+_T5 = TypeVar("_T5")
+_T6 = TypeVar("_T6")
+_T7 = TypeVar("_T7")
+_T8 = TypeVar("_T8")
 
 
 class ResponseParseError(Exception):
@@ -37,14 +46,78 @@ class BaseClient:
 
         return self._build(res, 0)
 
-    async def batch(self, *calls: Call[Any]) -> list[Any]:
-        """Send several calls as one batched request, decoding each result in place."""
+    @overload
+    async def batch(self, c1: Call[_T1], /) -> tuple[_T1]: ...
+    @overload
+    async def batch(self, c1: Call[_T1], c2: Call[_T2], /) -> tuple[_T1, _T2]: ...
+    @overload
+    async def batch(
+        self, c1: Call[_T1], c2: Call[_T2], c3: Call[_T3], /
+    ) -> tuple[_T1, _T2, _T3]: ...
+    @overload
+    async def batch(
+        self, c1: Call[_T1], c2: Call[_T2], c3: Call[_T3], c4: Call[_T4], /
+    ) -> tuple[_T1, _T2, _T3, _T4]: ...
+    @overload
+    async def batch(
+        self,
+        c1: Call[_T1],
+        c2: Call[_T2],
+        c3: Call[_T3],
+        c4: Call[_T4],
+        c5: Call[_T5],
+        /,
+    ) -> tuple[_T1, _T2, _T3, _T4, _T5]: ...
+    @overload
+    async def batch(
+        self,
+        c1: Call[_T1],
+        c2: Call[_T2],
+        c3: Call[_T3],
+        c4: Call[_T4],
+        c5: Call[_T5],
+        c6: Call[_T6],
+        /,
+    ) -> tuple[_T1, _T2, _T3, _T4, _T5, _T6]: ...
+    @overload
+    async def batch(
+        self,
+        c1: Call[_T1],
+        c2: Call[_T2],
+        c3: Call[_T3],
+        c4: Call[_T4],
+        c5: Call[_T5],
+        c6: Call[_T6],
+        c7: Call[_T7],
+        /,
+    ) -> tuple[_T1, _T2, _T3, _T4, _T5, _T6, _T7]: ...
+    @overload
+    async def batch(
+        self,
+        c1: Call[_T1],
+        c2: Call[_T2],
+        c3: Call[_T3],
+        c4: Call[_T4],
+        c5: Call[_T5],
+        c6: Call[_T6],
+        c7: Call[_T7],
+        c8: Call[_T8],
+        /,
+    ) -> tuple[_T1, _T2, _T3, _T4, _T5, _T6, _T7, _T8]: ...
+    @overload
+    async def batch(self, *calls: Call[Any]) -> tuple[Any, ...]: ...
+
+    async def batch(self, *calls: Call[Any]) -> tuple[Any, ...]:
+        """Send several calls as one batched request, decoding each result in place.
+
+        Typed for up to 8 calls (result is a positional ``tuple``); beyond that the
+        element types fall back to ``Any``."""
         if not calls:
-            return []
+            return ()
 
         res = await self._send([call.method_call for call in calls])
 
-        return [call.build(self._build(res, index)) for index, call in enumerate(calls)]
+        return tuple(call.build(self._build(res, index)) for index, call in enumerate(calls))
 
     def _build(self, res: dict[str, Any] | None, index: int) -> Any:
         if res is not None:
