@@ -198,7 +198,7 @@ export type QaGetPinnedResponse = TCResponse & {
     /**
      * The questions the user has pinned to their profile.
      */
-    pinned: unknown[];
+    pinned: PinnedQuestion[];
 };
 export type NavbarGetResponse = TCResponse & {
     /**
@@ -483,6 +483,17 @@ export interface QuestionMetadata1 {
      * Whether this is a free-text question or a poll.
      */
     questionType: "text" | "poll";
+}
+export interface PinnedQuestion {
+    id: number;
+    /**
+     * First line(s) of the question body.
+     */
+    preview: string;
+    /**
+     * Unix time the question was asked.
+     */
+    time: number;
 }
 export interface NavItem {
     /**

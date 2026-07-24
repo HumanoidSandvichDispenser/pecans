@@ -653,13 +653,23 @@ ProfileDetailsResponse = TypedDict(
 )
 
 
+PinnedQuestion = TypedDict(
+    "PinnedQuestion",
+    {
+        "id": "int",
+        "preview": "str",
+        "time": "int",
+    },
+)
+
+
 QaGetPinnedResponse = TypedDict(
     "QaGetPinnedResponse",
     {
         "ok": "bool",
         "error": NotRequired["str"],
         "profiles": NotRequired["list[TCProfile]"],
-        "pinned": "list[Any]",
+        "pinned": "list[PinnedQuestion]",
     },
 )
 

@@ -2,9 +2,19 @@ import "../lib/main.tsp";
 
 namespace Pecans;
 
+model PinnedQuestion {
+  id: safeint;
+
+  /** First line(s) of the question body. */
+  preview: string;
+
+  /** Unix time the question was asked. */
+  time: safeint;
+}
+
 model QaGetPinnedResponse extends TCResponse {
   /** The questions the user has pinned to their profile. */
-  pinned: unknown[];
+  pinned: PinnedQuestion[];
 }
 
 interface Qa {
