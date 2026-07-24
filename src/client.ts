@@ -8,6 +8,20 @@ import { NotifyModule } from "./notify";
 import { AccountModule } from "./account";
 import { AuthModule } from "./auth";
 
+export class ResponseParseError {
+    public readonly name: string = "ResponseParseError";
+    public readonly message: string = "Failed to parse API response as JSON";
+    public readonly responseText: string;
+    public readonly cause?: unknown;
+
+    public constructor(responseText: string, cause?: unknown) {
+        this.responseText = responseText;
+        if (cause !== undefined) {
+            this.cause = cause;
+        }
+    }
+}
+
 interface QueuedCall {
     methodCall: MethodCall;
     creator: new(r: TCResponseRaw) => TCResponse;
@@ -19,7 +33,7 @@ interface QueuedCall {
  * Client for Two Cans & String API.
  */
 export class Client {
-    static readonly BASE_URI = "https://twocansandstring.com/api";
+    static readonly BASE_URI = "https://api.twocansandstring.com/api";
     static readonly VERSION = "1.68";
 
     #messages: MessagesModule;
@@ -234,7 +248,11 @@ export class Client {
         if (this.shouldTrimErrors) {
             let text = await res.text();
             text = text.replace(/^(?:.*\n)*{/, "{");
-            return JSON.parse(text) as TCJSONResponse;
+            try {
+                return JSON.parse(text) as TCJSONResponse;
+            } catch (cause) {
+                throw new ResponseParseError(text, cause);
+            }
         } else {
             return await res.json() as TCJSONResponse;
         }

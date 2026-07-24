@@ -10,3 +10,6 @@ obj/
 
 tsconfig.json
 tsconfig.tsbuildinfo
+
+# network logs
+*.har

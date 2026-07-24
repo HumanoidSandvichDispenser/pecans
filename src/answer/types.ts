@@ -4,15 +4,8 @@ import { TCResponse, TCResponseRaw } from "../types";
  * Response for answer.reply.
  */
 export class AnswerReplyResponse extends TCResponse {
-    public id: number;
-    public time: number;
-    public text: string;
-
     public constructor(res: TCResponseRaw) {
         super(res);
-        this.id = res["id"];
-        this.time = res["time"];
-        this.text = res["text"];
     }
 }
 
