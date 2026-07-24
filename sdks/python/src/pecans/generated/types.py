@@ -184,6 +184,17 @@ GetQuoteTextResponse = TypedDict(
 )
 
 
+NewThreadResponse = TypedDict(
+    "NewThreadResponse",
+    {
+        "ok": "bool",
+        "error": NotRequired["str"],
+        "profiles": NotRequired["list[TCProfile]"],
+        "threadId": "int",
+    },
+)
+
+
 FeedItemBase = TypedDict(
     "FeedItemBase",
     {
@@ -626,6 +637,34 @@ QuestionData = TypedDict(
     {
         "body": "str",
         "header": "QuestionMetadata",
+    },
+)
+
+
+NewPollChoice = TypedDict(
+    "NewPollChoice",
+    {
+        "label": "str",
+        "color": "str",
+    },
+)
+
+
+NewPoll = TypedDict(
+    "NewPoll",
+    {
+        "choices": "list[NewPollChoice]",
+    },
+)
+
+
+PostQuestionBody = TypedDict(
+    "PostQuestionBody",
+    {
+        "text": "str",
+        "isPublic": "bool",
+        "hasPoll": "bool",
+        "poll": NotRequired["NewPoll"],
     },
 )
 

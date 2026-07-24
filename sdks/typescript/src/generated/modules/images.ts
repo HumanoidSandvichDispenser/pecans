@@ -13,7 +13,7 @@ export class ImagesModule extends Module {
         return new Call<ImageBatchGetResponse>(this.client, {
             fn: "images.batchget",
             payload: {
-                ids: ids,
+                "ids": ids,
             },
         });
     }
@@ -29,8 +29,8 @@ export class ImagesModule extends Module {
         return new Call<ImageGalleryListResponse>(this.client, {
             fn: "images.gallerylist",
             payload: {
-                page: page,
-                deleted: deleted,
+                "page": page,
+                "deleted": deleted,
             },
         });
     }
@@ -45,7 +45,7 @@ export class ImagesModule extends Module {
         return new Call<ImageInfoResponse>(this.client, {
             fn: "images.info",
             payload: {
-                imageId: imageId,
+                "imageId": imageId,
             },
         });
     }

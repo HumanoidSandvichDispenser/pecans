@@ -89,7 +89,23 @@ model GetQuoteTextResponse extends TCResponse {
   user: string;
 }
 
+model NewThreadResponse extends TCResponse {
+  /** Id of the newly created thread. */
+  threadId: safeint;
+}
+
 interface Forum {
+  /**
+   * Create a new thread in a category.
+   *
+   * @param category Id of the category to post the thread in.
+   * @param title Thread title.
+   * @param text Body text of the opening post (UCP markup).
+   * @returns The new thread's id.
+   */
+  @rpc("forum.newthread")
+  newThread(category: string, title: string, text: string): NewThreadResponse;
+
   @rpc("forum.viewposts")
   @constant(#{ includeThreadMetadata: true })
   viewPosts(

@@ -7,40 +7,31 @@ export class MessagesModule extends Module {
         return new Call<FolderViewResponse>(this.client, {
             fn: "messages.folderview",
             payload: {
-                folder: folder,
-                page: page,
+                "folder": folder,
+                "page": page,
             },
         });
     }
 
-    public view(
-        conversationId: string,
-        includeHeader: boolean = true,
-        markAsRead: boolean = true,
-        page: number = 1,
-    ): Call<MessageViewResponse> {
+    public view(conversationId: string, includeHeader: boolean = true, markAsRead: boolean = true, page: number = 1): Call<MessageViewResponse> {
         return new Call<MessageViewResponse>(this.client, {
             fn: "messages.view",
             payload: {
-                conversationId: conversationId,
-                includeHeader: includeHeader,
-                markAsRead: markAsRead,
-                page: page,
+                "conversationId": conversationId,
+                "includeHeader": includeHeader,
+                "markAsRead": markAsRead,
+                "page": page,
             },
         });
     }
 
-    public reply(
-        conversationId: string,
-        text: string,
-        unanonymize: boolean = false,
-    ): Call<TCResponse> {
+    public reply(conversationId: string, text: string, unanonymize: boolean = false): Call<TCResponse> {
         return new Call<TCResponse>(this.client, {
             fn: "messages.reply",
             payload: {
-                conversationId: conversationId,
-                text: text,
-                unanonymize: unanonymize,
+                "conversationId": conversationId,
+                "text": text,
+                "unanonymize": unanonymize,
             },
         });
     }
@@ -49,6 +40,54 @@ export class MessagesModule extends Module {
         return new Call<FolderListResponse>(this.client, {
             fn: "messages.folderlist",
             payload: {},
+        });
+    }
+
+    /**
+     * Start a new conversation with one or more recipients.
+     *
+     * @param title - Conversation title / subject.
+     * @param body - Body text of the opening message (UCP markup).
+     * @param recipients - Usernames to send the conversation to.
+     */
+    public startConversation(title: string, body: string, recipients: string[]): Call<TCResponse> {
+        return new Call<TCResponse>(this.client, {
+            fn: "messages.startconversation",
+            payload: {
+                "title": title,
+                "body": body,
+                "recipients": recipients,
+            },
+        });
+    }
+
+    /**
+     * Delete a conversation from the current user's view.
+     *
+     * @param conversationId - Id of the conversation to delete.
+     */
+    public delete(conversationId: string): Call<TCResponse> {
+        return new Call<TCResponse>(this.client, {
+            fn: "messages.delete",
+            payload: {
+                "conversationId": conversationId,
+            },
+        });
+    }
+
+    /**
+     * Move a conversation into a folder.
+     *
+     * @param conversationId - Id of the conversation to move.
+     * @param folder - Id of the destination folder.
+     */
+    public moveToFolder(conversationId: string, folder: string): Call<TCResponse> {
+        return new Call<TCResponse>(this.client, {
+            fn: "messages.movetofolder",
+            payload: {
+                "conversationId": conversationId,
+                "folder": folder,
+            },
         });
     }
 }

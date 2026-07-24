@@ -15,6 +15,7 @@ const JOIN = Symbol.for("pecans.join");
 const ZIP = Symbol.for("pecans.zip");
 const FROM_INPUT = Symbol.for("pecans.fromInput");
 const FROM_RESULT = Symbol.for("pecans.fromResult");
+const EMBED = Symbol.for("pecans.embed");
 
 const FLOAT = new Set(["float", "float32", "float64", "numeric", "decimal", "decimal128"]);
 const INT = new Set([
@@ -79,6 +80,7 @@ export interface IrParam {
     wireName: string;
     also: string[];
     joinSep?: string;
+    embed?: string;
     doc?: string;
 }
 
@@ -316,6 +318,7 @@ export async function buildIr(specPath: string): Promise<IrProgram> {
     const zipMap = program.stateMap(ZIP);
     const fromInputMap = program.stateMap(FROM_INPUT);
     const fromResultMap = program.stateMap(FROM_RESULT);
+    const embedMap = program.stateMap(EMBED);
 
     const ns = program.getGlobalNamespaceType().namespaces.get("Pecans");
 
@@ -353,6 +356,7 @@ export async function buildIr(specPath: string): Promise<IrProgram> {
                 const wireName = resolveEncodedName(program, prm, "application/json");
                 const also = (alsoMap.get(prm) as string[] | undefined) ?? [];
                 const joinSep = joinMap.get(prm) as string | undefined;
+                const embed = embedMap.get(prm) as string | undefined;
 
                 return {
                     name: prm.name,
@@ -363,6 +367,7 @@ export async function buildIr(specPath: string): Promise<IrProgram> {
                     wireName,
                     also,
                     joinSep,
+                    embed,
                     doc: getDoc(program, prm),
                 };
             });

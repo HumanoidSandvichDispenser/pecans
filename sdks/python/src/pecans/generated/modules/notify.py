@@ -13,9 +13,9 @@ class NotifyModule(Module):
             MethodCall(
                 fn="notify.sync",
                 payload={
-                    "feature": feature,
-                },
-            ),
+                "feature": feature,
+            },
+            )
         )
 
     def fetchOnlineUsers(self, feature: Feature) -> Call[WhosOnlineResponse]:
@@ -24,9 +24,9 @@ class NotifyModule(Module):
             MethodCall(
                 fn="notify.whosonline",
                 payload={
-                    "feature": feature,
-                },
-            ),
+                "feature": feature,
+            },
+            )
         )
 
     def activity(self, url: str) -> Call[TCResponse]:
@@ -40,7 +40,7 @@ class NotifyModule(Module):
             MethodCall(
                 fn="notify.activity",
                 payload={
-                    "url": url,
-                },
-            ),
+                "url": url,
+            },
+            )
         )

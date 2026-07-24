@@ -109,6 +109,11 @@ function payloadLiteral(op: IrModule["ops"][number]): string {
     const entries: string[] = [];
 
     for (const p of op.params) {
+        if (p.embed !== undefined) {
+            entries.push(`                ${JSON.stringify(p.embed)}: JSON.stringify(${p.name}),`);
+            continue;
+        }
+
         const value =
             p.joinSep !== undefined ? `${p.name}.join(${JSON.stringify(p.joinSep)})` : p.name;
 

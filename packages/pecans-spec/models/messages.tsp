@@ -76,4 +76,31 @@ interface Messages {
 
   @rpc("messages.folderlist")
   folderList(): FolderListResponse;
+
+  /**
+   * Start a new conversation with one or more recipients.
+   *
+   * @param title Conversation title / subject.
+   * @param body Body text of the opening message (UCP markup).
+   * @param recipients Usernames to send the conversation to.
+   */
+  @rpc("messages.startconversation")
+  startConversation(title: string, body: string, recipients: string[]): TCResponse;
+
+  /**
+   * Delete a conversation from the current user's view.
+   *
+   * @param conversationId Id of the conversation to delete.
+   */
+  @rpc("messages.delete")
+  delete(conversationId: string): TCResponse;
+
+  /**
+   * Move a conversation into a folder.
+   *
+   * @param conversationId Id of the conversation to move.
+   * @param folder Id of the destination folder.
+   */
+  @rpc("messages.movetofolder")
+  moveToFolder(conversationId: string, folder: string): TCResponse;
 }

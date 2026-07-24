@@ -2,12 +2,7 @@
 from __future__ import annotations
 
 from ...runtime import Call, MethodCall, Module
-from ..types import (
-    AnswerQueueQuestionResponse,
-    AnswerReplyResponse,
-    QuestionFetchResponse,
-    TCResponse,
-)
+from ..types import AnswerQueueQuestionResponse, AnswerReplyResponse, QuestionFetchResponse, TCResponse
 from ..enums import DismissAction
 
 
@@ -18,7 +13,7 @@ class AnswerModule(Module):
             MethodCall(
                 fn="answer.getnext",
                 payload={},
-            ),
+            )
         )
 
     def dismissQuestion(self, questionId: int, action: DismissAction) -> Call[TCResponse]:
@@ -27,10 +22,10 @@ class AnswerModule(Module):
             MethodCall(
                 fn="answer.dismissquestion",
                 payload={
-                    "questionId": questionId,
-                    "action": action,
-                },
-            ),
+                "questionId": questionId,
+                "action": action,
+            },
+            )
         )
 
     def pollVote(self, questionId: int, optionNum: int) -> Call[TCResponse]:
@@ -39,10 +34,10 @@ class AnswerModule(Module):
             MethodCall(
                 fn="answer.pollvote",
                 payload={
-                    "questionId": questionId,
-                    "optionNum": optionNum,
-                },
-            ),
+                "questionId": questionId,
+                "optionNum": optionNum,
+            },
+            )
         )
 
     def queueQuestion(self, questionId: int) -> Call[AnswerQueueQuestionResponse]:
@@ -51,9 +46,9 @@ class AnswerModule(Module):
             MethodCall(
                 fn="answer.queuequestion",
                 payload={
-                    "questionId": questionId,
-                },
-            ),
+                "questionId": questionId,
+            },
+            )
         )
 
     def reply(self, questionId: int, text: str) -> Call[AnswerReplyResponse]:
@@ -62,8 +57,8 @@ class AnswerModule(Module):
             MethodCall(
                 fn="answer.reply",
                 payload={
-                    "questionId": questionId,
-                    "text": text,
-                },
-            ),
+                "questionId": questionId,
+                "text": text,
+            },
+            )
         )

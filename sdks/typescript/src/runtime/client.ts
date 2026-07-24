@@ -24,7 +24,7 @@ export abstract class BaseClient {
 
     public authToken?: string;
 
-    public agent: string = "pecans";
+    public agent?: string = "pecans";
 
     public shouldTrimErrors: boolean = true;
 
@@ -66,8 +66,11 @@ export abstract class BaseClient {
     async #send(requests: MethodCall[]): Promise<TCJSONResponse | undefined> {
         const headers: { [key: string]: string } = {
             "Content-Type": "application/json",
-            "User-Agent": this.agent,
         };
+
+        if (this.agent != undefined) {
+            headers["User-Agent"] = this.agent;
+        }
 
         if (this.authToken != undefined) {
             headers["Cookie"] = "tc_auth_v3=" + this.authToken;

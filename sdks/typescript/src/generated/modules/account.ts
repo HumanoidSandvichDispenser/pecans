@@ -7,12 +7,12 @@ export class AccountModule extends Module {
         return new Call<TCResponse>(this.client, {
             fn: "account.register",
             payload: {
-                email: email,
-                username: username,
-                password1: password,
-                password2: password,
-                age: true,
-                tos: true,
+                "email": email,
+                "username": username,
+                "password1": password,
+                "password2": password,
+                "age": true,
+                "tos": true,
             },
         });
     }
@@ -21,7 +21,7 @@ export class AccountModule extends Module {
         return new Call<TCResponse>(this.client, {
             fn: "account.activate",
             payload: {
-                token: token,
+                "token": token,
             },
         });
     }

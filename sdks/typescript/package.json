@@ -1,6 +1,6 @@
 {
     "name": "@sandvichxyz/pecans",
-    "version": "1.0.0",
+    "version": "1.0.2",
     "description": "Pretty easy Two Cans & String API wrapper",
     "scripts": {
         "generate": "bun run --filter pecans-spec generate",

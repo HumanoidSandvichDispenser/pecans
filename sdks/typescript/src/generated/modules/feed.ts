@@ -14,8 +14,8 @@ export class FeedModule extends Module {
         return new Call<FeedResponse>(this.client, {
             fn: "feed.start",
             payload: {
-                user: user,
-                size: size,
+                "user": user,
+                "size": size,
             },
         });
     }
@@ -32,9 +32,9 @@ export class FeedModule extends Module {
         return new Call<FeedScrollResponse>(this.client, {
             fn: "feed.scroll",
             payload: {
-                feedId: feedId,
-                numItems: numItems,
-                lastId: lastId,
+                "feedId": feedId,
+                "numItems": numItems,
+                "lastId": lastId,
             },
         });
     }

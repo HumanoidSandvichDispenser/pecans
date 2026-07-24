@@ -70,7 +70,53 @@ model QuestionData {
   @fromInput header: QuestionMetadata;
 }
 
+/** One choice in a new poll question. */
+model NewPollChoice {
+  /** Display label for the choice. */
+  label: string;
+
+  /** 6-digit hex color (no leading `#`), e.g. "ff0000". */
+  color: string;
+}
+
+/** The poll attached to a new poll-type question. */
+model NewPoll {
+  choices: NewPollChoice[];
+}
+
+/**
+ * The body of a new question, serialized as JSON into the legacy askapi's
+ * `rawEmbeddedJsonLolInternalTechDebt` field.
+ */
+model PostQuestionBody {
+  /** The question text. */
+  text: string;
+
+  /** Whether the question (and its answers) are public. */
+  isPublic: boolean;
+
+  /** Whether the question carries a poll. */
+  hasPoll: boolean;
+
+  /** The poll definition, present only when `hasPoll` is true. */
+  poll?: NewPoll;
+}
+
 interface Ask {
+  /**
+   * Ask a new question, optionally with a poll.
+   *
+   * @param body The question text, visibility, and optional poll.
+   */
+  @rpc("legacy.askapi")
+  @constant(#{
+    name: "postquestion",
+    arg1: "undefined",
+    arg2: "undefined",
+    arg3: "undefined",
+  })
+  postQuestion(@embed("rawEmbeddedJsonLolInternalTechDebt") body: PostQuestionBody): TCResponse;
+
   /**
    * List all question headers without body text.
    *

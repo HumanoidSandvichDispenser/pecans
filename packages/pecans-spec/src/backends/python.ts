@@ -169,6 +169,13 @@ function payloadLiteral(op: IrModule["ops"][number]): string {
     const entries: string[] = [];
 
     for (const p of op.params) {
+        if (p.embed !== undefined) {
+            entries.push(
+                `                ${JSON.stringify(p.embed)}: json.dumps(${p.name}, separators=(",", ":")),`,
+            );
+            continue;
+        }
+
         const value =
             p.joinSep !== undefined
                 ? `${JSON.stringify(p.joinSep)}.join(str(v) for v in ${p.name})`
@@ -341,7 +348,14 @@ ${body}
         const hasZip = mod.ops.some((op) => op.zip);
         const runtimeImports = hasCall ? "Call, MethodCall, Module" : "Module";
 
-        const imports = [`from ...runtime import ${runtimeImports}`];
+        const hasEmbed = mod.ops.some((op) => op.params.some((p) => p.embed !== undefined));
+        const imports = [];
+
+        if (hasEmbed) {
+            imports.push(`import json\n`);
+        }
+
+        imports.push(`from ...runtime import ${runtimeImports}`);
 
         if (hasZip) {
             imports.push(`from ...runtime.join import join_by`);
