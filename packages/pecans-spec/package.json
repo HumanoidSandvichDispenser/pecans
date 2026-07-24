@@ -9,6 +9,7 @@
         "compile": "tsp compile .",
         "watch": "tsp compile . --watch",
         "generate": "tsp compile . && bun run src/generate-ts.ts",
+        "generate:py": "bun run src/generate-py.ts",
         "clean": "rm -rf dist || true"
     },
     "devDependencies": {

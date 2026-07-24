@@ -9,11 +9,13 @@
         "sdks/typescript"
     ],
     "scripts": {
-        "generate": "bun run --filter pecans-spec generate && biome format --write sdks/typescript/src/generated",
+        "generate": "bun run generate:ts && bun run generate:py",
+        "generate:ts": "bun run --filter pecans-spec generate && biome format --write sdks/typescript/src/generated",
+        "generate:py": "bun run --filter pecans-spec generate:py && uvx ruff format sdks/python/src/pecans",
         "build": "bun run generate && bun run --filter pecans build",
         "clean": "bun run --filter pecans clean && bun run --filter pecans-spec clean",
-        "format": "biome format --write .",
-        "format:check": "biome format ."
+        "format": "biome format --write . && uvx ruff format sdks/python/src/pecans",
+        "format:check": "biome format . && uvx ruff format --check sdks/python/src/pecans"
     },
     "devDependencies": {
         "@biomejs/biome": "^2.5.5"
