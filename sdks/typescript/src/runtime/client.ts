@@ -32,12 +32,10 @@ export abstract class BaseClient {
         this.authToken = auth;
     }
 
-    /**
-     * @internal Send a single call on its own.
-     */
-    public async _sendOne<T>(call: MethodCall): Promise<T> {
+    /** @internal */
+    public async sendOne(call: MethodCall): Promise<any> {
         const res = await this.#send([call]);
-        return this.#build<T>(res, 0);
+        return this.#build(res, 0);
     }
 
     /**
@@ -48,10 +46,13 @@ export abstract class BaseClient {
             return [] as unknown as CallResults<C>;
         }
         const res = await this.#send(calls.map((call) => call.methodCall));
-        return calls.map((_, index) => this.#build(res, index)) as CallResults<C>;
+        return calls
+            .map((call, index) => {
+                return call.build(this.#build(res, index));
+            }) as CallResults<C>;
     }
 
-    #build<T>(res: TCJSONResponse | undefined, index: number): T {
+    #build(res: TCJSONResponse | undefined, index: number): any {
         res?.profiles?.forEach((profile) => {
             this.profileCache[profile.id] = profile;
         });
@@ -60,7 +61,7 @@ export abstract class BaseClient {
             ok: res?.ok ?? false,
             ...(res?.responses?.[index] ?? {}),
             profiles: res?.profiles,
-        } as T;
+        };
     }
 
     async #send(requests: MethodCall[]): Promise<TCJSONResponse | undefined> {

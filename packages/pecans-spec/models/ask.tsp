@@ -1,22 +1,6 @@
+import "../lib/main.tsp";
+
 namespace Pecans;
-
-model QuestionMetadataRaw {
-  id: safeint;
-  ia: boolean;
-  r: int32;
-  nr: int32;
-  it: safeint;
-  la: safeint;
-  at: safeint;
-  p: boolean;
-  pn: boolean;
-  t: string;
-}
-
-model QuestionTextRaw {
-  id: safeint;
-  b: string;
-}
 
 model PollOptionRaw {
   n: int32;
@@ -28,26 +12,57 @@ model PollMetadataRaw {
   options: PollOptionRaw[];
 }
 
-model ListDataResponse extends TCResponse {
-  questions: QuestionMetadataRaw[];
-}
-
-model QuestionTextResponse extends TCResponse {
-  questions: QuestionTextRaw[];
-}
-
 model QuestionMetadata {
   id: safeint;
-  isActive: boolean;
-  replyCount: int32;
-  newReplyCount: int32;
-  expireTime: safeint;
-  creationTime: safeint;
-  isPinned: boolean;
-  questionType: "text" | "poll";
+  @encodedName("application/json", "ia") isActive: boolean;
+  @encodedName("application/json", "r") replyCount: int32;
+  @encodedName("application/json", "nr") newReplyCount: int32;
+  @encodedName("application/json", "it") expireTime: safeint;
+  @encodedName("application/json", "at") creationTime: safeint;
+  @encodedName("application/json", "p") isPinned: boolean;
+  @encodedName("application/json", "t") questionType: "text" | "poll";
 }
 
 model QuestionText {
   id: safeint;
-  text: string;
+  @encodedName("application/json", "b") text: string;
+}
+
+model ListDataResponse extends TCResponse {
+  questions: QuestionMetadata[];
+}
+
+model QuestionTextResponse extends TCResponse {
+  questions: QuestionText[];
+}
+
+// join product of QuestionText body + its QuestionMetadata header
+model QuestionData {
+  body: string;
+  header: QuestionMetadata;
+}
+
+interface Ask {
+  @rpc("legacy.askapi")
+  @constant(#{
+    name: "listdata",
+    arg1: "0",
+    arg2: "none",
+    arg3: "0",
+    rawEmbeddedJsonLolInternalTechDebt: null,
+  })
+  listData(): ListDataResponse;
+
+  @rpc("legacy.askapi")
+  @constant(#{
+    name: "qtext",
+    arg2: "0",
+    arg3: "0",
+    rawEmbeddedJsonLolInternalTechDebt: null,
+  })
+  qtext(
+    @encodedName("application/json", "arg1")
+    @join("x")
+    ids: safeint[],
+  ): QuestionTextResponse;
 }

@@ -2,6 +2,7 @@
 import { BaseClient } from "../runtime";
 import { AccountModule } from "./modules/account";
 import { AnswerModule } from "./modules/answer";
+import { AskModule } from "./modules/ask";
 import { AuthModule } from "./modules/auth";
 import { DrawingModule } from "./modules/drawing";
 import { ForumModule } from "./modules/forum";
@@ -11,6 +12,7 @@ import { NotifyModule } from "./modules/notify";
 export class Client extends BaseClient {
     #account: AccountModule;
     #answer: AnswerModule;
+    #ask: AskModule;
     #auth: AuthModule;
     #drawing: DrawingModule;
     #forum: ForumModule;
@@ -21,6 +23,7 @@ export class Client extends BaseClient {
         super(auth);
         this.#account = new AccountModule(this);
         this.#answer = new AnswerModule(this);
+        this.#ask = new AskModule(this);
         this.#auth = new AuthModule(this);
         this.#drawing = new DrawingModule(this);
         this.#forum = new ForumModule(this);
@@ -34,6 +37,10 @@ export class Client extends BaseClient {
 
     public get answer(): AnswerModule {
         return this.#answer;
+    }
+
+    public get ask(): AskModule {
+        return this.#ask;
     }
 
     public get auth(): AuthModule {

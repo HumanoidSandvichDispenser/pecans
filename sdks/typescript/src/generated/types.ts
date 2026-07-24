@@ -81,10 +81,10 @@ export type AnswerQueueQuestionResponse = TCResponse & {
   poll?: Poll;
 };
 export type ListDataResponse = TCResponse & {
-  questions: QuestionMetadataRaw[];
+  questions: QuestionMetadata[];
 };
 export type QuestionTextResponse = TCResponse & {
-  questions: QuestionTextRaw[];
+  questions: QuestionText[];
 };
 
 export interface TCFollowInfo {
@@ -215,22 +215,6 @@ export interface Poll {
   options: PollOption[];
   answered: boolean;
 }
-export interface QuestionMetadataRaw {
-  id: number;
-  ia: boolean;
-  r: number;
-  nr: number;
-  it: number;
-  la: number;
-  at: number;
-  p: boolean;
-  pn: boolean;
-  t: string;
-}
-export interface QuestionTextRaw {
-  id: number;
-  b: string;
-}
 export interface PollOptionRaw {
   n: number;
   c: number;
@@ -252,4 +236,8 @@ export interface QuestionMetadata {
 export interface QuestionText {
   id: number;
   text: string;
+}
+export interface QuestionData {
+  body: string;
+  header: QuestionMetadata;
 }
