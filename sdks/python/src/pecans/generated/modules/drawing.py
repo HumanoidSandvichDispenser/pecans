@@ -7,6 +7,15 @@ from ..types import SaveDrawingResponse, TCResponse, ViewDrawingDataResponse
 
 class DrawingModule(Module):
     def saveDrawing(self, data: str, makeActive: bool = False) -> Call[SaveDrawingResponse]:
+        """Save a drawing and return its image id.
+
+        Args:
+            data: Flat hex pixel string: 32×32, RGB, 6 hex chars per pixel, row-major (1024 pixels = 6144 chars), left-to-right then top-to-bottom.
+            makeActive: Set this drawing as your active image immediately on save.
+
+        Returns:
+            The id of the newly-created image.
+        """
         return Call(
             self.client,
             MethodCall(
@@ -20,6 +29,14 @@ class DrawingModule(Module):
         )
 
     def viewDrawingData(self, imageId: str) -> Call[ViewDrawingDataResponse]:
+        """Fetch the raw pixel data for an existing image, for editing or inspection.
+
+        Args:
+            imageId: The image to load, e.g. `img45790`.
+
+        Returns:
+            The image's flat hex pixel data.
+        """
         return Call(
             self.client,
             MethodCall(
@@ -32,6 +49,12 @@ class DrawingModule(Module):
         )
 
     def sendDrawing(self, imageId: str, receiver: str) -> Call[TCResponse]:
+        """Send one of your drawings to another user.
+
+        Args:
+            imageId: The image to send.
+            receiver: Username of the recipient.
+        """
         return Call(
             self.client,
             MethodCall(
@@ -44,6 +67,11 @@ class DrawingModule(Module):
         )
 
     def setActive(self, imageId: str) -> Call[TCResponse]:
+        """Set which of your saved images is the active one.
+
+        Args:
+            imageId: The image to make active.
+        """
         return Call(
             self.client,
             MethodCall(

@@ -3,6 +3,13 @@ import { Call, Module } from "../../runtime";
 import { SaveDrawingResponse, TCResponse, ViewDrawingDataResponse } from "../types";
 
 export class DrawingModule extends Module {
+    /**
+     * Save a drawing and return its image id.
+     *
+     * @param data - Flat hex pixel string: 32×32, RGB, 6 hex chars per pixel, row-major (1024 pixels = 6144 chars), left-to-right then top-to-bottom.
+     * @param makeActive - Set this drawing as your active image immediately on save.
+     * @returns The id of the newly-created image.
+     */
     public saveDrawing(data: string, makeActive: boolean = false): Call<SaveDrawingResponse> {
         return new Call<SaveDrawingResponse>(this.client, {
             fn: "legacy.drawing",
@@ -14,6 +21,12 @@ export class DrawingModule extends Module {
         });
     }
 
+    /**
+     * Fetch the raw pixel data for an existing image, for editing or inspection.
+     *
+     * @param imageId - The image to load, e.g. `img45790`.
+     * @returns The image's flat hex pixel data.
+     */
     public viewDrawingData(imageId: string): Call<ViewDrawingDataResponse> {
         return new Call<ViewDrawingDataResponse>(this.client, {
             fn: "legacy.drawing",
@@ -24,6 +37,12 @@ export class DrawingModule extends Module {
         });
     }
 
+    /**
+     * Send one of your drawings to another user.
+     *
+     * @param imageId - The image to send.
+     * @param receiver - Username of the recipient.
+     */
     public sendDrawing(imageId: string, receiver: string): Call<TCResponse> {
         return new Call<TCResponse>(this.client, {
             fn: "drawing.send",
@@ -34,6 +53,11 @@ export class DrawingModule extends Module {
         });
     }
 
+    /**
+     * Set which of your saved images is the active one.
+     *
+     * @param imageId - The image to make active.
+     */
     public setActive(imageId: string): Call<TCResponse> {
         return new Call<TCResponse>(this.client, {
             fn: "drawing.setactive",

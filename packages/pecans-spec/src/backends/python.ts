@@ -95,6 +95,53 @@ function zipSource(field: IrZipField): string {
     return "inp";
 }
 
+/** Render a Google-style docstring (indented into the method body), or "" if undocumented. */
+function docstring(op: IrModule["ops"][number]): string {
+    const flat = (s: string) => s.replace(/\s*\n\s*/g, " ");
+    const lines: string[] = [];
+
+    if (op.doc) {
+        lines.push(...op.doc.split("\n"));
+    }
+
+    const args = op.params.filter((p) => p.doc);
+
+    if (args.length > 0) {
+        if (lines.length > 0) {
+            lines.push("");
+        }
+
+        lines.push("Args:");
+
+        for (const p of args) {
+            lines.push(`    ${p.name}: ${flat(p.doc!)}`);
+        }
+    }
+
+    if (op.returnsDoc) {
+        if (lines.length > 0) {
+            lines.push("");
+        }
+
+        lines.push("Returns:", `    ${flat(op.returnsDoc)}`);
+    }
+
+    if (lines.length === 0) {
+        return "";
+    }
+
+    if (lines.length === 1) {
+        return `        """${lines[0]}"""\n`;
+    }
+
+    const rest = lines
+        .slice(1)
+        .map((l) => (l ? `        ${l}` : ""))
+        .join("\n");
+
+    return `        """${lines[0]}\n${rest}\n        """\n`;
+}
+
 function signature(mod: IrModule, op: IrModule["ops"][number]): string {
     const parts = ["self"];
 
@@ -145,7 +192,7 @@ function zipMethod(mod: IrModule, op: IrModule["ops"][number]): string {
         .join(", ");
 
     return `    async def ${op.method}(${signature(mod, op)}) -> list[${z.element}]:
-        res = await self.${z.callMethod}([x[${JSON.stringify(z.project)}] for x in ${z.input}])
+${docstring(op)}        res = await self.${z.callMethod}([x[${JSON.stringify(z.project)}] for x in ${z.input}])
 
         return join_by(
             ${z.input},
@@ -160,7 +207,7 @@ function callMethod(mod: IrModule, op: IrModule["ops"][number]): string {
     const decodeArg = op.decodeModel ? `,\n            ${decodeName(op.decodeModel)},` : "";
 
     return `    def ${op.method}(${signature(mod, op)}) -> Call[${op.response}]:
-        return Call(
+${docstring(op)}        return Call(
             self.client,
             MethodCall(
                 fn=${JSON.stringify(op.fn)},

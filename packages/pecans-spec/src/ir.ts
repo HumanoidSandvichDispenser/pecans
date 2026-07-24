@@ -1,4 +1,11 @@
-import { compile, NodeHost, resolveEncodedName, serializeValueAsJson } from "@typespec/compiler";
+import {
+    compile,
+    getDoc,
+    getReturnsDoc,
+    NodeHost,
+    resolveEncodedName,
+    serializeValueAsJson,
+} from "@typespec/compiler";
 import { join } from "node:path";
 
 const RPC = Symbol.for("pecans.rpc");
@@ -43,11 +50,13 @@ export interface IrField {
     wireName: string;
     type: IrType;
     optional: boolean;
+    doc?: string;
 }
 
 export interface IrModel {
     name: string;
     fields: IrField[];
+    doc?: string;
 }
 
 export interface IrEnumMember {
@@ -69,6 +78,7 @@ export interface IrParam {
     wireName: string;
     also: string[];
     joinSep?: string;
+    doc?: string;
 }
 
 export interface IrZipField {
@@ -95,6 +105,8 @@ export interface IrOp {
     response: string;
     decodeModel?: string;
     zip?: IrZip;
+    doc?: string;
+    returnsDoc?: string;
 }
 
 export interface IrModule {
@@ -329,6 +341,7 @@ export async function buildIr(specPath: string): Promise<IrProgram> {
                     wireName,
                     also,
                     joinSep,
+                    doc: getDoc(program, prm),
                 };
             });
 
@@ -377,6 +390,8 @@ export async function buildIr(specPath: string): Promise<IrProgram> {
                         element: element.name,
                         fields,
                     },
+                    doc: getDoc(program, op),
+                    returnsDoc: getReturnsDoc(program, op),
                 });
                 continue;
             }
@@ -400,6 +415,8 @@ export async function buildIr(specPath: string): Promise<IrProgram> {
                 params,
                 constants,
                 response,
+                doc: getDoc(program, op),
+                returnsDoc: getReturnsDoc(program, op),
             });
         }
 
@@ -467,11 +484,13 @@ export async function buildIr(specPath: string): Promise<IrProgram> {
 
     const models: IrModel[] = [...ns.models.values()].map((model: any) => ({
         name: model.name,
+        doc: getDoc(program, model),
         fields: collectProps(model).map((p: any) => ({
             name: p.name,
             wireName: resolveEncodedName(program, p, "application/json"),
             type: irType(p.type, scratch),
             optional: p.optional,
+            doc: getDoc(program, p),
         })),
     }));
 

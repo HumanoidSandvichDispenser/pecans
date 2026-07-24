@@ -45,21 +45,42 @@ export type FolderListResponse = TCResponse & {
     folders: Folder[];
 };
 export type SaveDrawingResponse = TCResponse & {
+    /**
+     * Id of the newly-created image, e.g. `img45790`.
+     */
     newImageId: string;
 };
 export type ViewDrawingDataResponse = TCResponse & {
+    /**
+     * The raw pixel data: a flat hex string, 32×32, RGB, 6 hex chars per pixel, row-major.
+     */
     data: string;
 };
 export type ImageBatchGetResponse = TCResponse & {
+    /**
+     * The requested images, in no guaranteed order.
+     */
     items: ImageData[];
 };
 export type ImageGalleryListResponse = TCResponse & {
+    /**
+     * Ids of the images on this page.
+     */
     images: ImageRef[];
+    /**
+     * Whether further pages exist beyond this one.
+     */
     hasMore: boolean;
 };
 export type ImageInfoResponse = TCResponse & {
     imageId: string;
+    /**
+     * Username of the image's owner.
+     */
     owner: string;
+    /**
+     * Whether the active account owns this image.
+     */
     isYours: boolean;
 };
 export type NotifySyncResponse = TCResponse & {
@@ -219,10 +240,19 @@ export interface Folder {
     name: string;
 }
 export interface ImageData {
+    /**
+     * Image id, e.g. `img45788`.
+     */
     id: string;
+    /**
+     * Base64-encoded PNG, prefixed with the literal string `B64`.
+     */
     data: string;
 }
 export interface ImageRef {
+    /**
+     * Image id, e.g. `img45788`.
+     */
     id: string;
 }
 export interface TruncatedUser {

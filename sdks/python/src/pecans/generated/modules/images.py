@@ -7,6 +7,14 @@ from ..types import ImageBatchGetResponse, ImageGalleryListResponse, ImageInfoRe
 
 class ImagesModule(Module):
     def batchGet(self, ids: list[str]) -> Call[ImageBatchGetResponse]:
+        """Fetch one or more images by id as base64-encoded PNGs.
+
+        Args:
+            ids: Image ids to fetch, e.g. `["img45788"]`.
+
+        Returns:
+            The matching images with their base64 PNG data.
+        """
         return Call(
             self.client,
             MethodCall(
@@ -18,6 +26,15 @@ class ImagesModule(Module):
         )
 
     def galleryList(self, page: int = 1, deleted: bool = False) -> Call[ImageGalleryListResponse]:
+        """List the active account's own saved images, most-recent first.
+
+        Args:
+            page: 1-based page number.
+            deleted: Whether to list deleted images instead of live ones.
+
+        Returns:
+            A page of image ids and a flag for whether more pages remain.
+        """
         return Call(
             self.client,
             MethodCall(
@@ -30,6 +47,14 @@ class ImagesModule(Module):
         )
 
     def info(self, imageId: str) -> Call[ImageInfoResponse]:
+        """Look up ownership metadata for a single image.
+
+        Args:
+            imageId: The image to inspect.
+
+        Returns:
+            The image's owner and whether the active account owns it.
+        """
         return Call(
             self.client,
             MethodCall(

@@ -52,6 +52,40 @@ function zipSource(field: IrZipField): string {
     return "input";
 }
 
+/** Render a JSDoc block (indented one level) for a method, or "" if undocumented. */
+function docBlock(op: IrModule["ops"][number]): string {
+    const lines: string[] = [];
+
+    if (op.doc) {
+        lines.push(...op.doc.split("\n"));
+    }
+
+    const tags: string[] = [];
+
+    for (const p of op.params) {
+        if (p.doc) {
+            tags.push(`@param ${p.name} - ${p.doc.replace(/\s*\n\s*/g, " ")}`);
+        }
+    }
+
+    if (op.returnsDoc) {
+        tags.push(`@returns ${op.returnsDoc.replace(/\s*\n\s*/g, " ")}`);
+    }
+
+    if (lines.length > 0 && tags.length > 0) {
+        lines.push("");
+    }
+
+    lines.push(...tags);
+
+    if (lines.length === 0) {
+        return "";
+    }
+
+    const body = lines.map((l) => `     * ${l}`.trimEnd()).join("\n");
+    return `    /**\n${body}\n     */\n`;
+}
+
 function signature(op: IrModule["ops"][number]): string {
     return op.params
         .map((p) => {
@@ -97,7 +131,7 @@ function zipMethod(op: IrModule["ops"][number]): string {
     const z = op.zip!;
     const combine = z.fields.map((f) => `${f.name}: ${zipSource(f)}`).join(", ");
 
-    return `    public async ${op.method}(${signature(op)}): Promise<${z.element}[]> {
+    return `${docBlock(op)}    public async ${op.method}(${signature(op)}): Promise<${z.element}[]> {
         const res = await this.${z.callMethod}(${z.input}.map((x) => x.${z.project}));
 
         return joinBy(
@@ -113,7 +147,7 @@ function zipMethod(op: IrModule["ops"][number]): string {
 function callMethod(op: IrModule["ops"][number]): string {
     const decode = op.decodeModel ? `, ${decodeName(op.decodeModel)}` : "";
 
-    return `    public ${op.method}(${signature(op)}): Call<${op.response}> {
+    return `${docBlock(op)}    public ${op.method}(${signature(op)}): Call<${op.response}> {
         return new Call<${op.response}>(this.client, {
             fn: ${JSON.stringify(op.fn)},
             payload: ${payloadLiteral(op)},
