@@ -10,7 +10,7 @@
     },
     "keywords": [],
     "repository": {
-        "url": "https://github.com/humanoidsandvichdispenser/pew.git"
+        "url": "https://github.com/humanoidsandvichdispenser/pecans.git"
     },
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
