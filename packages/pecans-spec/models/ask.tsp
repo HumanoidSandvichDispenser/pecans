@@ -38,8 +38,8 @@ model QuestionTextResponse extends TCResponse {
 
 // join product of QuestionText body + its QuestionMetadata header
 model QuestionData {
-  body: string;
-  header: QuestionMetadata;
+  @fromResult("text") body: string;
+  @fromInput header: QuestionMetadata;
 }
 
 interface Ask {
@@ -65,4 +65,8 @@ interface Ask {
     @join("x")
     ids: safeint[],
   ): QuestionTextResponse;
+
+  // fetch each question's body and zip it to its header by id
+  @zip(#{ call: "qtext", input: "metadata", project: "id", key: "id", results: "questions" })
+  fetchQuestions(metadata: QuestionMetadata[]): QuestionData[];
 }

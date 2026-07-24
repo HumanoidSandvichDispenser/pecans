@@ -14,6 +14,9 @@ const RPC = Symbol.for("pecans.rpc");
 const CONSTANT = Symbol.for("pecans.constant");
 const ALSO = Symbol.for("pecans.also");
 const JOIN = Symbol.for("pecans.join");
+const ZIP = Symbol.for("pecans.zip");
+const FROM_INPUT = Symbol.for("pecans.fromInput");
+const FROM_RESULT = Symbol.for("pecans.fromResult");
 
 const NUMERIC = new Set([
     "int8",
@@ -139,6 +142,16 @@ interface GenParam {
     joinSep?: string;
 }
 
+interface GenZip {
+    callMethod: string;
+    input: string;
+    project: string;
+    key: string;
+    results: string;
+    element: string;
+    fields: { name: string; source: string }[];
+}
+
 interface GenOp {
     method: string;
     fn: string;
@@ -146,6 +159,7 @@ interface GenOp {
     constants: Record<string, unknown>;
     response: string;
     decode?: string;
+    zip?: GenZip;
 }
 
 interface GenModule {
@@ -265,8 +279,14 @@ function genDecodersFile(program: any, models: any[], memo: Map<any, boolean>): 
 function signature(params: GenParam[]): string {
     return params
         .map((p) => {
-            if (p.defaultCode !== undefined) return `${p.name}: ${p.tsType} = ${p.defaultCode}`;
-            if (p.optional) return `${p.name}?: ${p.tsType}`;
+            if (p.defaultCode !== undefined) {
+                return `${p.name}: ${p.tsType} = ${p.defaultCode}`;
+            }
+
+            if (p.optional) {
+                return `${p.name}?: ${p.tsType}`;
+            }
+
             return `${p.name}: ${p.tsType}`;
         })
         .join(", ");
@@ -278,8 +298,12 @@ function payloadLiteral(op: GenOp): string {
     for (const p of op.params) {
         const value =
             p.joinSep !== undefined ? `${p.name}.join(${JSON.stringify(p.joinSep)})` : p.name;
+
         entries.push(`                ${JSON.stringify(p.wireName)}: ${value},`);
-        for (const alt of p.also) entries.push(`                ${JSON.stringify(alt)}: ${value},`);
+
+        for (const alt of p.also) {
+            entries.push(`                ${JSON.stringify(alt)}: ${value},`);
+        }
     }
 
     for (const [key, value] of Object.entries(op.constants)) {
@@ -293,11 +317,44 @@ function payloadLiteral(op: GenOp): string {
     return `{\n${entries.join("\n")}\n            }`;
 }
 
+function genZipMethod(op: GenOp): string {
+    const z = op.zip!;
+    const combine = z.fields.map((f) => `${f.name}: ${f.source}`).join(", ");
+
+    return `    public async ${op.method}(${signature(op.params)}): Promise<${z.element}[]> {
+        const res = await this.${z.callMethod}(${z.input}.map((x) => x.${z.project}));
+
+        return joinBy(
+            ${z.input},
+            res.${z.results} ?? [],
+            (input) => input.${z.key},
+            (r) => r.${z.key},
+            (r, input) => ({ ${combine} }),
+        );
+    }`;
+}
+
+function genCallMethod(op: GenOp): string {
+    return `    public ${op.method}(${signature(op.params)}): Call<${op.response}> {
+        return new Call<${op.response}>(this.client, {
+            fn: ${JSON.stringify(op.fn)},
+            payload: ${payloadLiteral(op)},
+        }${op.decode ? `, ${op.decode}` : ""});
+    }`;
+}
+
 function genModuleFile(mod: GenModule): string {
-    const imports = [
-        `import { Call, Module } from "../../runtime";`,
-        `import { ${[...mod.responses].sort().join(", ")} } from "../types";`,
-    ];
+    const hasCall = mod.ops.some((op) => !op.zip);
+    const hasZip = mod.ops.some((op) => op.zip);
+    const runtimeImports = hasCall ? "Call, Module" : "Module";
+
+    const imports = [`import { ${runtimeImports} } from "../../runtime";`];
+
+    if (hasZip) {
+        imports.push(`import { joinBy } from "../../runtime/join";`);
+    }
+
+    imports.push(`import { ${[...mod.responses].sort().join(", ")} } from "../types";`);
 
     if (mod.enums.size > 0) {
         imports.push(`import { ${[...mod.enums].sort().join(", ")} } from "../enums";`);
@@ -308,14 +365,7 @@ function genModuleFile(mod: GenModule): string {
     }
 
     const methods = mod.ops
-        .map(
-            (op) => `    public ${op.method}(${signature(op.params)}): Call<${op.response}> {
-        return new Call<${op.response}>(this.client, {
-            fn: ${JSON.stringify(op.fn)},
-            payload: ${payloadLiteral(op)},
-        }${op.decode ? `, ${op.decode}` : ""});
-    }`,
-        )
+        .map((op) => (op.zip ? genZipMethod(op) : genCallMethod(op)))
         .join("\n\n");
 
     return `${BANNER}${imports.join("\n")}
@@ -382,7 +432,10 @@ async function main(): Promise<void> {
     const errors = program.diagnostics.filter((d) => d.severity === "error");
 
     if (errors.length) {
-        for (const d of errors) console.error(d.code, d.message);
+        for (const d of errors) {
+            console.error(d.code, d.message);
+        }
+
         throw new Error("spec has errors");
     }
 
@@ -390,6 +443,9 @@ async function main(): Promise<void> {
     const constMap = program.stateMap(CONSTANT);
     const alsoMap = program.stateMap(ALSO);
     const joinMap = program.stateMap(JOIN);
+    const zipMap = program.stateMap(ZIP);
+    const fromInputMap = program.stateMap(FROM_INPUT);
+    const fromResultMap = program.stateMap(FROM_RESULT);
 
     const ns = program.getGlobalNamespaceType().namespaces.get("Pecans");
     if (!ns) {
@@ -411,8 +467,9 @@ async function main(): Promise<void> {
         };
 
         for (const op of iface.operations.values()) {
+            const zipCfg = zipMap.get(op);
             const fn = rpcMap.get(op);
-            if (!fn) {
+            if (!fn && !zipCfg) {
                 continue;
             }
 
@@ -443,6 +500,50 @@ async function main(): Promise<void> {
             for (const en of localEnums) {
                 enumsUsed.set(en.name, en);
                 mod.enums.add(en.name);
+            }
+
+            if (zipCfg) {
+                const cfg = jsValue(program, zipCfg) as Record<string, string>;
+                const element = (op.returnType as any).indexer.value;
+
+                mod.responses.add(element.name);
+
+                for (const prm of op.parameters.properties.values()) {
+                    const { model } = propModel((prm as any).type);
+
+                    if (model) {
+                        mod.responses.add(model.name);
+                    }
+                }
+
+                const fields = [...element.properties.values()].map((pr: any) => {
+                    const fromResult = fromResultMap.get(pr) as string | undefined;
+                    if (fromResult !== undefined) {
+                        return { name: pr.name, source: `r.${fromResult}` };
+                    }
+                    const fromInput = fromInputMap.get(pr) as string | null | undefined;
+                    return { name: pr.name, source: fromInput ? `input.${fromInput}` : "input" };
+                });
+
+                const zip: GenZip = {
+                    callMethod: cfg.call,
+                    input: cfg.input,
+                    project: cfg.project,
+                    key: cfg.key,
+                    results: cfg.results,
+                    element: element.name,
+                    fields,
+                };
+
+                mod.ops.push({
+                    method: op.name,
+                    fn: "",
+                    params,
+                    constants: {},
+                    response: element.name,
+                    zip,
+                });
+                continue;
             }
 
             const response = (op.returnType as any).name ?? "TCResponse";
@@ -480,14 +581,26 @@ async function main(): Promise<void> {
 
     while (queue.length) {
         const model = queue.pop();
-        if (!model || seen.has(model)) continue;
+
+        if (!model || seen.has(model)) {
+            continue;
+        }
+
         seen.add(model);
-        if (!needsDecode(program, model, memo)) continue;
+
+        if (!needsDecode(program, model, memo)) {
+            continue;
+        }
+
         decoderModels.push(model);
         decodable.add(model.name);
+
         for (const p of collectProps(model)) {
             const { model: m } = propModel(p.type);
-            if (m) queue.push(m);
+
+            if (m) {
+                queue.push(m);
+            }
         }
     }
 
