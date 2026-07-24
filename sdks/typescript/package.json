@@ -1,5 +1,5 @@
 {
-    "name": "pecans",
+    "name": "@sandvichxyz/pecans",
     "version": "1.0.0",
     "description": "Pretty easy Two Cans & String API wrapper",
     "scripts": {

@@ -3,13 +3,13 @@
 Pretty easy Two Cans & String API wrapper.
 
 ```sh
-npm install pecans
+npm install @sandvichxyz/pecans
 ```
 
 ## Quick start
 
 ```ts
-import { Client } from "pecans";
+import { Client } from "@sandvichxyz/pecans";
 
 const client = new Client(process.env.TC_AUTH);
 
