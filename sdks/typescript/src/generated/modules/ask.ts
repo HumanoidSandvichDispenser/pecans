@@ -5,28 +5,36 @@ import { decodeListDataResponse, decodeQuestionTextResponse } from "../decoders"
 
 export class AskModule extends Module {
     public listData(): Call<ListDataResponse> {
-        return new Call<ListDataResponse>(this.client, {
-            fn: "legacy.askapi",
-            payload: {
-                "name": "listdata",
-                "arg1": "0",
-                "arg2": "none",
-                "arg3": "0",
-                "rawEmbeddedJsonLolInternalTechDebt": null,
+        return new Call<ListDataResponse>(
+            this.client,
+            {
+                fn: "legacy.askapi",
+                payload: {
+                    name: "listdata",
+                    arg1: "0",
+                    arg2: "none",
+                    arg3: "0",
+                    rawEmbeddedJsonLolInternalTechDebt: null,
+                },
             },
-        }, decodeListDataResponse);
+            decodeListDataResponse,
+        );
     }
 
     public qtext(ids: number[]): Call<QuestionTextResponse> {
-        return new Call<QuestionTextResponse>(this.client, {
-            fn: "legacy.askapi",
-            payload: {
-                "arg1": ids.join("x"),
-                "name": "qtext",
-                "arg2": "0",
-                "arg3": "0",
-                "rawEmbeddedJsonLolInternalTechDebt": null,
+        return new Call<QuestionTextResponse>(
+            this.client,
+            {
+                fn: "legacy.askapi",
+                payload: {
+                    arg1: ids.join("x"),
+                    name: "qtext",
+                    arg2: "0",
+                    arg3: "0",
+                    rawEmbeddedJsonLolInternalTechDebt: null,
+                },
             },
-        }, decodeQuestionTextResponse);
+            decodeQuestionTextResponse,
+        );
     }
 }

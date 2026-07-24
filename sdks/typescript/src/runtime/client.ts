@@ -46,10 +46,9 @@ export abstract class BaseClient {
             return [] as unknown as CallResults<C>;
         }
         const res = await this.#send(calls.map((call) => call.methodCall));
-        return calls
-            .map((call, index) => {
-                return call.build(this.#build(res, index));
-            }) as CallResults<C>;
+        return calls.map((call, index) => {
+            return call.build(this.#build(res, index));
+        }) as CallResults<C>;
     }
 
     #build(res: TCJSONResponse | undefined, index: number): any {

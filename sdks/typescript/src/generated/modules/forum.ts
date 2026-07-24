@@ -3,16 +3,22 @@ import { Call, Module } from "../../runtime";
 import { ForumSearchResponse, TCResponse, ViewPostsResponse } from "../types";
 
 export class ForumModule extends Module {
-    public viewPosts(threadId: number, fetchType: string, postId: number = 0, reverse: boolean = false, includePost: boolean = true): Call<ViewPostsResponse> {
+    public viewPosts(
+        threadId: number,
+        fetchType: string,
+        postId: number = 0,
+        reverse: boolean = false,
+        includePost: boolean = true,
+    ): Call<ViewPostsResponse> {
         return new Call<ViewPostsResponse>(this.client, {
             fn: "forum.viewposts",
             payload: {
-                "threadId": threadId,
-                "type": fetchType,
-                "postId": postId,
-                "getSomeBackscroll": reverse,
-                "includePost": includePost,
-                "includeThreadMetadata": true,
+                threadId: threadId,
+                type: fetchType,
+                postId: postId,
+                getSomeBackscroll: reverse,
+                includePost: includePost,
+                includeThreadMetadata: true,
             },
         });
     }
@@ -21,8 +27,8 @@ export class ForumModule extends Module {
         return new Call<TCResponse>(this.client, {
             fn: "forum.replythread",
             payload: {
-                "text": text,
-                "threadId": threadId,
+                text: text,
+                threadId: threadId,
             },
         });
     }
@@ -31,8 +37,8 @@ export class ForumModule extends Module {
         return new Call<TCResponse>(this.client, {
             fn: "forum.readthread",
             payload: {
-                "postId": postId,
-                "threadId": threadId,
+                postId: postId,
+                threadId: threadId,
             },
         });
     }
@@ -41,8 +47,8 @@ export class ForumModule extends Module {
         return new Call<TCResponse>(this.client, {
             fn: "forum.editpost",
             payload: {
-                "postId": postId,
-                "text": text,
+                postId: postId,
+                text: text,
             },
         });
     }
@@ -51,7 +57,7 @@ export class ForumModule extends Module {
         return new Call<ForumSearchResponse>(this.client, {
             fn: "forum.search",
             payload: {
-                "query": query,
+                query: query,
             },
         });
     }

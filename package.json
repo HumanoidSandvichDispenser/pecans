@@ -1,16 +1,21 @@
 {
-  "name": "pecans-monorepo",
-  "version": "1.0.0",
-  "description": "Pecans Two Cans & String API wrapper and MCP server",
-  "private": true,
-  "license": "GPL-3.0-only",
-  "workspaces": [
-    "packages/*",
-    "sdks/typescript"
-  ],
-  "scripts": {
-    "generate": "bun run --filter pecans-spec generate",
-    "build": "bun run generate && bun run --filter pecans build",
-    "clean": "bun run --filter pecans clean && bun run --filter pecans-spec clean"
-  }
+    "name": "pecans-monorepo",
+    "version": "1.0.0",
+    "description": "Pecans Two Cans & String API wrapper and MCP server",
+    "private": true,
+    "license": "GPL-3.0-only",
+    "workspaces": [
+        "packages/*",
+        "sdks/typescript"
+    ],
+    "scripts": {
+        "generate": "bun run --filter pecans-spec generate && biome format --write sdks/typescript/src/generated",
+        "build": "bun run generate && bun run --filter pecans build",
+        "clean": "bun run --filter pecans clean && bun run --filter pecans-spec clean",
+        "format": "biome format --write .",
+        "format:check": "biome format ."
+    },
+    "devDependencies": {
+        "@biomejs/biome": "^2.5.5"
+    }
 }

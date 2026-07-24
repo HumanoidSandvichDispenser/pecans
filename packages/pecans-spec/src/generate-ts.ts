@@ -1,10 +1,5 @@
 #!/usr/bin/env bun
-import {
-    compile,
-    NodeHost,
-    resolveEncodedName,
-    serializeValueAsJson,
-} from "@typespec/compiler";
+import { compile, NodeHost, resolveEncodedName, serializeValueAsJson } from "@typespec/compiler";
 import { compile as jsonToTs } from "json-schema-to-typescript";
 import { mkdir, rm, writeFile } from "node:fs/promises";
 import { join } from "node:path";
@@ -21,9 +16,22 @@ const ALSO = Symbol.for("pecans.also");
 const JOIN = Symbol.for("pecans.join");
 
 const NUMERIC = new Set([
-    "int8", "int16", "int32", "int64", "integer", "safeint",
-    "uint8", "uint16", "uint32", "uint64", "float", "float32", "float64",
-    "numeric", "decimal", "decimal128",
+    "int8",
+    "int16",
+    "int32",
+    "int64",
+    "integer",
+    "safeint",
+    "uint8",
+    "uint16",
+    "uint32",
+    "uint64",
+    "float",
+    "float32",
+    "float64",
+    "numeric",
+    "decimal",
+    "decimal128",
 ]);
 
 function tsType(type: any, enumsUsed: Set<any>): string {
@@ -152,8 +160,15 @@ interface GenModule {
 /** All properties of a model, own plus inherited, base-first. */
 function collectProps(model: any): any[] {
     const props: any[] = [];
-    if (model.baseModel) props.push(...collectProps(model.baseModel));
-    for (const p of model.properties.values()) props.push(p);
+
+    if (model.baseModel) {
+        props.push(...collectProps(model.baseModel));
+    }
+
+    for (const p of model.properties.values()) {
+        props.push(p);
+    }
+
     return props;
 }
 
@@ -162,30 +177,50 @@ function propModel(type: any): { model: any | undefined; isArray: boolean } {
     if (type?.kind === "Model" && type.name === "Array" && type.indexer) {
         const el = type.indexer.value;
         const named = el?.kind === "Model" && el.name && el.name !== "Array" ? el : undefined;
-        return { model: named, isArray: true };
+
+        return {
+            model: named,
+            isArray: true,
+        };
     }
+
     if (type?.kind === "Model" && type.name && type.name !== "Array") {
-        return { model: type, isArray: false };
+        return {
+            model: type,
+            isArray: false,
+        };
     }
-    return { model: undefined, isArray: false };
+
+    return {
+        model: undefined,
+        isArray: false,
+    };
 }
 
 /** A model needs a decoder if any field is renamed on the wire, transitively. */
 function needsDecode(program: any, model: any, memo: Map<any, boolean>): boolean {
-    if (memo.has(model)) return memo.get(model)!;
+    if (memo.has(model)) {
+        return memo.get(model)!;
+    }
+
     memo.set(model, false);
+
     let result = false;
+
     for (const p of collectProps(model)) {
         if (resolveEncodedName(program, p, "application/json") !== p.name) {
             result = true;
             break;
         }
+
         const { model: m } = propModel(p.type);
+
         if (m && needsDecode(program, m, memo)) {
             result = true;
             break;
         }
     }
+
     memo.set(model, result);
     return result;
 }
@@ -195,7 +230,9 @@ function genDecoder(program: any, model: any, memo: Map<any, boolean>): string {
         const wire = resolveEncodedName(program, p, "application/json");
         const key = JSON.stringify(wire);
         const { model: m, isArray } = propModel(p.type);
+
         let expr: string;
+
         if (m && needsDecode(program, m, memo)) {
             expr = isArray
                 ? `(raw[${key}] ?? []).map(decode${m.name})`
@@ -203,8 +240,10 @@ function genDecoder(program: any, model: any, memo: Map<any, boolean>): string {
         } else {
             expr = `raw[${key}]`;
         }
+
         return `        ${p.name}: ${expr},`;
     });
+
     return `export function decode${model.name}(raw: any): ${model.name} {
     return {
 ${lines.join("\n")}
@@ -219,6 +258,7 @@ function genDecodersFile(program: any, models: any[], memo: Map<any, boolean>): 
         .sort((a, b) => a.name.localeCompare(b.name))
         .map((m) => genDecoder(program, m, memo))
         .join("\n\n");
+
     return `${BANNER}import { ${names.join(", ")} } from "./types";\n\n${body}\n`;
 }
 
@@ -236,7 +276,8 @@ function payloadLiteral(op: GenOp): string {
     const entries: string[] = [];
 
     for (const p of op.params) {
-        const value = p.joinSep !== undefined ? `${p.name}.join(${JSON.stringify(p.joinSep)})` : p.name;
+        const value =
+            p.joinSep !== undefined ? `${p.name}.join(${JSON.stringify(p.joinSep)})` : p.name;
         entries.push(`                ${JSON.stringify(p.wireName)}: ${value},`);
         for (const alt of p.also) entries.push(`                ${JSON.stringify(alt)}: ${value},`);
     }
@@ -288,10 +329,14 @@ ${methods}
 function genEnums(program: any, enums: Map<string, any>): string {
     const blocks = [...enums.values()].map((en) => {
         const members = [...en.members.values()]
-            .map((m: any) => `    ${m.name} = ${JSON.stringify(jsValue(program, m.value ?? m.name))},`)
+            .map(
+                (m: any) =>
+                    `    ${m.name} = ${JSON.stringify(jsValue(program, m.value ?? m.name))},`,
+            )
             .join("\n");
         return `export enum ${en.name} {\n${members}\n}`;
     });
+
     return `${BANNER}${blocks.join("\n\n")}\n`;
 }
 
@@ -301,7 +346,10 @@ function genClient(mods: GenModule[]): string {
         .join("\n");
     const fields = mods.map((m) => `    #${m.name}: ${m.className};`).join("\n");
     const getters = mods
-        .map((m) => `    public get ${m.name}(): ${m.className} {\n        return this.#${m.name};\n    }`)
+        .map(
+            (m) =>
+                `    public get ${m.name}(): ${m.className} {\n        return this.#${m.name};\n    }`,
+        )
         .join("\n\n");
     const init = mods.map((m) => `        this.#${m.name} = new ${m.className}(this);`).join("\n");
 
@@ -388,7 +436,7 @@ async function main(): Promise<void> {
                     defaultCode,
                     wireName,
                     also,
-                    joinSep
+                    joinSep,
                 };
             });
 
@@ -404,13 +452,16 @@ async function main(): Promise<void> {
             }
 
             const rawConst = constMap.get(op);
-            const constants = (rawConst ? jsValue(program, rawConst) : {}) as Record<string, unknown>;
+            const constants = (rawConst ? jsValue(program, rawConst) : {}) as Record<
+                string,
+                unknown
+            >;
             mod.ops.push({
                 method: op.name,
                 fn: fn as string,
                 params,
                 constants,
-                response
+                response,
             });
         }
 

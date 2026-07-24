@@ -7,31 +7,40 @@ export class MessagesModule extends Module {
         return new Call<FolderViewResponse>(this.client, {
             fn: "messages.folderview",
             payload: {
-                "folder": folder,
-                "page": page,
+                folder: folder,
+                page: page,
             },
         });
     }
 
-    public view(conversationId: string, includeHeader: boolean = true, markAsRead: boolean = true, page: number = 1): Call<MessageViewResponse> {
+    public view(
+        conversationId: string,
+        includeHeader: boolean = true,
+        markAsRead: boolean = true,
+        page: number = 1,
+    ): Call<MessageViewResponse> {
         return new Call<MessageViewResponse>(this.client, {
             fn: "messages.view",
             payload: {
-                "conversationId": conversationId,
-                "includeHeader": includeHeader,
-                "markAsRead": markAsRead,
-                "page": page,
+                conversationId: conversationId,
+                includeHeader: includeHeader,
+                markAsRead: markAsRead,
+                page: page,
             },
         });
     }
 
-    public reply(conversationId: string, text: string, unanonymize: boolean = false): Call<TCResponse> {
+    public reply(
+        conversationId: string,
+        text: string,
+        unanonymize: boolean = false,
+    ): Call<TCResponse> {
         return new Call<TCResponse>(this.client, {
             fn: "messages.reply",
             payload: {
-                "conversationId": conversationId,
-                "text": text,
-                "unanonymize": unanonymize,
+                conversationId: conversationId,
+                text: text,
+                unanonymize: unanonymize,
             },
         });
     }

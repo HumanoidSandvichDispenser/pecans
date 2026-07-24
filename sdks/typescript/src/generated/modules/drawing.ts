@@ -7,9 +7,9 @@ export class DrawingModule extends Module {
         return new Call<SaveDrawingResponse>(this.client, {
             fn: "legacy.drawing",
             payload: {
-                "data": data,
-                "makeActive": makeActive,
-                "action": "save",
+                data: data,
+                makeActive: makeActive,
+                action: "save",
             },
         });
     }
@@ -18,8 +18,8 @@ export class DrawingModule extends Module {
         return new Call<ViewDrawingDataResponse>(this.client, {
             fn: "legacy.drawing",
             payload: {
-                "imageId": imageId,
-                "action": "initial-image-data",
+                imageId: imageId,
+                action: "initial-image-data",
             },
         });
     }
@@ -28,8 +28,8 @@ export class DrawingModule extends Module {
         return new Call<TCResponse>(this.client, {
             fn: "drawing.send",
             payload: {
-                "imageId": imageId,
-                "receiver": receiver,
+                imageId: imageId,
+                receiver: receiver,
             },
         });
     }

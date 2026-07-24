@@ -7,9 +7,9 @@ export class AuthModule extends Module {
         return new Call<LoginResponse>(this.client, {
             fn: "auth.login",
             payload: {
-                "nameOrEmail": username,
-                "password": password,
-                "client": client,
+                nameOrEmail: username,
+                password: password,
+                client: client,
             },
         });
     }
