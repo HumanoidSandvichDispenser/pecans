@@ -118,9 +118,15 @@ export type AnswerQueueQuestionResponse = TCResponse & {
     poll?: Poll;
 };
 export type ListDataResponse = TCResponse & {
+    /**
+     * Question headers, without their body text.
+     */
     questions: QuestionMetadata[];
 };
 export type QuestionTextResponse = TCResponse & {
+    /**
+     * Question bodies, keyed by id.
+     */
     questions: QuestionText[];
 };
 
@@ -269,28 +275,103 @@ export interface Poll {
     answered: boolean;
 }
 export interface PollOptionRaw {
+    /**
+     * Number of votes this option has received.
+     */
     n: number;
+    /**
+     * Option index / choice id.
+     */
     c: number;
 }
 export interface PollMetadataRaw {
     id: number;
     options: PollOptionRaw[];
 }
+/**
+ * The header for one question: everything except the question body itself.
+ * Returned by `listData`; the body is fetched separately via `qtext`.
+ */
 export interface QuestionMetadata {
     id: number;
+    /**
+     * Whether the question is still activate.
+     */
     isActive: boolean;
+    /**
+     * Total number of replies.
+     */
     replyCount: number;
+    /**
+     * Total number of new replies (not yet marked as read).
+     */
     newReplyCount: number;
+    /**
+     * Unix time at which the question closes.
+     */
     expireTime: number;
+    /**
+     * Unix time at which the question was asked.
+     */
     creationTime: number;
+    /**
+     * Whether the question is pinned to the user's profile.
+     */
     isPinned: boolean;
+    /**
+     * Whether this is a free-text question or a poll.
+     */
     questionType: "text" | "poll";
 }
 export interface QuestionText {
     id: number;
+    /**
+     * The question's body text.
+     */
     text: string;
 }
+/**
+ * A fully populated question with metadata and  body text.
+ */
 export interface QuestionData {
+    /**
+     * The question's body text.
+     */
     body: string;
-    header: QuestionMetadata;
+    header: QuestionMetadata1;
+}
+/**
+ * The header for one question: everything except the question body itself.
+ * Returned by `listData`; the body is fetched separately via `qtext`.
+ */
+export interface QuestionMetadata1 {
+    id: number;
+    /**
+     * Whether the question is still activate.
+     */
+    isActive: boolean;
+    /**
+     * Total number of replies.
+     */
+    replyCount: number;
+    /**
+     * Total number of new replies (not yet marked as read).
+     */
+    newReplyCount: number;
+    /**
+     * Unix time at which the question closes.
+     */
+    expireTime: number;
+    /**
+     * Unix time at which the question was asked.
+     */
+    creationTime: number;
+    /**
+     * Whether the question is pinned to the user's profile.
+     */
+    isPinned: boolean;
+    /**
+     * Whether this is a free-text question or a poll.
+     */
+    questionType: "text" | "poll";
 }

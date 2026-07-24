@@ -9,6 +9,13 @@ from ..decoders import decodeListDataResponse, decodeQuestionTextResponse
 
 class AskModule(Module):
     def listData(self) -> Call[ListDataResponse]:
+        """List all question headers without body text.
+
+        Use `fetchQuestions` to also pull the bodies in one step.
+
+        Returns:
+            The question headers.
+        """
         return Call(
             self.client,
             MethodCall(
@@ -25,6 +32,14 @@ class AskModule(Module):
         )
 
     def qtext(self, ids: list[int]) -> Call[QuestionTextResponse]:
+        """Fetch the body text for a batch of questions by id.
+
+        Args:
+            ids: Question ids to fetch bodies for.
+
+        Returns:
+            The requested question bodies.
+        """
         return Call(
             self.client,
             MethodCall(
@@ -41,6 +56,17 @@ class AskModule(Module):
         )
 
     async def fetchQuestions(self, metadata: list[QuestionMetadata]) -> list[QuestionData]:
+        """Fetch each question's body and zip it onto its header, keyed by id.
+
+        A convenience method for fetching a batch of questions in one step, rather
+        than calling `listData` and then `qtext` separately.
+
+        Args:
+            metadata: Question headers to hydrate, e.g. from `listData`.
+
+        Returns:
+            Each header paired with its body text.
+        """
         res = await self.qtext([x["id"] for x in metadata])
 
         return join_by(

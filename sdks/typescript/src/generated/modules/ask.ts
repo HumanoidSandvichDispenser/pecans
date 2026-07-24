@@ -5,6 +5,13 @@ import { ListDataResponse, QuestionData, QuestionMetadata, QuestionTextResponse 
 import { decodeListDataResponse, decodeQuestionTextResponse } from "../decoders";
 
 export class AskModule extends Module {
+    /**
+     * List all question headers without body text.
+     *
+     * Use `fetchQuestions` to also pull the bodies in one step.
+     *
+     * @returns The question headers.
+     */
     public listData(): Call<ListDataResponse> {
         return new Call<ListDataResponse>(
             this.client,
@@ -22,6 +29,12 @@ export class AskModule extends Module {
         );
     }
 
+    /**
+     * Fetch the body text for a batch of questions by id.
+     *
+     * @param ids - Question ids to fetch bodies for.
+     * @returns The requested question bodies.
+     */
     public qtext(ids: number[]): Call<QuestionTextResponse> {
         return new Call<QuestionTextResponse>(
             this.client,
@@ -39,6 +52,15 @@ export class AskModule extends Module {
         );
     }
 
+    /**
+     * Fetch each question's body and zip it onto its header, keyed by id.
+     *
+     * A convenience method for fetching a batch of questions in one step, rather
+     * than calling `listData` and then `qtext` separately.
+     *
+     * @param metadata - Question headers to hydrate, e.g. from `listData`.
+     * @returns Each header paired with its body text.
+     */
     public async fetchQuestions(metadata: QuestionMetadata[]): Promise<QuestionData[]> {
         const res = await this.qtext(metadata.map((x) => x.id));
 
