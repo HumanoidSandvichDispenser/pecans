@@ -5,7 +5,8 @@
   "private": true,
   "license": "GPL-3.0-only",
   "workspaces": [
-    "packages/*"
+    "packages/*",
+    "sdks/typescript"
   ],
   "scripts": {
     "build": "npm run build --workspace pecans && npm run build --workspace pecans-mcp",

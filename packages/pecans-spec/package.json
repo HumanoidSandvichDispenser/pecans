@@ -1,0 +1,16 @@
+{
+  "name": "pecans-spec",
+  "version": "1.0.0",
+  "description": "TypeSpec source for Two Cans & String API",
+  "private": true,
+  "license": "GPL-3.0-only",
+  "scripts": {
+    "compile": "tsp compile .",
+    "watch": "tsp compile . --watch",
+    "clean": "rm -rf dist || true"
+  },
+  "devDependencies": {
+    "@typespec/compiler": "^1.6.0",
+    "@typespec/json-schema": "^1.6.0"
+  }
+}
