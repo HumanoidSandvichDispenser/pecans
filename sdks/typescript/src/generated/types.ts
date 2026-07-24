@@ -73,6 +73,10 @@ export type LoginResponse = TCResponse & {
     authToken: string;
     yourId: string;
 };
+export type ExistingCookieResponse = TCResponse & {
+    success: boolean;
+    yourId: string;
+};
 export type AnswerReplyResponse = TCResponse & {
     id: number;
     time: number;

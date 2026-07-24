@@ -8,6 +8,11 @@ model LoginResponse extends TCResponse {
   yourId: string;
 }
 
+model ExistingCookieResponse extends TCResponse {
+  success: boolean;
+  yourId: string;
+}
+
 interface Auth {
   @rpc("auth.login")
   login(
@@ -15,4 +20,7 @@ interface Auth {
     password: string,
     client?: string = "web",
   ): LoginResponse;
+
+  @rpc("auth.existingcookie")
+  existingCookie(cookie: string): ExistingCookieResponse;
 }

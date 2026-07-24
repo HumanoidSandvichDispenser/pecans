@@ -444,6 +444,18 @@ LoginResponse = TypedDict(
 )
 
 
+ExistingCookieResponse = TypedDict(
+    "ExistingCookieResponse",
+    {
+        "ok": "bool",
+        "error": NotRequired["str"],
+        "profiles": NotRequired["list[TCProfile]"],
+        "success": "bool",
+        "yourId": "str",
+    },
+)
+
+
 PollOption = TypedDict(
     "PollOption",
     {
