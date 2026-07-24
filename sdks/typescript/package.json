@@ -8,14 +8,20 @@
         "clean": "rm -rf dist || true",
         "test": "vitest run"
     },
-    "keywords": [],
+    "keywords": [
+        "twocansandstring",
+        "api",
+        "sdk",
+        "client"
+    ],
     "repository": {
         "url": "https://github.com/humanoidsandvichdispenser/pecans.git"
     },
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
     "files": [
-        "dist"
+        "dist",
+        "README.md"
     ],
     "author": {
         "name": "HumanoidSandvichDispenser",
