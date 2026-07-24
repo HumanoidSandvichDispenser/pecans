@@ -1,0 +1,7 @@
+{
+  "name": "pecans-mcp",
+  "version": "0.1.0",
+  "description": "MCP server for pecans",
+  "private": true,
+  "license": "GPL-3.0-only"
+}
