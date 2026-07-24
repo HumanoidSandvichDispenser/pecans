@@ -9,8 +9,8 @@
     "sdks/typescript"
   ],
   "scripts": {
-    "compile:spec": "bun run --filter pecans-spec compile",
-    "build": "bun run --filter pecans build",
+    "generate": "bun run --filter pecans-spec generate",
+    "build": "bun run generate && bun run --filter pecans build",
     "clean": "bun run --filter pecans clean && bun run --filter pecans-spec clean"
   }
 }

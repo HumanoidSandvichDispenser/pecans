@@ -1,0 +1,25 @@
+namespace Pecans;
+
+model TCFollowInfo {
+  in: int32;
+  out: int32;
+}
+
+model TCProfile {
+  id: string;
+  name: string;
+  online: int32;
+  avatar: string;
+  subs: TCFollowInfo;
+}
+
+model TCResponse {
+  ok: boolean;
+  error?: string;
+  profiles?: TCProfile[];
+}
+
+model TCUser {
+  id?: string;
+  anon?: boolean;
+}

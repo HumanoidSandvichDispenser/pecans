@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "description": "Pretty easy Two Cans & String API wrapper",
   "scripts": {
-    "codegen": "bun run --filter pecans-spec compile && bun run scripts/codegen.ts",
-    "build": "bun run codegen && tsc",
-    "clean": "rm -rf dist obj src/generated || true",
+    "generate": "bun run --filter pecans-spec generate",
+    "build": "tsc",
+    "clean": "rm -rf dist || true",
     "test": "vitest run"
   },
   "keywords": [],
@@ -24,7 +24,6 @@
   "license": "GPL-3.0-only",
   "devDependencies": {
     "@types/node": "^20.8.4",
-    "json-schema-to-typescript": "^15.0.4",
     "typescript": "^5.6.0",
     "vitest": "^0.34.6"
   }
