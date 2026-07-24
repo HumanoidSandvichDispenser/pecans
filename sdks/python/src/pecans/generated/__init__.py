@@ -17,3 +17,4 @@ from .modules.navbar import NavbarModule
 from .modules.notify import NotifyModule
 from .modules.profile import ProfileModule
 from .modules.qa import QaModule
+from .modules.settings import SettingsModule

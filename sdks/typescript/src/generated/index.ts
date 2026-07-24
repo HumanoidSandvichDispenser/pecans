@@ -17,3 +17,4 @@ export * from "./modules/navbar";
 export * from "./modules/notify";
 export * from "./modules/profile";
 export * from "./modules/qa";
+export * from "./modules/settings";

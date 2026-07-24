@@ -212,6 +212,20 @@ export type DashboardResponse = TCResponse & {
      */
     recentQuestions: DashboardQuestion[];
 };
+export type SettingsGetResponse = TCResponse & {
+    /**
+     * The account's email address.
+     */
+    email: string;
+    /**
+     * Whether to send notifications for new private messages.
+     */
+    msgNotify: boolean;
+    /**
+     * Whether to hide the sender identity on anonymous messages.
+     */
+    msgHideAnon: boolean;
+};
 
 export interface TCFollowInfo {
     in: number;

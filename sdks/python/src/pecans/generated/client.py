@@ -16,6 +16,7 @@ from .modules.navbar import NavbarModule
 from .modules.notify import NotifyModule
 from .modules.profile import ProfileModule
 from .modules.qa import QaModule
+from .modules.settings import SettingsModule
 
 
 class Client(BaseClient):
@@ -36,6 +37,7 @@ class Client(BaseClient):
         self._notify = NotifyModule(self)
         self._profile = ProfileModule(self)
         self._qa = QaModule(self)
+        self._settings = SettingsModule(self)
 
     @property
     def account(self) -> AccountModule:
@@ -92,3 +94,7 @@ class Client(BaseClient):
     @property
     def qa(self) -> QaModule:
         return self._qa
+
+    @property
+    def settings(self) -> SettingsModule:
+        return self._settings

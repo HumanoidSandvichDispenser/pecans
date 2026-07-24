@@ -706,3 +706,16 @@ DashboardResponse = TypedDict(
         "recentQuestions": "list[DashboardQuestion]",
     },
 )
+
+
+SettingsGetResponse = TypedDict(
+    "SettingsGetResponse",
+    {
+        "ok": "bool",
+        "error": NotRequired["str"],
+        "profiles": NotRequired["list[TCProfile]"],
+        "email": "str",
+        "msgNotify": "bool",
+        "msgHideAnon": "bool",
+    },
+)

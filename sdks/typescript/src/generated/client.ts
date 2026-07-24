@@ -14,6 +14,7 @@ import { NavbarModule } from "./modules/navbar";
 import { NotifyModule } from "./modules/notify";
 import { ProfileModule } from "./modules/profile";
 import { QaModule } from "./modules/qa";
+import { SettingsModule } from "./modules/settings";
 
 export class Client extends BaseClient {
     #account: AccountModule;
@@ -30,6 +31,7 @@ export class Client extends BaseClient {
     #notify: NotifyModule;
     #profile: ProfileModule;
     #qa: QaModule;
+    #settings: SettingsModule;
 
     public constructor(auth?: string) {
         super(auth);
@@ -47,6 +49,7 @@ export class Client extends BaseClient {
         this.#notify = new NotifyModule(this);
         this.#profile = new ProfileModule(this);
         this.#qa = new QaModule(this);
+        this.#settings = new SettingsModule(this);
     }
 
     public get account(): AccountModule {
@@ -103,5 +106,9 @@ export class Client extends BaseClient {
 
     public get qa(): QaModule {
         return this.#qa;
+    }
+
+    public get settings(): SettingsModule {
+        return this.#settings;
     }
 }
