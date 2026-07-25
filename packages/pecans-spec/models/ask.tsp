@@ -135,7 +135,7 @@ model GetResponseResponse extends TCResponse {
   convoHeaderId?: safeint;
 }
 
-/** A fully populated question with metadata and  body text. */
+/** A fully populated question with metadata and body text. */
 model QuestionData {
   /** The question's body text. */
   @fromResult("text") body: string;
@@ -149,7 +149,7 @@ model NewPollChoice {
   /** Display label for the choice. */
   label: string;
 
-  /** 6-digit hex color (no leading `#`), e.g. "ff0000". */
+  /** 6-digit hex color (no leading `#`), e.g. "ff0000", or the name of a color. */
   color: string;
 }
 
@@ -166,7 +166,7 @@ model PostQuestionBody {
   /** The question text. */
   text: string;
 
-  /** Whether the question (and its answers) are public. */
+  /** Whether the question was asked publicly (non-anonymously). */
   isPublic: boolean;
 
   /** Whether the question carries a poll. */
@@ -208,7 +208,7 @@ interface Ask {
   getResponse(answerId: safeint): GetResponseResponse;
 
   /**
-   * Start a conversation ("respectful rebuttal") in reply to an answer.
+   * Reply to an answer, creating a new conversation/direct message thread.
    *
    * @param answerId Id of the answer being replied to.
    * @param content Body text of the reply.
@@ -238,7 +238,7 @@ interface Ask {
   ): AnswersResponse;
 
   /**
-   * Pin or unpin a question to your profile.
+   * Pin or unpin a publicly-asked question to your profile.
    *
    * @param questionId Id of the question to pin/unpin.
    * @param pinned True to pin, false to unpin.
@@ -251,7 +251,7 @@ interface Ask {
   ): PinToggleResponse;
 
   /**
-   * Bump a question back to the top of its recipient's queue.
+   * Bump a question from inactive to active.
    *
    * @param questionId Id of the question to bump.
    */
@@ -262,7 +262,7 @@ interface Ask {
   ): BumpQuestionResponse;
 
   /**
-   * Delete a question that was asked to you.
+   * Delete a question.
    *
    * @param questionId Id of the question to delete.
    */
@@ -273,7 +273,7 @@ interface Ask {
   ): TCResponse;
 
   /**
-   * Delete one of your answers.
+   * Delete an answer to a question.
    *
    * @param answerId Id of the answer to delete.
    */

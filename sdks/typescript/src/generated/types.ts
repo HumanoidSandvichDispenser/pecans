@@ -569,7 +569,7 @@ export interface QuestionAnswer {
     unread: boolean;
 }
 /**
- * A fully populated question with metadata and  body text.
+ * A fully populated question with metadata and body text.
  */
 export interface QuestionData {
     /**
@@ -622,7 +622,7 @@ export interface NewPollChoice {
      */
     label: string;
     /**
-     * 6-digit hex color (no leading `#`), e.g. "ff0000".
+     * 6-digit hex color (no leading `#`), e.g. "ff0000", or the name of a color.
      */
     color: string;
 }
@@ -642,7 +642,7 @@ export interface PostQuestionBody {
      */
     text: string;
     /**
-     * Whether the question (and its answers) are public.
+     * Whether the question was asked publicly (non-anonymously).
      */
     isPublic: boolean;
     /**

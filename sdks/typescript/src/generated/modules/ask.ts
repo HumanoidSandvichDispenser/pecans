@@ -74,7 +74,7 @@ export class AskModule extends Module {
     }
 
     /**
-     * Start a conversation ("respectful rebuttal") in reply to an answer.
+     * Reply to an answer, creating a new conversation/direct message thread.
      *
      * @param answerId - Id of the answer being replied to.
      * @param content - Body text of the reply.
@@ -120,7 +120,7 @@ export class AskModule extends Module {
     }
 
     /**
-     * Pin or unpin a question to your profile.
+     * Pin or unpin a publicly-asked question to your profile.
      *
      * @param questionId - Id of the question to pin/unpin.
      * @param pinned - True to pin, false to unpin.
@@ -139,7 +139,7 @@ export class AskModule extends Module {
     }
 
     /**
-     * Bump a question back to the top of its recipient's queue.
+     * Bump a question from inactive to active.
      *
      * @param questionId - Id of the question to bump.
      */
@@ -161,7 +161,7 @@ export class AskModule extends Module {
     }
 
     /**
-     * Delete a question that was asked to you.
+     * Delete a question.
      *
      * @param questionId - Id of the question to delete.
      */
@@ -179,7 +179,7 @@ export class AskModule extends Module {
     }
 
     /**
-     * Delete one of your answers.
+     * Delete an answer to a question.
      *
      * @param answerId - Id of the answer to delete.
      */

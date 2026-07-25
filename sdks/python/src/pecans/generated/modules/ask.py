@@ -84,7 +84,7 @@ class AskModule(Module):
     def startConversation(
         self, answerId: int, content: str, unanonymize: bool = False
     ) -> Call[TCResponse]:
-        """Start a conversation ("respectful rebuttal") in reply to an answer.
+        """Reply to an answer, creating a new conversation/direct message thread.
 
         Args:
             answerId: Id of the answer being replied to.
@@ -127,7 +127,7 @@ class AskModule(Module):
         )
 
     def pinToggle(self, questionId: int, pinned: bool) -> Call[PinToggleResponse]:
-        """Pin or unpin a question to your profile.
+        """Pin or unpin a publicly-asked question to your profile.
 
         Args:
             questionId: Id of the question to pin/unpin.
@@ -148,7 +148,7 @@ class AskModule(Module):
         )
 
     def bumpQuestion(self, questionId: int) -> Call[BumpQuestionResponse]:
-        """Bump a question back to the top of its recipient's queue.
+        """Bump a question from inactive to active.
 
         Args:
             questionId: Id of the question to bump.
@@ -169,7 +169,7 @@ class AskModule(Module):
         )
 
     def deleteQuestion(self, questionId: int) -> Call[TCResponse]:
-        """Delete a question that was asked to you.
+        """Delete a question.
 
         Args:
             questionId: Id of the question to delete.
@@ -189,7 +189,7 @@ class AskModule(Module):
         )
 
     def deleteAnswer(self, answerId: int) -> Call[TCResponse]:
-        """Delete one of your answers.
+        """Delete an answer to a question.
 
         Args:
             answerId: Id of the answer to delete.
