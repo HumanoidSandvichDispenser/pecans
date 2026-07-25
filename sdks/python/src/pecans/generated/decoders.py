@@ -3,7 +3,36 @@ from __future__ import annotations
 
 from typing import Any
 
-from .types import ListDataResponse, QuestionMetadata, QuestionText, QuestionTextResponse
+from .types import (
+    AnswersResponse,
+    BumpQuestionResponse,
+    ListDataResponse,
+    QuestionAnswer,
+    QuestionMetadata,
+    QuestionText,
+    QuestionTextResponse,
+    ViewQuestionResponse,
+)
+
+
+def decodeAnswersResponse(raw: Any) -> AnswersResponse:
+    return {
+        "ok": raw.get("ok"),
+        "error": raw.get("error"),
+        "profiles": raw.get("profiles"),
+        "answers": [decodeQuestionAnswer(x) for x in raw.get("answers") or []],
+        "hasMore": raw.get("hasMore"),
+        "nextId": raw.get("nextId"),
+    }
+
+
+def decodeBumpQuestionResponse(raw: Any) -> BumpQuestionResponse:
+    return {
+        "ok": raw.get("ok"),
+        "error": raw.get("error"),
+        "profiles": raw.get("profiles"),
+        "expireTime": raw.get("it"),
+    }
 
 
 def decodeListDataResponse(raw: Any) -> ListDataResponse:
@@ -12,6 +41,17 @@ def decodeListDataResponse(raw: Any) -> ListDataResponse:
         "error": raw.get("error"),
         "profiles": raw.get("profiles"),
         "questions": [decodeQuestionMetadata(x) for x in raw.get("questions") or []],
+    }
+
+
+def decodeQuestionAnswer(raw: Any) -> QuestionAnswer:
+    return {
+        "id": raw.get("id"),
+        "body": raw.get("b"),
+        "time": raw.get("t"),
+        "questionId": raw.get("q"),
+        "convoId": raw.get("mc"),
+        "unread": raw.get("in"),
     }
 
 
@@ -41,4 +81,19 @@ def decodeQuestionTextResponse(raw: Any) -> QuestionTextResponse:
         "error": raw.get("error"),
         "profiles": raw.get("profiles"),
         "questions": [decodeQuestionText(x) for x in raw.get("questions") or []],
+    }
+
+
+def decodeViewQuestionResponse(raw: Any) -> ViewQuestionResponse:
+    return {
+        "ok": raw.get("ok"),
+        "error": raw.get("error"),
+        "profiles": raw.get("profiles"),
+        "id": raw.get("id"),
+        "time": raw.get("time"),
+        "text": raw.get("text"),
+        "isPublic": raw.get("isPublic"),
+        "responseCount": raw.get("responses"),
+        "user": raw.get("user"),
+        "isYours": raw.get("isYours"),
     }

@@ -13,7 +13,7 @@ export class QaModule extends Module {
         return new Call<QaGetPinnedResponse>(this.client, {
             fn: "qa.getpinned",
             payload: {
-                "profileId": profileId,
+                profileId: profileId,
             },
         });
     }

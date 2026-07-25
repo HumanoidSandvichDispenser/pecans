@@ -20,9 +20,9 @@ class ImagesModule(Module):
             MethodCall(
                 fn="images.batchget",
                 payload={
-                "ids": ids,
-            },
-            )
+                    "ids": ids,
+                },
+            ),
         )
 
     def galleryList(self, page: int = 1, deleted: bool = False) -> Call[ImageGalleryListResponse]:
@@ -40,10 +40,10 @@ class ImagesModule(Module):
             MethodCall(
                 fn="images.gallerylist",
                 payload={
-                "page": page,
-                "deleted": deleted,
-            },
-            )
+                    "page": page,
+                    "deleted": deleted,
+                },
+            ),
         )
 
     def info(self, imageId: str) -> Call[ImageInfoResponse]:
@@ -60,7 +60,7 @@ class ImagesModule(Module):
             MethodCall(
                 fn="images.info",
                 payload={
-                "imageId": imageId,
-            },
-            )
+                    "imageId": imageId,
+                },
+            ),
         )

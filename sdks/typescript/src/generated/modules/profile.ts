@@ -13,7 +13,7 @@ export class ProfileModule extends Module {
         return new Call<ProfileGetResponse>(this.client, {
             fn: "profile.get",
             payload: {
-                "id": id,
+                id: id,
             },
         });
     }
@@ -29,8 +29,8 @@ export class ProfileModule extends Module {
         return new Call<ProfileDetailsResponse>(this.client, {
             fn: "profile.details",
             payload: {
-                "user": user,
-                "field": field,
+                user: user,
+                field: field,
             },
         });
     }
@@ -45,8 +45,8 @@ export class ProfileModule extends Module {
         return new Call<TCResponse>(this.client, {
             fn: "profile.edit",
             payload: {
-                "field": field,
-                "value": value,
+                field: field,
+                value: value,
             },
         });
     }
@@ -61,8 +61,8 @@ export class ProfileModule extends Module {
         return new Call<TCResponse>(this.client, {
             fn: "profile.togglefollow",
             payload: {
-                "id": id,
-                "follow": follow,
+                id: id,
+                follow: follow,
             },
         });
     }

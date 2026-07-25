@@ -12,14 +12,14 @@ class AccountModule(Module):
             MethodCall(
                 fn="account.register",
                 payload={
-                "email": email,
-                "username": username,
-                "password1": password,
-                "password2": password,
-                "age": True,
-                "tos": True,
-            },
-            )
+                    "email": email,
+                    "username": username,
+                    "password1": password,
+                    "password2": password,
+                    "age": True,
+                    "tos": True,
+                },
+            ),
         )
 
     def activate(self, token: str) -> Call[TCResponse]:
@@ -28,7 +28,7 @@ class AccountModule(Module):
             MethodCall(
                 fn="account.activate",
                 payload={
-                "token": token,
-            },
-            )
+                    "token": token,
+                },
+            ),
         )

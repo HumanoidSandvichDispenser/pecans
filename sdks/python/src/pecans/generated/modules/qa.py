@@ -20,7 +20,7 @@ class QaModule(Module):
             MethodCall(
                 fn="qa.getpinned",
                 payload={
-                "profileId": profileId,
-            },
-            )
+                    "profileId": profileId,
+                },
+            ),
         )

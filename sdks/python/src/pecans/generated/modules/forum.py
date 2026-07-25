@@ -2,7 +2,15 @@
 from __future__ import annotations
 
 from ...runtime import Call, MethodCall, Module
-from ..types import ForumCategoriesResponse, ForumSearchResponse, GetQuoteTextResponse, NewThreadResponse, TCResponse, ThreadListResponse, ViewPostsResponse
+from ..types import (
+    ForumCategoriesResponse,
+    ForumSearchResponse,
+    GetQuoteTextResponse,
+    NewThreadResponse,
+    TCResponse,
+    ThreadListResponse,
+    ViewPostsResponse,
+)
 
 
 class ForumModule(Module):
@@ -22,27 +30,34 @@ class ForumModule(Module):
             MethodCall(
                 fn="forum.newthread",
                 payload={
-                "category": category,
-                "title": title,
-                "text": text,
-            },
-            )
+                    "category": category,
+                    "title": title,
+                    "text": text,
+                },
+            ),
         )
 
-    def viewPosts(self, threadId: int, fetchType: str, postId: int = 0, reverse: bool = False, includePost: bool = True) -> Call[ViewPostsResponse]:
+    def viewPosts(
+        self,
+        threadId: int,
+        fetchType: str,
+        postId: int = 0,
+        reverse: bool = False,
+        includePost: bool = True,
+    ) -> Call[ViewPostsResponse]:
         return Call(
             self.client,
             MethodCall(
                 fn="forum.viewposts",
                 payload={
-                "threadId": threadId,
-                "type": fetchType,
-                "postId": postId,
-                "getSomeBackscroll": reverse,
-                "includePost": includePost,
-                "includeThreadMetadata": True,
-            },
-            )
+                    "threadId": threadId,
+                    "type": fetchType,
+                    "postId": postId,
+                    "getSomeBackscroll": reverse,
+                    "includePost": includePost,
+                    "includeThreadMetadata": True,
+                },
+            ),
         )
 
     def replyThread(self, text: str, threadId: int) -> Call[TCResponse]:
@@ -51,10 +66,10 @@ class ForumModule(Module):
             MethodCall(
                 fn="forum.replythread",
                 payload={
-                "text": text,
-                "threadId": threadId,
-            },
-            )
+                    "text": text,
+                    "threadId": threadId,
+                },
+            ),
         )
 
     def readThread(self, postId: int, threadId: int) -> Call[TCResponse]:
@@ -63,10 +78,10 @@ class ForumModule(Module):
             MethodCall(
                 fn="forum.readthread",
                 payload={
-                "postId": postId,
-                "threadId": threadId,
-            },
-            )
+                    "postId": postId,
+                    "threadId": threadId,
+                },
+            ),
         )
 
     def editPost(self, postId: int, text: str) -> Call[TCResponse]:
@@ -75,10 +90,10 @@ class ForumModule(Module):
             MethodCall(
                 fn="forum.editpost",
                 payload={
-                "postId": postId,
-                "text": text,
-            },
-            )
+                    "postId": postId,
+                    "text": text,
+                },
+            ),
         )
 
     def search(self, query: str) -> Call[ForumSearchResponse]:
@@ -87,9 +102,9 @@ class ForumModule(Module):
             MethodCall(
                 fn="forum.search",
                 payload={
-                "query": query,
-            },
-            )
+                    "query": query,
+                },
+            ),
         )
 
     def categoriesGet(self) -> Call[ForumCategoriesResponse]:
@@ -98,7 +113,7 @@ class ForumModule(Module):
             MethodCall(
                 fn="forum.categoriesget",
                 payload={},
-            )
+            ),
         )
 
     def threadList(self, category: str, offset: int = 0) -> Call[ThreadListResponse]:
@@ -107,10 +122,10 @@ class ForumModule(Module):
             MethodCall(
                 fn="forum.threadlist",
                 payload={
-                "category": category,
-                "offset": offset,
-            },
-            )
+                    "category": category,
+                    "offset": offset,
+                },
+            ),
         )
 
     def getQuoteText(self, id: int) -> Call[GetQuoteTextResponse]:
@@ -127,9 +142,9 @@ class ForumModule(Module):
             MethodCall(
                 fn="forum.getquotetext",
                 payload={
-                "id": id,
-            },
-            )
+                    "id": id,
+                },
+            ),
         )
 
     def followThread(self, threadId: int, follow: bool) -> Call[TCResponse]:
@@ -144,8 +159,8 @@ class ForumModule(Module):
             MethodCall(
                 fn="forum.followthread",
                 payload={
-                "threadId": threadId,
-                "follow": follow,
-            },
-            )
+                    "threadId": threadId,
+                    "follow": follow,
+                },
+            ),
         )

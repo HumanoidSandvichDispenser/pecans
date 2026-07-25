@@ -25,25 +25,33 @@ model AnswerReplyResponse extends TCResponse {
   text: string;
 }
 
-model QuestionFetchResponse extends TCResponse {
+/**
+ * A question on Two Cans & String.
+ */
+model Question extends TCResponse {
   id: safeint;
+
+  /** Unix time the question was asked. */
   time: safeint;
+
+  /** The question body text (UCP markup). */
   text: string;
-  author?: string;
-  poll?: Poll;
 }
 
-model AnswerQueueQuestionResponse extends TCResponse {
-  id: safeint;
-  time: safeint;
-  text: string;
+/**
+ * A question viewed on the Answer page.
+ */
+model AnswerQuestion extends Question {
+  /** Username of the asker, present only when the question is public. */
   author?: string;
+
+  /** The attached poll, if this is a poll-type question. */
   poll?: Poll;
 }
 
 interface Answer {
   @rpc("answer.getnext")
-  fetchNext(): QuestionFetchResponse;
+  fetchNext(): AnswerQuestion;
 
   @rpc("answer.dismissquestion")
   dismissQuestion(questionId: safeint, action: DismissAction): TCResponse;
@@ -52,7 +60,7 @@ interface Answer {
   pollVote(questionId: safeint, optionNum: int32): TCResponse;
 
   @rpc("answer.queuequestion")
-  queueQuestion(questionId: safeint): AnswerQueueQuestionResponse;
+  queueQuestion(questionId: safeint): AnswerQuestion;
 
   @rpc("answer.reply")
   reply(questionId: safeint, text: string): AnswerReplyResponse;

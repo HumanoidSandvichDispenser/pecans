@@ -16,3 +16,10 @@ extern dec fromResult(target: ModelProperty, field: valueof string);
  * that nest a JSON body inside a single string field.
  */
 extern dec embed(target: ModelProperty, field: valueof string);
+
+/**
+ * Coerce this parameter to its string wire form in the payload. Numbers become
+ * `String(x)`, booleans become "1"/"0". Used for legacy endpoints whose
+ * positional `arg1/2/3` fields are always sent as strings.
+ */
+extern dec stringify(target: ModelProperty);

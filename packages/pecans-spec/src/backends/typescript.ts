@@ -114,8 +114,15 @@ function payloadLiteral(op: IrModule["ops"][number]): string {
             continue;
         }
 
-        const value =
-            p.joinSep !== undefined ? `${p.name}.join(${JSON.stringify(p.joinSep)})` : p.name;
+        let value: string;
+
+        if (p.joinSep !== undefined) {
+            value = `${p.name}.join(${JSON.stringify(p.joinSep)})`;
+        } else if (p.stringify) {
+            value = p.type.kind === "bool" ? `(${p.name} ? "1" : "0")` : `String(${p.name})`;
+        } else {
+            value = p.name;
+        }
 
         entries.push(`                ${JSON.stringify(p.wireName)}: ${value},`);
 

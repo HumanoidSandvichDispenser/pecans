@@ -2,11 +2,15 @@ import "../lib/main.tsp";
 
 namespace Pecans;
 
+const ASKAPI_NULL = #{ rawEmbeddedJsonLolInternalTechDebt: null };
+
+const ASKAPI_ARG1 = #{ arg2: "0", arg3: "0", rawEmbeddedJsonLolInternalTechDebt: null };
+
 model PollOptionRaw {
   /** Number of votes this option has received. */
   n: int32;
 
-  /** Option index / choice id. */
+  /** Option index or choice id. */
   c: int32;
 }
 
@@ -59,6 +63,76 @@ model ListDataResponse extends TCResponse {
 model QuestionTextResponse extends TCResponse {
   /** Question bodies, keyed by id. */
   questions: QuestionText[];
+}
+
+/** A single question as seen on its public view page. */
+model ViewQuestionResponse extends Question {
+  /** Whether the question was asked publicly (non-anonymously). */
+  isPublic: boolean;
+
+  /** Number of responses the question has received. */
+  @encodedName("application/json", "responses") responseCount: int32;
+
+  /** Username of the asker, present only when the question is public. */
+  user?: string;
+
+  /** Whether the current user is the asker. */
+  isYours: boolean;
+}
+
+/** One answer to a question you asked, as returned by `getAnswers`. */
+model QuestionAnswer {
+  id: safeint;
+
+  /** The answer body text (UCP markup). */
+  @encodedName("application/json", "b") body: string;
+
+  /** Unix time the answer was posted. */
+  @encodedName("application/json", "t") time: safeint;
+
+  /** Id of the question this answers. */
+  @encodedName("application/json", "q") questionId: safeint;
+
+  /** Id of the conversation spawned from this answer, or 0 if none. */
+  @encodedName("application/json", "mc") convoId: safeint;
+
+  /** Whether the answer is unread. */
+  @encodedName("application/json", "in") unread: boolean;
+}
+
+/** A page of answers to a question you asked. */
+model AnswersResponse extends TCResponse {
+  answers: QuestionAnswer[];
+
+  /** Whether more answers exist beyond this page. */
+  hasMore: boolean;
+
+  /** Cursor id for fetching the next page. */
+  nextId: safeint;
+}
+
+/** The result of pinning or unpinning a question. */
+model PinToggleResponse extends TCResponse {
+  /** The question's new pinned state. */
+  status: boolean;
+}
+
+/** The result of bumping a question. */
+model BumpQuestionResponse extends TCResponse {
+  /** The question's new expiry (inactive) time. */
+  @encodedName("application/json", "it") expireTime: safeint;
+}
+
+/** One answer/response, fetched by its answer id. */
+model GetResponseResponse extends TCResponse {
+  /** Id of the question this answers. */
+  questionId: safeint;
+
+  /** The answer body text (UCP markup). */
+  text: string;
+
+  /** Id of the conversation spawned from this answer, if any. */
+  convoHeaderId?: safeint;
 }
 
 /** A fully populated question with metadata and  body text. */
@@ -116,6 +190,109 @@ interface Ask {
     arg3: "undefined",
   })
   postQuestion(@embed("rawEmbeddedJsonLolInternalTechDebt") body: PostQuestionBody): TCResponse;
+
+  /**
+   * View a single question by id (its public view page).
+   *
+   * @param questionId Id of the question to view.
+   */
+  @rpc("ask.viewquestion")
+  viewQuestion(questionId: safeint): ViewQuestionResponse;
+
+  /**
+   * Fetch a single answer/response by its answer id.
+   *
+   * @param answerId Id of the answer to fetch.
+   */
+  @rpc("ask.getresponse")
+  getResponse(answerId: safeint): GetResponseResponse;
+
+  /**
+   * Start a conversation ("respectful rebuttal") in reply to an answer.
+   *
+   * @param answerId Id of the answer being replied to.
+   * @param content Body text of the reply.
+   * @param unanonymize Reveal your identity in the conversation.
+   */
+  @rpc("ask.startconversation")
+  startConversation(
+    answerId: safeint,
+    content: string,
+    unanonymize?: boolean = false,
+  ): TCResponse;
+
+  /**
+   * Fetch a page of answers to a question you asked.
+   *
+   * @param questionId Id of the question whose answers to fetch.
+   * @param mode Paging mode: "expand" (initial), "expandmore" (older), or
+   *   "inject" (newer than `refId`).
+   * @param refId Cursor answer id the mode pages relative to (0 for none).
+   */
+  @rpc("legacy.askapi")
+  @constant(#{ ...ASKAPI_NULL, name: "getanswers" })
+  getAnswers(
+    @encodedName("application/json", "arg1") @stringify questionId: safeint,
+    @encodedName("application/json", "arg2") mode: string,
+    @encodedName("application/json", "arg3") @stringify refId: safeint,
+  ): AnswersResponse;
+
+  /**
+   * Pin or unpin a question to your profile.
+   *
+   * @param questionId Id of the question to pin/unpin.
+   * @param pinned True to pin, false to unpin.
+   */
+  @rpc("legacy.askapi")
+  @constant(#{ ...ASKAPI_NULL, name: "pintoggle", arg3: "0" })
+  pinToggle(
+    @encodedName("application/json", "arg1") @stringify questionId: safeint,
+    @encodedName("application/json", "arg2") @stringify pinned: boolean,
+  ): PinToggleResponse;
+
+  /**
+   * Bump a question back to the top of its recipient's queue.
+   *
+   * @param questionId Id of the question to bump.
+   */
+  @rpc("legacy.askapi")
+  @constant(#{ ...ASKAPI_ARG1, name: "bumpquestion" })
+  bumpQuestion(
+    @encodedName("application/json", "arg1") @stringify questionId: safeint,
+  ): BumpQuestionResponse;
+
+  /**
+   * Delete a question that was asked to you.
+   *
+   * @param questionId Id of the question to delete.
+   */
+  @rpc("legacy.askapi")
+  @constant(#{ ...ASKAPI_ARG1, name: "deleteques" })
+  deleteQuestion(
+    @encodedName("application/json", "arg1") @stringify questionId: safeint,
+  ): TCResponse;
+
+  /**
+   * Delete one of your answers.
+   *
+   * @param answerId Id of the answer to delete.
+   */
+  @rpc("legacy.askapi")
+  @constant(#{ ...ASKAPI_ARG1, name: "deleteanswer" })
+  deleteAnswer(
+    @encodedName("application/json", "arg1") @stringify answerId: safeint,
+  ): TCResponse;
+
+  /**
+   * Mark an answer as read.
+   *
+   * @param answerId Id of the answer to mark read.
+   */
+  @rpc("legacy.askapi")
+  @constant(#{ ...ASKAPI_ARG1, name: "markanswerread" })
+  markAnswerRead(
+    @encodedName("application/json", "arg1") @stringify answerId: safeint,
+  ): TCResponse;
 
   /**
    * List all question headers without body text.

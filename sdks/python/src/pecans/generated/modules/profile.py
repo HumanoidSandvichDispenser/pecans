@@ -20,9 +20,9 @@ class ProfileModule(Module):
             MethodCall(
                 fn="profile.get",
                 payload={
-                "id": id,
-            },
-            )
+                    "id": id,
+                },
+            ),
         )
 
     def details(self, user: str, field: str) -> Call[ProfileDetailsResponse]:
@@ -40,10 +40,10 @@ class ProfileModule(Module):
             MethodCall(
                 fn="profile.details",
                 payload={
-                "user": user,
-                "field": field,
-            },
-            )
+                    "user": user,
+                    "field": field,
+                },
+            ),
         )
 
     def edit(self, field: str, value: str) -> Call[TCResponse]:
@@ -58,10 +58,10 @@ class ProfileModule(Module):
             MethodCall(
                 fn="profile.edit",
                 payload={
-                "field": field,
-                "value": value,
-            },
-            )
+                    "field": field,
+                    "value": value,
+                },
+            ),
         )
 
     def toggleFollow(self, id: str, follow: bool) -> Call[TCResponse]:
@@ -76,8 +76,8 @@ class ProfileModule(Module):
             MethodCall(
                 fn="profile.togglefollow",
                 payload={
-                "id": id,
-                "follow": follow,
-            },
-            )
+                    "id": id,
+                    "follow": follow,
+                },
+            ),
         )

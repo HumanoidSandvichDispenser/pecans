@@ -5,8 +5,26 @@ import json
 
 from ...runtime import Call, MethodCall, Module
 from ...runtime.join import join_by
-from ..types import ListDataResponse, PostQuestionBody, QuestionData, QuestionMetadata, QuestionTextResponse, TCResponse
-from ..decoders import decodeListDataResponse, decodeQuestionTextResponse
+from ..types import (
+    AnswersResponse,
+    BumpQuestionResponse,
+    GetResponseResponse,
+    ListDataResponse,
+    PinToggleResponse,
+    PostQuestionBody,
+    QuestionData,
+    QuestionMetadata,
+    QuestionTextResponse,
+    TCResponse,
+    ViewQuestionResponse,
+)
+from ..decoders import (
+    decodeAnswersResponse,
+    decodeBumpQuestionResponse,
+    decodeListDataResponse,
+    decodeQuestionTextResponse,
+    decodeViewQuestionResponse,
+)
 
 
 class AskModule(Module):
@@ -21,13 +39,193 @@ class AskModule(Module):
             MethodCall(
                 fn="legacy.askapi",
                 payload={
-                "rawEmbeddedJsonLolInternalTechDebt": json.dumps(body, separators=(",", ":")),
-                "name": "postquestion",
-                "arg1": "undefined",
-                "arg2": "undefined",
-                "arg3": "undefined",
-            },
-            )
+                    "rawEmbeddedJsonLolInternalTechDebt": json.dumps(body, separators=(",", ":")),
+                    "name": "postquestion",
+                    "arg1": "undefined",
+                    "arg2": "undefined",
+                    "arg3": "undefined",
+                },
+            ),
+        )
+
+    def viewQuestion(self, questionId: int) -> Call[ViewQuestionResponse]:
+        """View a single question by id (its public view page).
+
+        Args:
+            questionId: Id of the question to view.
+        """
+        return Call(
+            self.client,
+            MethodCall(
+                fn="ask.viewquestion",
+                payload={
+                    "questionId": questionId,
+                },
+            ),
+            decodeViewQuestionResponse,
+        )
+
+    def getResponse(self, answerId: int) -> Call[GetResponseResponse]:
+        """Fetch a single answer/response by its answer id.
+
+        Args:
+            answerId: Id of the answer to fetch.
+        """
+        return Call(
+            self.client,
+            MethodCall(
+                fn="ask.getresponse",
+                payload={
+                    "answerId": answerId,
+                },
+            ),
+        )
+
+    def startConversation(
+        self, answerId: int, content: str, unanonymize: bool = False
+    ) -> Call[TCResponse]:
+        """Start a conversation ("respectful rebuttal") in reply to an answer.
+
+        Args:
+            answerId: Id of the answer being replied to.
+            content: Body text of the reply.
+            unanonymize: Reveal your identity in the conversation.
+        """
+        return Call(
+            self.client,
+            MethodCall(
+                fn="ask.startconversation",
+                payload={
+                    "answerId": answerId,
+                    "content": content,
+                    "unanonymize": unanonymize,
+                },
+            ),
+        )
+
+    def getAnswers(self, questionId: int, mode: str, refId: int) -> Call[AnswersResponse]:
+        """Fetch a page of answers to a question you asked.
+
+        Args:
+            questionId: Id of the question whose answers to fetch.
+            mode: Paging mode: "expand" (initial), "expandmore" (older), or "inject" (newer than `refId`).
+            refId: Cursor answer id the mode pages relative to (0 for none).
+        """
+        return Call(
+            self.client,
+            MethodCall(
+                fn="legacy.askapi",
+                payload={
+                    "arg1": str(questionId),
+                    "arg2": mode,
+                    "arg3": str(refId),
+                    "rawEmbeddedJsonLolInternalTechDebt": None,
+                    "name": "getanswers",
+                },
+            ),
+            decodeAnswersResponse,
+        )
+
+    def pinToggle(self, questionId: int, pinned: bool) -> Call[PinToggleResponse]:
+        """Pin or unpin a question to your profile.
+
+        Args:
+            questionId: Id of the question to pin/unpin.
+            pinned: True to pin, false to unpin.
+        """
+        return Call(
+            self.client,
+            MethodCall(
+                fn="legacy.askapi",
+                payload={
+                    "arg1": str(questionId),
+                    "arg2": ("1" if pinned else "0"),
+                    "rawEmbeddedJsonLolInternalTechDebt": None,
+                    "name": "pintoggle",
+                    "arg3": "0",
+                },
+            ),
+        )
+
+    def bumpQuestion(self, questionId: int) -> Call[BumpQuestionResponse]:
+        """Bump a question back to the top of its recipient's queue.
+
+        Args:
+            questionId: Id of the question to bump.
+        """
+        return Call(
+            self.client,
+            MethodCall(
+                fn="legacy.askapi",
+                payload={
+                    "arg1": str(questionId),
+                    "arg2": "0",
+                    "arg3": "0",
+                    "rawEmbeddedJsonLolInternalTechDebt": None,
+                    "name": "bumpquestion",
+                },
+            ),
+            decodeBumpQuestionResponse,
+        )
+
+    def deleteQuestion(self, questionId: int) -> Call[TCResponse]:
+        """Delete a question that was asked to you.
+
+        Args:
+            questionId: Id of the question to delete.
+        """
+        return Call(
+            self.client,
+            MethodCall(
+                fn="legacy.askapi",
+                payload={
+                    "arg1": str(questionId),
+                    "arg2": "0",
+                    "arg3": "0",
+                    "rawEmbeddedJsonLolInternalTechDebt": None,
+                    "name": "deleteques",
+                },
+            ),
+        )
+
+    def deleteAnswer(self, answerId: int) -> Call[TCResponse]:
+        """Delete one of your answers.
+
+        Args:
+            answerId: Id of the answer to delete.
+        """
+        return Call(
+            self.client,
+            MethodCall(
+                fn="legacy.askapi",
+                payload={
+                    "arg1": str(answerId),
+                    "arg2": "0",
+                    "arg3": "0",
+                    "rawEmbeddedJsonLolInternalTechDebt": None,
+                    "name": "deleteanswer",
+                },
+            ),
+        )
+
+    def markAnswerRead(self, answerId: int) -> Call[TCResponse]:
+        """Mark an answer as read.
+
+        Args:
+            answerId: Id of the answer to mark read.
+        """
+        return Call(
+            self.client,
+            MethodCall(
+                fn="legacy.askapi",
+                payload={
+                    "arg1": str(answerId),
+                    "arg2": "0",
+                    "arg3": "0",
+                    "rawEmbeddedJsonLolInternalTechDebt": None,
+                    "name": "markanswerread",
+                },
+            ),
         )
 
     def listData(self) -> Call[ListDataResponse]:
@@ -43,12 +241,12 @@ class AskModule(Module):
             MethodCall(
                 fn="legacy.askapi",
                 payload={
-                "name": "listdata",
-                "arg1": "0",
-                "arg2": "none",
-                "arg3": "0",
-                "rawEmbeddedJsonLolInternalTechDebt": None,
-            },
+                    "name": "listdata",
+                    "arg1": "0",
+                    "arg2": "none",
+                    "arg3": "0",
+                    "rawEmbeddedJsonLolInternalTechDebt": None,
+                },
             ),
             decodeListDataResponse,
         )
@@ -67,12 +265,12 @@ class AskModule(Module):
             MethodCall(
                 fn="legacy.askapi",
                 payload={
-                "arg1": "x".join(str(v) for v in ids),
-                "name": "qtext",
-                "arg2": "0",
-                "arg3": "0",
-                "rawEmbeddedJsonLolInternalTechDebt": None,
-            },
+                    "arg1": "x".join(str(v) for v in ids),
+                    "name": "qtext",
+                    "arg2": "0",
+                    "arg3": "0",
+                    "rawEmbeddedJsonLolInternalTechDebt": None,
+                },
             ),
             decodeQuestionTextResponse,
         )

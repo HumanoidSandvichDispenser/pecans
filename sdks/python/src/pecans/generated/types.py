@@ -538,8 +538,8 @@ AnswerReplyResponse = TypedDict(
 )
 
 
-QuestionFetchResponse = TypedDict(
-    "QuestionFetchResponse",
+Question = TypedDict(
+    "Question",
     {
         "ok": "bool",
         "error": NotRequired["str"],
@@ -547,14 +547,12 @@ QuestionFetchResponse = TypedDict(
         "id": "int",
         "time": "int",
         "text": "str",
-        "author": NotRequired["str"],
-        "poll": NotRequired["Poll"],
     },
 )
 
 
-AnswerQueueQuestionResponse = TypedDict(
-    "AnswerQueueQuestionResponse",
+AnswerQuestion = TypedDict(
+    "AnswerQuestion",
     {
         "ok": "bool",
         "error": NotRequired["str"],
@@ -628,6 +626,84 @@ QuestionTextResponse = TypedDict(
         "error": NotRequired["str"],
         "profiles": NotRequired["list[TCProfile]"],
         "questions": "list[QuestionText]",
+    },
+)
+
+
+ViewQuestionResponse = TypedDict(
+    "ViewQuestionResponse",
+    {
+        "ok": "bool",
+        "error": NotRequired["str"],
+        "profiles": NotRequired["list[TCProfile]"],
+        "id": "int",
+        "time": "int",
+        "text": "str",
+        "isPublic": "bool",
+        "responseCount": "int",
+        "user": NotRequired["str"],
+        "isYours": "bool",
+    },
+)
+
+
+QuestionAnswer = TypedDict(
+    "QuestionAnswer",
+    {
+        "id": "int",
+        "body": "str",
+        "time": "int",
+        "questionId": "int",
+        "convoId": "int",
+        "unread": "bool",
+    },
+)
+
+
+AnswersResponse = TypedDict(
+    "AnswersResponse",
+    {
+        "ok": "bool",
+        "error": NotRequired["str"],
+        "profiles": NotRequired["list[TCProfile]"],
+        "answers": "list[QuestionAnswer]",
+        "hasMore": "bool",
+        "nextId": "int",
+    },
+)
+
+
+PinToggleResponse = TypedDict(
+    "PinToggleResponse",
+    {
+        "ok": "bool",
+        "error": NotRequired["str"],
+        "profiles": NotRequired["list[TCProfile]"],
+        "status": "bool",
+    },
+)
+
+
+BumpQuestionResponse = TypedDict(
+    "BumpQuestionResponse",
+    {
+        "ok": "bool",
+        "error": NotRequired["str"],
+        "profiles": NotRequired["list[TCProfile]"],
+        "expireTime": "int",
+    },
+)
+
+
+GetResponseResponse = TypedDict(
+    "GetResponseResponse",
+    {
+        "ok": "bool",
+        "error": NotRequired["str"],
+        "profiles": NotRequired["list[TCProfile]"],
+        "questionId": "int",
+        "text": "str",
+        "convoHeaderId": NotRequired["int"],
     },
 )
 
