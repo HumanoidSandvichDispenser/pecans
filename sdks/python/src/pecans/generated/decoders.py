@@ -63,7 +63,7 @@ def decodeQuestionMetadata(raw: Any) -> QuestionMetadata:
         "newReplyCount": raw.get("nr"),
         "expireTime": raw.get("it"),
         "creationTime": raw.get("at"),
-        "isPinned": raw.get("p"),
+        "isPublic": raw.get("p"),
         "questionType": raw.get("t"),
     }
 

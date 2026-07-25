@@ -41,8 +41,8 @@ model QuestionMetadata {
   /** Unix time at which the question was asked. */
   @encodedName("application/json", "at") creationTime: safeint;
 
-  /** Whether the question is pinned to the user's profile. */
-  @encodedName("application/json", "p") isPinned: boolean;
+  /** Whether the question was asked publicly (non-anonymously). */
+  @encodedName("application/json", "p") isPublic: boolean;
 
   /** Whether this is a free-text question or a poll. */
   @encodedName("application/json", "t") questionType: "text" | "poll";

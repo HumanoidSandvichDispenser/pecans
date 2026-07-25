@@ -594,7 +594,7 @@ QuestionMetadata = TypedDict(
         "newReplyCount": "int",
         "expireTime": "int",
         "creationTime": "int",
-        "isPinned": "bool",
+        "isPublic": "bool",
         "questionType": "str",
     },
 )

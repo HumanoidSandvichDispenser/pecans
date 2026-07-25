@@ -58,7 +58,7 @@ export function decodeQuestionMetadata(raw: any): QuestionMetadata {
         newReplyCount: raw["nr"],
         expireTime: raw["it"],
         creationTime: raw["at"],
-        isPinned: raw["p"],
+        isPublic: raw["p"],
         questionType: raw["t"],
     };
 }

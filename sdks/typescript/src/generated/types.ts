@@ -527,9 +527,9 @@ export interface QuestionMetadata {
      */
     creationTime: number;
     /**
-     * Whether the question is pinned to the user's profile.
+     * Whether the question was asked publicly (non-anonymously).
      */
-    isPinned: boolean;
+    isPublic: boolean;
     /**
      * Whether this is a free-text question or a poll.
      */
@@ -605,9 +605,9 @@ export interface QuestionMetadata1 {
      */
     creationTime: number;
     /**
-     * Whether the question is pinned to the user's profile.
+     * Whether the question was asked publicly (non-anonymously).
      */
-    isPinned: boolean;
+    isPublic: boolean;
     /**
      * Whether this is a free-text question or a poll.
      */
