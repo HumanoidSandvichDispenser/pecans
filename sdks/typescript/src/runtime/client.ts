@@ -22,6 +22,8 @@ export abstract class BaseClient {
 
     public profileCache: { [key: string]: TCProfile } = {};
 
+    public baseUri: string = BaseClient.BASE_URI;
+
     public authToken?: string;
 
     public agent?: string = "pecans";
@@ -76,7 +78,7 @@ export abstract class BaseClient {
             headers["Cookie"] = "tc_auth_v3=" + this.authToken;
         }
 
-        const res = await fetch(BaseClient.BASE_URI, {
+        const res = await fetch(this.baseUri, {
             method: "POST",
             headers,
             body: JSON.stringify({ auth: this.authToken, requests }),

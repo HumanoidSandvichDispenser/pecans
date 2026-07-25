@@ -37,6 +37,7 @@ class BaseClient:
 
     def __init__(self, auth: str | None = None) -> None:
         self.auth_token = auth
+        self.base_uri = BaseClient.BASE_URI
         self.agent = "pecans"
         self.should_trim_errors = True
         self.profile_cache: dict[str, Any] = {}
@@ -148,7 +149,7 @@ class BaseClient:
         }
 
         async with httpx.AsyncClient() as http:
-            res = await http.post(BaseClient.BASE_URI, headers=headers, json=body)
+            res = await http.post(self.base_uri, headers=headers, json=body)
 
         res.raise_for_status()
 
