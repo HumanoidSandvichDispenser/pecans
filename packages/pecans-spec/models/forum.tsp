@@ -69,12 +69,8 @@ model ViewPostsResponse extends TCResponse {
 }
 
 model ForumSearchResult {
-  id: safeint;
-  author: string;
-  text: string;
-  time: safeint;
-  category: string;
-  thread: safeint;
+  post: ThreadListPost;
+  threadTitle: string;
 }
 
 model ForumSearchResponse extends TCResponse {

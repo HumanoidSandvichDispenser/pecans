@@ -151,12 +151,8 @@ ViewPostsResponse = TypedDict(
 ForumSearchResult = TypedDict(
     "ForumSearchResult",
     {
-        "id": "int",
-        "author": "str",
-        "text": "str",
-        "time": "int",
-        "category": "str",
-        "thread": "int",
+        "post": "ThreadListPost",
+        "threadTitle": "str",
     },
 )
 

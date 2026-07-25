@@ -388,12 +388,8 @@ export interface ViewThread {
     locked: boolean;
 }
 export interface ForumSearchResult {
-    id: number;
-    author: string;
-    text: string;
-    time: number;
-    category: string;
-    thread: number;
+    post: ThreadListPost;
+    threadTitle: string;
 }
 export interface FeedItemBase {
     id: number;
