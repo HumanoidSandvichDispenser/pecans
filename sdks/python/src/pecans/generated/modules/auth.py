@@ -12,11 +12,11 @@ class AuthModule(Module):
             MethodCall(
                 fn="auth.login",
                 payload={
-                    "nameOrEmail": username,
-                    "password": password,
-                    "client": client,
-                },
-            ),
+                "nameOrEmail": username,
+                "password": password,
+                "client": client,
+            },
+            )
         )
 
     def existingCookie(self, cookie: str) -> Call[ExistingCookieResponse]:
@@ -25,7 +25,7 @@ class AuthModule(Module):
             MethodCall(
                 fn="auth.existingcookie",
                 payload={
-                    "cookie": cookie,
-                },
-            ),
+                "cookie": cookie,
+            },
+            )
         )

@@ -21,11 +21,11 @@ class DrawingModule(Module):
             MethodCall(
                 fn="legacy.drawing",
                 payload={
-                    "data": data,
-                    "makeActive": makeActive,
-                    "action": "save",
-                },
-            ),
+                "data": data,
+                "makeActive": makeActive,
+                "action": "save",
+            },
+            )
         )
 
     def viewDrawingData(self, imageId: str) -> Call[ViewDrawingDataResponse]:
@@ -42,10 +42,10 @@ class DrawingModule(Module):
             MethodCall(
                 fn="legacy.drawing",
                 payload={
-                    "imageId": imageId,
-                    "action": "initial-image-data",
-                },
-            ),
+                "imageId": imageId,
+                "action": "initial-image-data",
+            },
+            )
         )
 
     def sendDrawing(self, imageId: str, receiver: str) -> Call[TCResponse]:
@@ -60,10 +60,10 @@ class DrawingModule(Module):
             MethodCall(
                 fn="drawing.send",
                 payload={
-                    "imageId": imageId,
-                    "receiver": receiver,
-                },
-            ),
+                "imageId": imageId,
+                "receiver": receiver,
+            },
+            )
         )
 
     def setActive(self, imageId: str) -> Call[TCResponse]:
@@ -77,7 +77,7 @@ class DrawingModule(Module):
             MethodCall(
                 fn="drawing.setactive",
                 payload={
-                    "imageId": imageId,
-                },
-            ),
+                "imageId": imageId,
+            },
+            )
         )

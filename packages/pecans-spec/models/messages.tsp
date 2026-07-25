@@ -53,6 +53,12 @@ model FolderViewResponse extends TCResponse {
 model MessageViewResponse extends TCResponse {
   messages: Message[];
   header: MessageThreadHeader;
+
+  /**
+   * Whether older pages exist beyond this one. Page 1 holds the most recent
+   * messages; higher page numbers are progressively older.
+   */
+  hasMore: boolean;
 }
 
 model FolderListResponse extends TCResponse {

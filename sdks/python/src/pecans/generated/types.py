@@ -360,6 +360,7 @@ MessageViewResponse = TypedDict(
         "profiles": NotRequired["list[TCProfile]"],
         "messages": "list[Message]",
         "header": "MessageThreadHeader",
+        "hasMore": "bool",
     },
 )
 
