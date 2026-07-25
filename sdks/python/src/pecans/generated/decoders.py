@@ -3,7 +3,16 @@ from __future__ import annotations
 
 from typing import Any
 
-from .types import AnswersResponse, BumpQuestionResponse, ListDataResponse, QuestionAnswer, QuestionMetadata, QuestionText, QuestionTextResponse, ViewQuestionResponse
+from .types import (
+    AnswersResponse,
+    BumpQuestionResponse,
+    ListDataResponse,
+    QuestionAnswer,
+    QuestionMetadata,
+    QuestionText,
+    QuestionTextResponse,
+    ViewQuestionResponse,
+)
 
 
 def decodeAnswersResponse(raw: Any) -> AnswersResponse:

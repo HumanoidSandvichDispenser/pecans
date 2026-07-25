@@ -823,6 +823,47 @@ DashboardQuestion = TypedDict(
 )
 
 
+DashboardForumCategory = TypedDict(
+    "DashboardForumCategory",
+    {
+        "key": "str",
+        "name": "str",
+        "url": "str",
+    },
+)
+
+
+DashboardForumThread = TypedDict(
+    "DashboardForumThread",
+    {
+        "name": "str",
+        "url": "str",
+    },
+)
+
+
+DashboardForumPost = TypedDict(
+    "DashboardForumPost",
+    {
+        "id": "int",
+        "preview": "str",
+        "url": "str",
+        "user": "str",
+        "thread": "DashboardForumThread",
+        "category": "DashboardForumCategory",
+    },
+)
+
+
+DashboardPointlessNums = TypedDict(
+    "DashboardPointlessNums",
+    {
+        "usersRegistered": "int",
+        "questionsAndAnswers": "int",
+    },
+)
+
+
 DashboardResponse = TypedDict(
     "DashboardResponse",
     {
@@ -830,6 +871,8 @@ DashboardResponse = TypedDict(
         "error": NotRequired["str"],
         "profiles": NotRequired["list[TCProfile]"],
         "recentQuestions": "list[DashboardQuestion]",
+        "recentForumPosts": "list[DashboardForumPost]",
+        "pointlessNums": "DashboardPointlessNums",
     },
 )
 

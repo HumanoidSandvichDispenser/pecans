@@ -8,7 +8,7 @@ export class NotifyModule extends Module {
         return new Call<NotifySyncResponse>(this.client, {
             fn: "notify.sync",
             payload: {
-                "feature": feature,
+                feature: feature,
             },
         });
     }
@@ -17,7 +17,7 @@ export class NotifyModule extends Module {
         return new Call<WhosOnlineResponse>(this.client, {
             fn: "notify.whosonline",
             payload: {
-                "feature": feature,
+                feature: feature,
             },
         });
     }
@@ -31,7 +31,7 @@ export class NotifyModule extends Module {
         return new Call<TCResponse>(this.client, {
             fn: "notify.activity",
             payload: {
-                "url": url,
+                url: url,
             },
         });
     }

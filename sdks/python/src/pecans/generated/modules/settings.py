@@ -17,10 +17,12 @@ class SettingsModule(Module):
             MethodCall(
                 fn="legacy.settingsget",
                 payload={},
-            )
+            ),
         )
 
-    def set(self, email: str, msgNotify: bool, msgHideAnon: bool, pwOld: str = "", pwNew: str = "") -> Call[TCResponse]:
+    def set(
+        self, email: str, msgNotify: bool, msgHideAnon: bool, pwOld: str = "", pwNew: str = ""
+    ) -> Call[TCResponse]:
         """Save account settings. Sends the full settings each time, so pass the current
         values for anything you're not changing. Leave the password fields empty to
         keep the current password.
@@ -37,12 +39,12 @@ class SettingsModule(Module):
             MethodCall(
                 fn="legacy.settingsset",
                 payload={
-                "email": email,
-                "msgNotify": msgNotify,
-                "msgHideAnon": msgHideAnon,
-                "pwOld": pwOld,
-                "pwNew1": pwNew,
-                "pwNew2": pwNew,
-            },
-            )
+                    "email": email,
+                    "msgNotify": msgNotify,
+                    "msgHideAnon": msgHideAnon,
+                    "pwOld": pwOld,
+                    "pwNew1": pwNew,
+                    "pwNew2": pwNew,
+                },
+            ),
         )

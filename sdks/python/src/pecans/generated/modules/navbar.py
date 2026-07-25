@@ -17,5 +17,5 @@ class NavbarModule(Module):
             MethodCall(
                 fn="navbar.get",
                 payload={},
-            )
+            ),
         )

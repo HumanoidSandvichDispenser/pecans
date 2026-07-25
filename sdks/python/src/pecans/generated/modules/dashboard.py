@@ -17,5 +17,5 @@ class DashboardModule(Module):
             MethodCall(
                 fn="legacy.dashboard",
                 payload={},
-            )
+            ),
         )

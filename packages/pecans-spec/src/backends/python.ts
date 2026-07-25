@@ -206,9 +206,7 @@ function payloadLiteral(op: IrModule["ops"][number]): string {
 
 function zipMethod(mod: IrModule, op: IrModule["ops"][number]): string {
     const z = op.zip!;
-    const combine = z.fields
-        .map((f) => `${JSON.stringify(f.name)}: ${zipSource(f)}`)
-        .join(", ");
+    const combine = z.fields.map((f) => `${JSON.stringify(f.name)}: ${zipSource(f)}`).join(", ");
 
     return `    async def ${op.method}(${signature(mod, op)}) -> list[${z.element}]:
 ${docstring(op)}        res = await self.${z.callMethod}([x[${JSON.stringify(z.project)}] for x in ${z.input}])

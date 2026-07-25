@@ -5,8 +5,26 @@ import json
 
 from ...runtime import Call, MethodCall, Module
 from ...runtime.join import join_by
-from ..types import AnswersResponse, BumpQuestionResponse, GetResponseResponse, ListDataResponse, PinToggleResponse, PostQuestionBody, QuestionData, QuestionMetadata, QuestionTextResponse, TCResponse, ViewQuestionResponse
-from ..decoders import decodeAnswersResponse, decodeBumpQuestionResponse, decodeListDataResponse, decodeQuestionTextResponse, decodeViewQuestionResponse
+from ..types import (
+    AnswersResponse,
+    BumpQuestionResponse,
+    GetResponseResponse,
+    ListDataResponse,
+    PinToggleResponse,
+    PostQuestionBody,
+    QuestionData,
+    QuestionMetadata,
+    QuestionTextResponse,
+    TCResponse,
+    ViewQuestionResponse,
+)
+from ..decoders import (
+    decodeAnswersResponse,
+    decodeBumpQuestionResponse,
+    decodeListDataResponse,
+    decodeQuestionTextResponse,
+    decodeViewQuestionResponse,
+)
 
 
 class AskModule(Module):
@@ -21,13 +39,13 @@ class AskModule(Module):
             MethodCall(
                 fn="legacy.askapi",
                 payload={
-                "rawEmbeddedJsonLolInternalTechDebt": json.dumps(body, separators=(",", ":")),
-                "name": "postquestion",
-                "arg1": "undefined",
-                "arg2": "undefined",
-                "arg3": "undefined",
-            },
-            )
+                    "rawEmbeddedJsonLolInternalTechDebt": json.dumps(body, separators=(",", ":")),
+                    "name": "postquestion",
+                    "arg1": "undefined",
+                    "arg2": "undefined",
+                    "arg3": "undefined",
+                },
+            ),
         )
 
     def viewQuestion(self, questionId: int) -> Call[ViewQuestionResponse]:
@@ -41,8 +59,8 @@ class AskModule(Module):
             MethodCall(
                 fn="ask.viewquestion",
                 payload={
-                "questionId": questionId,
-            },
+                    "questionId": questionId,
+                },
             ),
             decodeViewQuestionResponse,
         )
@@ -58,12 +76,14 @@ class AskModule(Module):
             MethodCall(
                 fn="ask.getresponse",
                 payload={
-                "answerId": answerId,
-            },
-            )
+                    "answerId": answerId,
+                },
+            ),
         )
 
-    def startConversation(self, answerId: int, content: str, unanonymize: bool = False) -> Call[TCResponse]:
+    def startConversation(
+        self, answerId: int, content: str, unanonymize: bool = False
+    ) -> Call[TCResponse]:
         """Start a conversation ("respectful rebuttal") in reply to an answer.
 
         Args:
@@ -76,11 +96,11 @@ class AskModule(Module):
             MethodCall(
                 fn="ask.startconversation",
                 payload={
-                "answerId": answerId,
-                "content": content,
-                "unanonymize": unanonymize,
-            },
-            )
+                    "answerId": answerId,
+                    "content": content,
+                    "unanonymize": unanonymize,
+                },
+            ),
         )
 
     def getAnswers(self, questionId: int, mode: str, refId: int) -> Call[AnswersResponse]:
@@ -96,12 +116,12 @@ class AskModule(Module):
             MethodCall(
                 fn="legacy.askapi",
                 payload={
-                "arg1": str(questionId),
-                "arg2": mode,
-                "arg3": str(refId),
-                "rawEmbeddedJsonLolInternalTechDebt": None,
-                "name": "getanswers",
-            },
+                    "arg1": str(questionId),
+                    "arg2": mode,
+                    "arg3": str(refId),
+                    "rawEmbeddedJsonLolInternalTechDebt": None,
+                    "name": "getanswers",
+                },
             ),
             decodeAnswersResponse,
         )
@@ -118,13 +138,13 @@ class AskModule(Module):
             MethodCall(
                 fn="legacy.askapi",
                 payload={
-                "arg1": str(questionId),
-                "arg2": ("1" if pinned else "0"),
-                "rawEmbeddedJsonLolInternalTechDebt": None,
-                "name": "pintoggle",
-                "arg3": "0",
-            },
-            )
+                    "arg1": str(questionId),
+                    "arg2": ("1" if pinned else "0"),
+                    "rawEmbeddedJsonLolInternalTechDebt": None,
+                    "name": "pintoggle",
+                    "arg3": "0",
+                },
+            ),
         )
 
     def bumpQuestion(self, questionId: int) -> Call[BumpQuestionResponse]:
@@ -138,12 +158,12 @@ class AskModule(Module):
             MethodCall(
                 fn="legacy.askapi",
                 payload={
-                "arg1": str(questionId),
-                "arg2": "0",
-                "arg3": "0",
-                "rawEmbeddedJsonLolInternalTechDebt": None,
-                "name": "bumpquestion",
-            },
+                    "arg1": str(questionId),
+                    "arg2": "0",
+                    "arg3": "0",
+                    "rawEmbeddedJsonLolInternalTechDebt": None,
+                    "name": "bumpquestion",
+                },
             ),
             decodeBumpQuestionResponse,
         )
@@ -159,13 +179,13 @@ class AskModule(Module):
             MethodCall(
                 fn="legacy.askapi",
                 payload={
-                "arg1": str(questionId),
-                "arg2": "0",
-                "arg3": "0",
-                "rawEmbeddedJsonLolInternalTechDebt": None,
-                "name": "deleteques",
-            },
-            )
+                    "arg1": str(questionId),
+                    "arg2": "0",
+                    "arg3": "0",
+                    "rawEmbeddedJsonLolInternalTechDebt": None,
+                    "name": "deleteques",
+                },
+            ),
         )
 
     def deleteAnswer(self, answerId: int) -> Call[TCResponse]:
@@ -179,13 +199,13 @@ class AskModule(Module):
             MethodCall(
                 fn="legacy.askapi",
                 payload={
-                "arg1": str(answerId),
-                "arg2": "0",
-                "arg3": "0",
-                "rawEmbeddedJsonLolInternalTechDebt": None,
-                "name": "deleteanswer",
-            },
-            )
+                    "arg1": str(answerId),
+                    "arg2": "0",
+                    "arg3": "0",
+                    "rawEmbeddedJsonLolInternalTechDebt": None,
+                    "name": "deleteanswer",
+                },
+            ),
         )
 
     def markAnswerRead(self, answerId: int) -> Call[TCResponse]:
@@ -199,13 +219,13 @@ class AskModule(Module):
             MethodCall(
                 fn="legacy.askapi",
                 payload={
-                "arg1": str(answerId),
-                "arg2": "0",
-                "arg3": "0",
-                "rawEmbeddedJsonLolInternalTechDebt": None,
-                "name": "markanswerread",
-            },
-            )
+                    "arg1": str(answerId),
+                    "arg2": "0",
+                    "arg3": "0",
+                    "rawEmbeddedJsonLolInternalTechDebt": None,
+                    "name": "markanswerread",
+                },
+            ),
         )
 
     def listData(self) -> Call[ListDataResponse]:
@@ -221,12 +241,12 @@ class AskModule(Module):
             MethodCall(
                 fn="legacy.askapi",
                 payload={
-                "name": "listdata",
-                "arg1": "0",
-                "arg2": "none",
-                "arg3": "0",
-                "rawEmbeddedJsonLolInternalTechDebt": None,
-            },
+                    "name": "listdata",
+                    "arg1": "0",
+                    "arg2": "none",
+                    "arg3": "0",
+                    "rawEmbeddedJsonLolInternalTechDebt": None,
+                },
             ),
             decodeListDataResponse,
         )
@@ -245,12 +265,12 @@ class AskModule(Module):
             MethodCall(
                 fn="legacy.askapi",
                 payload={
-                "arg1": "x".join(str(v) for v in ids),
-                "name": "qtext",
-                "arg2": "0",
-                "arg3": "0",
-                "rawEmbeddedJsonLolInternalTechDebt": None,
-            },
+                    "arg1": "x".join(str(v) for v in ids),
+                    "name": "qtext",
+                    "arg2": "0",
+                    "arg3": "0",
+                    "rawEmbeddedJsonLolInternalTechDebt": None,
+                },
             ),
             decodeQuestionTextResponse,
         )

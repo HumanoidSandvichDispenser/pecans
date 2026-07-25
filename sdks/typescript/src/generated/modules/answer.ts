@@ -15,8 +15,8 @@ export class AnswerModule extends Module {
         return new Call<TCResponse>(this.client, {
             fn: "answer.dismissquestion",
             payload: {
-                "questionId": questionId,
-                "action": action,
+                questionId: questionId,
+                action: action,
             },
         });
     }
@@ -25,8 +25,8 @@ export class AnswerModule extends Module {
         return new Call<TCResponse>(this.client, {
             fn: "answer.pollvote",
             payload: {
-                "questionId": questionId,
-                "optionNum": optionNum,
+                questionId: questionId,
+                optionNum: optionNum,
             },
         });
     }
@@ -35,7 +35,7 @@ export class AnswerModule extends Module {
         return new Call<AnswerQuestion>(this.client, {
             fn: "answer.queuequestion",
             payload: {
-                "questionId": questionId,
+                questionId: questionId,
             },
         });
     }
@@ -44,8 +44,8 @@ export class AnswerModule extends Module {
         return new Call<AnswerReplyResponse>(this.client, {
             fn: "answer.reply",
             payload: {
-                "questionId": questionId,
-                "text": text,
+                questionId: questionId,
+                text: text,
             },
         });
     }

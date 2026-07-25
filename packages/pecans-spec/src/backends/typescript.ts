@@ -303,9 +303,7 @@ ${lines.join("\n")}
             imports.push(`import { ${decoders.join(", ")} } from "../decoders";`);
         }
 
-        const methods = mod.ops
-            .map((op) => (op.zip ? zipMethod(op) : callMethod(op)))
-            .join("\n\n");
+        const methods = mod.ops.map((op) => (op.zip ? zipMethod(op) : callMethod(op))).join("\n\n");
 
         return `${BANNER}${imports.join("\n")}
 

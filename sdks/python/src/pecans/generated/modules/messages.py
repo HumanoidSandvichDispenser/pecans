@@ -12,24 +12,30 @@ class MessagesModule(Module):
             MethodCall(
                 fn="messages.folderview",
                 payload={
-                "folder": folder,
-                "page": page,
-            },
-            )
+                    "folder": folder,
+                    "page": page,
+                },
+            ),
         )
 
-    def view(self, conversationId: str, includeHeader: bool = True, markAsRead: bool = True, page: int = 1) -> Call[MessageViewResponse]:
+    def view(
+        self,
+        conversationId: str,
+        includeHeader: bool = True,
+        markAsRead: bool = True,
+        page: int = 1,
+    ) -> Call[MessageViewResponse]:
         return Call(
             self.client,
             MethodCall(
                 fn="messages.view",
                 payload={
-                "conversationId": conversationId,
-                "includeHeader": includeHeader,
-                "markAsRead": markAsRead,
-                "page": page,
-            },
-            )
+                    "conversationId": conversationId,
+                    "includeHeader": includeHeader,
+                    "markAsRead": markAsRead,
+                    "page": page,
+                },
+            ),
         )
 
     def reply(self, conversationId: str, text: str, unanonymize: bool = False) -> Call[TCResponse]:
@@ -38,11 +44,11 @@ class MessagesModule(Module):
             MethodCall(
                 fn="messages.reply",
                 payload={
-                "conversationId": conversationId,
-                "text": text,
-                "unanonymize": unanonymize,
-            },
-            )
+                    "conversationId": conversationId,
+                    "text": text,
+                    "unanonymize": unanonymize,
+                },
+            ),
         )
 
     def folderList(self) -> Call[FolderListResponse]:
@@ -51,7 +57,7 @@ class MessagesModule(Module):
             MethodCall(
                 fn="messages.folderlist",
                 payload={},
-            )
+            ),
         )
 
     def startConversation(self, title: str, body: str, recipients: list[str]) -> Call[TCResponse]:
@@ -67,11 +73,11 @@ class MessagesModule(Module):
             MethodCall(
                 fn="messages.startconversation",
                 payload={
-                "title": title,
-                "body": body,
-                "recipients": recipients,
-            },
-            )
+                    "title": title,
+                    "body": body,
+                    "recipients": recipients,
+                },
+            ),
         )
 
     def delete(self, conversationId: str) -> Call[TCResponse]:
@@ -85,9 +91,9 @@ class MessagesModule(Module):
             MethodCall(
                 fn="messages.delete",
                 payload={
-                "conversationId": conversationId,
-            },
-            )
+                    "conversationId": conversationId,
+                },
+            ),
         )
 
     def moveToFolder(self, conversationId: str, folder: str) -> Call[TCResponse]:
@@ -102,8 +108,8 @@ class MessagesModule(Module):
             MethodCall(
                 fn="messages.movetofolder",
                 payload={
-                "conversationId": conversationId,
-                "folder": folder,
-            },
-            )
+                    "conversationId": conversationId,
+                    "folder": folder,
+                },
+            ),
         )

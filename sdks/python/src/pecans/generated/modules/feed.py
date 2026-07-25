@@ -21,10 +21,10 @@ class FeedModule(Module):
             MethodCall(
                 fn="feed.start",
                 payload={
-                "user": user,
-                "size": size,
-            },
-            )
+                    "user": user,
+                    "size": size,
+                },
+            ),
         )
 
     def scroll(self, feedId: str, numItems: int, lastId: int) -> Call[FeedScrollResponse]:
@@ -43,9 +43,9 @@ class FeedModule(Module):
             MethodCall(
                 fn="feed.scroll",
                 payload={
-                "feedId": feedId,
-                "numItems": numItems,
-                "lastId": lastId,
-            },
-            )
+                    "feedId": feedId,
+                    "numItems": numItems,
+                    "lastId": lastId,
+                },
+            ),
         )

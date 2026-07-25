@@ -38,7 +38,10 @@ export async function emit(ir: IrProgram, backend: Backend): Promise<void> {
     }
 
     for (const mod of ir.modules) {
-        files.push({ path: `modules/${mod.name}.${backend.ext}`, content: backend.renderModule(mod, ir) });
+        files.push({
+            path: `modules/${mod.name}.${backend.ext}`,
+            content: backend.renderModule(mod, ir),
+        });
     }
 
     if (backend.extraFiles) {

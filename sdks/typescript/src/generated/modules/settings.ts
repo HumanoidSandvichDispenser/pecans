@@ -26,16 +26,22 @@ export class SettingsModule extends Module {
      * @param pwOld - Current password, required only when changing it.
      * @param pwNew - New password, when changing it.
      */
-    public set(email: string, msgNotify: boolean, msgHideAnon: boolean, pwOld: string = "", pwNew: string = ""): Call<TCResponse> {
+    public set(
+        email: string,
+        msgNotify: boolean,
+        msgHideAnon: boolean,
+        pwOld: string = "",
+        pwNew: string = "",
+    ): Call<TCResponse> {
         return new Call<TCResponse>(this.client, {
             fn: "legacy.settingsset",
             payload: {
-                "email": email,
-                "msgNotify": msgNotify,
-                "msgHideAnon": msgHideAnon,
-                "pwOld": pwOld,
-                "pwNew1": pwNew,
-                "pwNew2": pwNew,
+                email: email,
+                msgNotify: msgNotify,
+                msgHideAnon: msgHideAnon,
+                pwOld: pwOld,
+                pwNew1: pwNew,
+                pwNew2: pwNew,
             },
         });
     }
