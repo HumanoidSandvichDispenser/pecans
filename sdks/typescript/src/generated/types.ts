@@ -376,7 +376,7 @@ export interface TCUser {
     anon?: boolean;
 }
 /**
- * An RGB color, normalized from whatever encoded form the wire uses.
+ * An RGB color, normalized from whatever encoded form the Twocans API uses.
  */
 export interface Rgb {
     r: number;
@@ -883,7 +883,7 @@ export interface StoryLine {
     color: Rgb1;
 }
 /**
- * An RGB color, normalized from whatever encoded form the wire uses.
+ * An RGB color, normalized from whatever encoded form the Twocans API uses.
  */
 export interface Rgb1 {
     r: number;

@@ -136,4 +136,31 @@ export class ForumModule extends Module {
             },
         });
     }
+
+    /**
+     * Flag a post for mod attention.
+     *
+     * @param postId - Id of the post being flagged.
+     * @param comment - Reason the post is being flagged.
+     */
+    public flagPost(postId: number, comment: string): Call<TCResponse> {
+        return new Call<TCResponse>(this.client, {
+            fn: "forum.flagpost",
+            payload: {
+                postId: postId,
+                comment: comment,
+            },
+        });
+    }
+
+    /**
+     * Mark every thread as read, clearing all new-post indicators. This is
+     * irreversible and sets `ForumCategory.newThreads` to 0 for every category.
+     */
+    public readAll(): Call<TCResponse> {
+        return new Call<TCResponse>(this.client, {
+            fn: "forum.readall",
+            payload: {},
+        });
+    }
 }

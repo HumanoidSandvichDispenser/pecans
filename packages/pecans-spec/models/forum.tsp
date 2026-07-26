@@ -147,4 +147,20 @@ interface Forum {
    */
   @rpc("forum.followthread")
   followThread(threadId: safeint, follow: boolean): TCResponse;
+
+  /**
+   * Flag a post for mod attention.
+   *
+   * @param postId Id of the post being flagged.
+   * @param comment Reason the post is being flagged.
+   */
+  @rpc("forum.flagpost")
+  flagPost(postId: safeint, comment: string): TCResponse;
+
+  /**
+   * Mark every thread as read, clearing all new-post indicators. This is
+   * irreversible and sets `ForumCategory.newThreads` to 0 for every category.
+   */
+  @rpc("forum.readall")
+  readAll(): TCResponse;
 }

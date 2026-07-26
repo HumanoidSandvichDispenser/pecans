@@ -164,3 +164,33 @@ class ForumModule(Module):
                 },
             ),
         )
+
+    def flagPost(self, postId: int, comment: str) -> Call[TCResponse]:
+        """Flag a post for mod attention.
+
+        Args:
+            postId: Id of the post being flagged.
+            comment: Reason the post is being flagged.
+        """
+        return Call(
+            self.client,
+            MethodCall(
+                fn="forum.flagpost",
+                payload={
+                    "postId": postId,
+                    "comment": comment,
+                },
+            ),
+        )
+
+    def readAll(self) -> Call[TCResponse]:
+        """Mark every thread as read, clearing all new-post indicators. This is
+        irreversible and sets `ForumCategory.newThreads` to 0 for every category.
+        """
+        return Call(
+            self.client,
+            MethodCall(
+                fn="forum.readall",
+                payload={},
+            ),
+        )
