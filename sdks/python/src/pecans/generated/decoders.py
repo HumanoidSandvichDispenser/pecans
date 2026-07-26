@@ -11,8 +11,13 @@ from .types import (
     QuestionMetadata,
     QuestionText,
     QuestionTextResponse,
+    StoriesViewListResponse,
+    Story,
+    StoryLine,
+    StoryText,
     ViewQuestionResponse,
 )
+from ..runtime.transform import tuple_unpack
 
 
 def decodeAnswersResponse(raw: Any) -> AnswersResponse:
@@ -81,6 +86,40 @@ def decodeQuestionTextResponse(raw: Any) -> QuestionTextResponse:
         "error": raw.get("error"),
         "profiles": raw.get("profiles"),
         "questions": [decodeQuestionText(x) for x in raw.get("questions") or []],
+    }
+
+
+def decodeStoriesViewListResponse(raw: Any) -> StoriesViewListResponse:
+    return {
+        "ok": raw.get("ok"),
+        "error": raw.get("error"),
+        "profiles": raw.get("profiles"),
+        "stories": [decodeStory(x) for x in raw.get("stories") or []],
+    }
+
+
+def decodeStory(raw: Any) -> Story:
+    return {
+        "userId": raw.get("userId"),
+        "background": raw.get("background"),
+        "text": None if raw.get("text") is None else decodeStoryText(raw.get("text")),
+    }
+
+
+def decodeStoryLine(raw: Any) -> StoryLine:
+    return {
+        "value": raw.get("value"),
+        "color": None
+        if raw.get("color") is None
+        else tuple_unpack(raw.get("color"), ["r", "g", "b"]),
+    }
+
+
+def decodeStoryText(raw: Any) -> StoryText:
+    return {
+        "top": None if raw.get("top") is None else decodeStoryLine(raw.get("top")),
+        "middle": None if raw.get("middle") is None else decodeStoryLine(raw.get("middle")),
+        "bottom": None if raw.get("bottom") is None else decodeStoryLine(raw.get("bottom")),
     }
 
 

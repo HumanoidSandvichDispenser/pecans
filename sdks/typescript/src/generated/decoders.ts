@@ -7,8 +7,13 @@ import {
     QuestionMetadata,
     QuestionText,
     QuestionTextResponse,
+    StoriesViewListResponse,
+    Story,
+    StoryLine,
+    StoryText,
     ViewQuestionResponse,
 } from "./types";
+import { tupleUnpack } from "../runtime/transform";
 
 export function decodeAnswersResponse(raw: any): AnswersResponse {
     return {
@@ -76,6 +81,38 @@ export function decodeQuestionTextResponse(raw: any): QuestionTextResponse {
         error: raw["error"],
         profiles: raw["profiles"],
         questions: (raw["questions"] ?? []).map(decodeQuestionText),
+    };
+}
+
+export function decodeStoriesViewListResponse(raw: any): StoriesViewListResponse {
+    return {
+        ok: raw["ok"],
+        error: raw["error"],
+        profiles: raw["profiles"],
+        stories: (raw["stories"] ?? []).map(decodeStory),
+    };
+}
+
+export function decodeStory(raw: any): Story {
+    return {
+        userId: raw["userId"],
+        background: raw["background"],
+        text: raw["text"] == null ? raw["text"] : decodeStoryText(raw["text"]),
+    };
+}
+
+export function decodeStoryLine(raw: any): StoryLine {
+    return {
+        value: raw["value"],
+        color: raw["color"] == null ? raw["color"] : tupleUnpack(raw["color"], ["r", "g", "b"]),
+    };
+}
+
+export function decodeStoryText(raw: any): StoryText {
+    return {
+        top: raw["top"] == null ? raw["top"] : decodeStoryLine(raw["top"]),
+        middle: raw["middle"] == null ? raw["middle"] : decodeStoryLine(raw["middle"]),
+        bottom: raw["bottom"] == null ? raw["bottom"] : decodeStoryLine(raw["bottom"]),
     };
 }
 

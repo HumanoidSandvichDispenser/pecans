@@ -16,6 +16,7 @@ import "./models/qa.tsp";
 import "./models/navbar.tsp";
 import "./models/dashboard.tsp";
 import "./models/settings.tsp";
+import "./models/stories.tsp";
 
 using TypeSpec.JsonSchema;
 

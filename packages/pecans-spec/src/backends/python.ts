@@ -1,6 +1,14 @@
 import { join } from "node:path";
 import type { Backend, GenFile } from "../emit";
-import type { IrEnum, IrModule, IrProgram, IrType, IrZipField } from "../ir";
+import type {
+    IrEnum,
+    IrModule,
+    IrProgram,
+    IrTransform,
+    IrTransformPrimitive,
+    IrType,
+    IrZipField,
+} from "../ir";
 
 const ROOT = join(import.meta.dir, "../../../..");
 const OUT = join(ROOT, "sdks/python/src/pecans/generated");
@@ -90,6 +98,53 @@ function decodeName(model: string): string {
     return `decode${model}`;
 }
 
+function encodeName(model: string): string {
+    return `encode${model}`;
+}
+
+/** Args literal for a transform primitive (the bitfield components / tuple fields). */
+function transformArgs(p: IrTransformPrimitive): string {
+    return pyLiteral(p.kind === "bitfield" ? p.components : p.fields);
+}
+
+/** Wire value -> struct, using the transform's decode primitive. */
+function unpackExpr(t: IrTransform, value: string): string {
+    const p = t.decode;
+    const fn = p.kind === "bitfield" ? "bitfield_unpack" : "tuple_unpack";
+    return `${fn}(${value}, ${transformArgs(p)})`;
+}
+
+/** Struct -> wire value, using the transform's encode primitive. */
+function packExpr(t: IrTransform, value: string): string {
+    const p = t.encode;
+    const fn = p.kind === "bitfield" ? "bitfield_pack" : "tuple_pack";
+    return `${fn}(${value}, ${transformArgs(p)})`;
+}
+
+/** Runtime transform helpers referenced anywhere in the generated converters. */
+function transformHelpers(ir: IrProgram, encode: boolean): string[] {
+    const used = new Set<string>();
+    const fields = encode
+        ? ir.encoders.flatMap((e) => e.fields)
+        : ir.decoders.flatMap((d) => d.fields);
+
+    for (const f of fields) {
+        if (!f.transform) {
+            continue;
+        }
+
+        const p = encode ? f.transform.encode : f.transform.decode;
+
+        if (p.kind === "bitfield") {
+            used.add(encode ? "bitfield_pack" : "bitfield_unpack");
+        } else {
+            used.add(encode ? "tuple_pack" : "tuple_unpack");
+        }
+    }
+
+    return [...used].sort();
+}
+
 function zipSource(field: IrZipField): string {
     if (field.from === "result") {
         return `r[${JSON.stringify(field.field)}]`;
@@ -168,10 +223,26 @@ function signature(mod: IrModule, op: IrModule["ops"][number]): string {
 function payloadLiteral(op: IrModule["ops"][number]): string {
     const entries: string[] = [];
 
+    // Normalize a param to its wire form: run the encoder for model params, the
+    // transform for scalar-transform params, or leave it as-is.
+    const encoded = (p: (typeof op.params)[number]): string => {
+        if (p.encodeModel) {
+            return p.encodeArray
+                ? `[${encodeName(p.encodeModel)}(x) for x in ${p.name} or []]`
+                : `None if ${p.name} is None else ${encodeName(p.encodeModel)}(${p.name})`;
+        }
+
+        if (p.transform) {
+            return `None if ${p.name} is None else ${packExpr(p.transform, p.name)}`;
+        }
+
+        return p.name;
+    };
+
     for (const p of op.params) {
         if (p.embed !== undefined) {
             entries.push(
-                `                ${JSON.stringify(p.embed)}: json.dumps(${p.name}, separators=(",", ":")),`,
+                `                ${JSON.stringify(p.embed)}: json.dumps(${encoded(p)}, separators=(",", ":")),`,
             );
             continue;
         }
@@ -183,7 +254,7 @@ function payloadLiteral(op: IrModule["ops"][number]): string {
         } else if (p.stringify) {
             value = p.type.kind === "bool" ? `("1" if ${p.name} else "0")` : `str(${p.name})`;
         } else {
-            value = p.name;
+            value = encoded(p);
         }
 
         entries.push(`                ${JSON.stringify(p.wireName)}: ${value},`);
@@ -317,7 +388,11 @@ ${blocks.join("\n\n\n")}
 
                     let expr: string;
 
-                    if (f.decodeModel && f.isArray) {
+                    if (f.transform && f.isArray) {
+                        expr = `[${unpackExpr(f.transform, "x")} for x in raw.get(${key}) or []]`;
+                    } else if (f.transform) {
+                        expr = `None if raw.get(${key}) is None else ${unpackExpr(f.transform, `raw.get(${key})`)}`;
+                    } else if (f.decodeModel && f.isArray) {
                         expr = `[${decodeName(f.decodeModel)}(x) for x in raw.get(${key}) or []]`;
                     } else if (f.decodeModel) {
                         expr = `None if raw.get(${key}) is None else ${decodeName(f.decodeModel)}(raw.get(${key}))`;
@@ -335,12 +410,67 @@ ${lines.join("\n")}
             })
             .join("\n\n\n");
 
+        const helpers = transformHelpers(ir, false);
+        const helperImport = helpers.length
+            ? `from ..runtime.transform import ${helpers.join(", ")}\n`
+            : "";
+
         return `${BANNER}from __future__ import annotations
 
 from typing import Any
 
 from .types import ${names.join(", ")}
+${helperImport}
 
+${body}
+`;
+    },
+
+    renderEncoders(ir: IrProgram): string {
+        const names = [...new Set(ir.encoders.map((e) => e.model))].sort();
+        const body = ir.encoders
+            .slice()
+            .sort((a, b) => a.model.localeCompare(b.model))
+            .map((e) => {
+                const lines = e.fields.map((f) => {
+                    const wire = JSON.stringify(f.wireName);
+                    const src = `value.get(${JSON.stringify(f.name)})`;
+
+                    let expr: string;
+
+                    if (f.transform && f.isArray) {
+                        expr = `[${packExpr(f.transform, "x")} for x in ${src} or []]`;
+                    } else if (f.transform) {
+                        expr = `None if ${src} is None else ${packExpr(f.transform, src)}`;
+                    } else if (f.encodeModel && f.isArray) {
+                        expr = `[${encodeName(f.encodeModel)}(x) for x in ${src} or []]`;
+                    } else if (f.encodeModel) {
+                        expr = `None if ${src} is None else ${encodeName(f.encodeModel)}(${src})`;
+                    } else {
+                        expr = src;
+                    }
+
+                    return `        ${wire}: ${expr},`;
+                });
+
+                return `def ${encodeName(e.model)}(value: ${e.model}) -> Any:
+    return {
+${lines.join("\n")}
+    }`;
+            })
+            .join("\n\n\n");
+
+        const helpers = transformHelpers(ir, true);
+        const helperImport = helpers.length
+            ? `from ..runtime.transform import ${helpers.join(", ")}\n`
+            : "";
+
+        return `${BANNER}from __future__ import annotations
+
+from typing import Any
+
+from .types import ${names.join(", ")}
+${helperImport}
 
 ${body}
 `;
@@ -373,6 +503,11 @@ ${body}
         if (mod.decoderModels.length > 0) {
             const decoders = mod.decoderModels.map(decodeName).sort();
             imports.push(`from ..decoders import ${decoders.join(", ")}`);
+        }
+
+        if (mod.encoderModels.length > 0) {
+            const encoders = mod.encoderModels.map(encodeName).sort();
+            imports.push(`from ..encoders import ${encoders.join(", ")}`);
         }
 
         const methods = mod.ops
@@ -424,6 +559,10 @@ ${getters}
 
         if (ir.hasDecoders) {
             lines.push("from .decoders import *  # noqa: F401,F403");
+        }
+
+        if (ir.hasEncoders) {
+            lines.push("from .encoders import *  # noqa: F401,F403");
         }
 
         lines.push("from .types import *  # noqa: F401,F403");

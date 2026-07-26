@@ -23,3 +23,9 @@ extern dec embed(target: ModelProperty, field: valueof string);
  * positional `arg1/2/3` fields are always sent as strings.
  */
 extern dec stringify(target: ModelProperty);
+
+/**
+ * Declare that this color field is transported in some encoded form, and
+ * should be normalized to/from an `Rgb` struct.
+ */
+extern dec rgb(target: ModelProperty, encode: valueof string, decode?: valueof string);

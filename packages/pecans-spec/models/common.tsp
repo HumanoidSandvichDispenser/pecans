@@ -23,3 +23,12 @@ model TCUser {
   id?: string;
   anon?: boolean;
 }
+
+/**
+ * An RGB color, normalized from whatever encoded form the Twocans API uses.
+ */
+model Rgb {
+  r: int32;
+  g: int32;
+  b: int32;
+}

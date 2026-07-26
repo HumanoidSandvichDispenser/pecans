@@ -17,6 +17,7 @@ from .modules.notify import NotifyModule
 from .modules.profile import ProfileModule
 from .modules.qa import QaModule
 from .modules.settings import SettingsModule
+from .modules.stories import StoriesModule
 
 
 class Client(BaseClient):
@@ -38,6 +39,7 @@ class Client(BaseClient):
         self._profile = ProfileModule(self)
         self._qa = QaModule(self)
         self._settings = SettingsModule(self)
+        self._stories = StoriesModule(self)
 
     @property
     def account(self) -> AccountModule:
@@ -98,3 +100,7 @@ class Client(BaseClient):
     @property
     def settings(self) -> SettingsModule:
         return self._settings
+
+    @property
+    def stories(self) -> StoriesModule:
+        return self._stories

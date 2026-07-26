@@ -1,7 +1,7 @@
 import { compile as jsonToTs } from "json-schema-to-typescript";
 import { join } from "node:path";
 import type { Backend } from "../emit";
-import type { IrModule, IrProgram, IrType, IrZipField } from "../ir";
+import type { IrModule, IrProgram, IrTransform, IrTransformPrimitive, IrType, IrZipField } from "../ir";
 
 const ROOT = join(import.meta.dir, "../../../..");
 const OUT = join(ROOT, "sdks/typescript/src/generated");
@@ -41,6 +41,53 @@ function className(mod: IrModule): string {
 
 function decodeName(model: string): string {
     return `decode${model}`;
+}
+
+function encodeName(model: string): string {
+    return `encode${model}`;
+}
+
+/** Args literal for a transform primitive (the bitfield components / tuple fields). */
+function transformArgs(p: IrTransformPrimitive): string {
+    return p.kind === "bitfield" ? JSON.stringify(p.components) : JSON.stringify(p.fields);
+}
+
+/** Wire value -> struct, using the transform's decode primitive. */
+function unpackExpr(t: IrTransform, value: string): string {
+    const p = t.decode;
+    const fn = p.kind === "bitfield" ? "bitfieldUnpack" : "tupleUnpack";
+    return `${fn}(${value}, ${transformArgs(p)})`;
+}
+
+/** Struct -> wire value, using the transform's encode primitive. */
+function packExpr(t: IrTransform, value: string): string {
+    const p = t.encode;
+    const fn = p.kind === "bitfield" ? "bitfieldPack" : "tuplePack";
+    return `${fn}(${value}, ${transformArgs(p)})`;
+}
+
+/** Runtime transform helpers referenced anywhere in the generated converters. */
+function transformHelpers(ir: IrProgram, encode: boolean): string[] {
+    const used = new Set<string>();
+    const fields = encode
+        ? ir.encoders.flatMap((e) => e.fields)
+        : ir.decoders.flatMap((d) => d.fields);
+
+    for (const f of fields) {
+        if (!f.transform) {
+            continue;
+        }
+
+        const p = encode ? f.transform.encode : f.transform.decode;
+
+        if (p.kind === "bitfield") {
+            used.add(encode ? "bitfieldPack" : "bitfieldUnpack");
+        } else {
+            used.add(encode ? "tuplePack" : "tupleUnpack");
+        }
+    }
+
+    return [...used].sort();
 }
 
 function zipSource(field: IrZipField): string {
@@ -108,9 +155,26 @@ function signature(op: IrModule["ops"][number]): string {
 function payloadLiteral(op: IrModule["ops"][number]): string {
     const entries: string[] = [];
 
+    // denormalize
+    const encoded = (p: (typeof op.params)[number]): string => {
+        if (p.encodeModel) {
+            return p.encodeArray
+                ? `(${p.name} ?? []).map(${encodeName(p.encodeModel)})`
+                : `${p.name} == null ? ${p.name} : ${encodeName(p.encodeModel)}(${p.name})`;
+        }
+
+        if (p.transform) {
+            return `${p.name} == null ? ${p.name} : ${packExpr(p.transform, p.name)}`;
+        }
+
+        return p.name;
+    };
+
     for (const p of op.params) {
         if (p.embed !== undefined) {
-            entries.push(`                ${JSON.stringify(p.embed)}: JSON.stringify(${p.name}),`);
+            entries.push(
+                `                ${JSON.stringify(p.embed)}: JSON.stringify(${encoded(p)}),`,
+            );
             continue;
         }
 
@@ -121,7 +185,7 @@ function payloadLiteral(op: IrModule["ops"][number]): string {
         } else if (p.stringify) {
             value = p.type.kind === "bool" ? `(${p.name} ? "1" : "0")` : `String(${p.name})`;
         } else {
-            value = p.name;
+            value = encoded(p);
         }
 
         entries.push(`                ${JSON.stringify(p.wireName)}: ${value},`);
@@ -259,7 +323,11 @@ export const typescript: Backend = {
 
                     let expr: string;
 
-                    if (f.decodeModel && f.isArray) {
+                    if (f.transform && f.isArray) {
+                        expr = `(raw[${key}] ?? []).map((x: any) => ${unpackExpr(f.transform, "x")})`;
+                    } else if (f.transform) {
+                        expr = `raw[${key}] == null ? raw[${key}] : ${unpackExpr(f.transform, `raw[${key}]`)}`;
+                    } else if (f.decodeModel && f.isArray) {
                         expr = `(raw[${key}] ?? []).map(${decodeName(f.decodeModel)})`;
                     } else if (f.decodeModel) {
                         expr = `raw[${key}] == null ? raw[${key}] : ${decodeName(f.decodeModel)}(raw[${key}])`;
@@ -278,7 +346,55 @@ ${lines.join("\n")}
             })
             .join("\n\n");
 
-        return `${BANNER}import { ${names.join(", ")} } from "./types";\n\n${body}\n`;
+        const helpers = transformHelpers(ir, false);
+        const helperImport = helpers.length
+            ? `import { ${helpers.join(", ")} } from "../runtime/transform";\n`
+            : "";
+
+        return `${BANNER}import { ${names.join(", ")} } from "./types";\n${helperImport}\n${body}\n`;
+    },
+
+    renderEncoders(ir: IrProgram): string {
+        const names = [...new Set(ir.encoders.map((e) => e.model))].sort();
+        const body = ir.encoders
+            .slice()
+            .sort((a, b) => a.model.localeCompare(b.model))
+            .map((e) => {
+                const lines = e.fields.map((f) => {
+                    const key = JSON.stringify(f.wireName);
+                    const src = `value.${f.name}`;
+
+                    let expr: string;
+
+                    if (f.transform && f.isArray) {
+                        expr = `(${src} ?? []).map((x) => ${packExpr(f.transform, "x")})`;
+                    } else if (f.transform) {
+                        expr = `${src} == null ? ${src} : ${packExpr(f.transform, src)}`;
+                    } else if (f.encodeModel && f.isArray) {
+                        expr = `(${src} ?? []).map(${encodeName(f.encodeModel)})`;
+                    } else if (f.encodeModel) {
+                        expr = `${src} == null ? ${src} : ${encodeName(f.encodeModel)}(${src})`;
+                    } else {
+                        expr = src;
+                    }
+
+                    return `        ${key}: ${expr},`;
+                });
+
+                return `export function ${encodeName(e.model)}(value: ${e.model}): any {
+    return {
+${lines.join("\n")}
+    };
+}`;
+            })
+            .join("\n\n");
+
+        const helpers = transformHelpers(ir, true);
+        const helperImport = helpers.length
+            ? `import { ${helpers.join(", ")} } from "../runtime/transform";\n`
+            : "";
+
+        return `${BANNER}import { ${names.join(", ")} } from "./types";\n${helperImport}\n${body}\n`;
     },
 
     renderModule(mod: IrModule): string {
@@ -301,6 +417,11 @@ ${lines.join("\n")}
         if (mod.decoderModels.length > 0) {
             const decoders = mod.decoderModels.map(decodeName).sort();
             imports.push(`import { ${decoders.join(", ")} } from "../decoders";`);
+        }
+
+        if (mod.encoderModels.length > 0) {
+            const encoders = mod.encoderModels.map(encodeName).sort();
+            imports.push(`import { ${encoders.join(", ")} } from "../encoders";`);
         }
 
         const methods = mod.ops.map((op) => (op.zip ? zipMethod(op) : callMethod(op))).join("\n\n");
@@ -347,7 +468,7 @@ ${getters}
     renderIndex(ir: IrProgram): string {
         return `${BANNER}export * from "./types";
 export * from "./enums";
-${ir.hasDecoders ? `export * from "./decoders";\n` : ""}export * from "./client";
+${ir.hasDecoders ? `export * from "./decoders";\n` : ""}${ir.hasEncoders ? `export * from "./encoders";\n` : ""}export * from "./client";
 ${ir.modules.map((m) => `export * from "./modules/${m.name}";`).join("\n")}
 `;
     },

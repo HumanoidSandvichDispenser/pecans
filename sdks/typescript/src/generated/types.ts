@@ -345,6 +345,15 @@ export type SettingsGetResponse = TCResponse & {
      */
     msgHideAnon: boolean;
 };
+export type StoriesViewListResponse = TCResponse & {
+    stories: Story[];
+};
+export type FerrytellCreateResponse = TCResponse & {
+    /**
+     * Id of the newly created story.
+     */
+    storyId: number;
+};
 
 export interface TCFollowInfo {
     in: number;
@@ -365,6 +374,14 @@ export interface TCResponse {
 export interface TCUser {
     id?: string;
     anon?: boolean;
+}
+/**
+ * An RGB color, normalized from whatever encoded form the wire uses.
+ */
+export interface Rgb {
+    r: number;
+    g: number;
+    b: number;
 }
 export interface ForumCategory {
     id: string;
@@ -852,4 +869,90 @@ export interface DashboardPointlessNums1 {
      * Total number of questions and answers ever posted.
      */
     questionsAndAnswers: number;
+}
+/**
+ * One line of text on a story. The color is normalized to an `Rgb` struct in
+ * both directions, though the wire form is asymmetric: a packed 0xRRGGBB
+ * integer when creating a story, an `[r, g, b]` tuple when reading one back.
+ */
+export interface StoryLine {
+    /**
+     * The line's text content.
+     */
+    value: string;
+    color: Rgb1;
+}
+/**
+ * An RGB color, normalized from whatever encoded form the wire uses.
+ */
+export interface Rgb1 {
+    r: number;
+    g: number;
+    b: number;
+}
+/**
+ * The three lines of text composing a story.
+ */
+export interface StoryText {
+    top: StoryLine;
+    middle: StoryLine;
+    bottom: StoryLine;
+}
+/**
+ * The background of a story, as sent when creating one.
+ */
+export interface StoryBackgroundInput {
+    /**
+     * Background kind, e.g. "image".
+     */
+    type: string;
+    /**
+     * Image id, present when `type` is "image".
+     */
+    image?: string;
+}
+/**
+ * The background of a story, as returned by the view list.
+ */
+export interface StoryBackground {
+    /**
+     * True when the background is an image rather than a solid color.
+     */
+    isImage: boolean;
+    /**
+     * Image id, present when `isImage` is true.
+     */
+    imageId?: string;
+}
+/**
+ * A story shown in the stories tray.
+ */
+export interface Story {
+    /**
+     * Id of the user whose story this is.
+     */
+    userId: string;
+    background: StoryBackground1;
+    text: StoryText1;
+}
+/**
+ * The background of a story, as returned by the view list.
+ */
+export interface StoryBackground1 {
+    /**
+     * True when the background is an image rather than a solid color.
+     */
+    isImage: boolean;
+    /**
+     * Image id, present when `isImage` is true.
+     */
+    imageId?: string;
+}
+/**
+ * The three lines of text composing a story.
+ */
+export interface StoryText1 {
+    top: StoryLine;
+    middle: StoryLine;
+    bottom: StoryLine;
 }

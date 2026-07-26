@@ -17,6 +17,7 @@ const FROM_INPUT = Symbol.for("pecans.fromInput");
 const FROM_RESULT = Symbol.for("pecans.fromResult");
 const EMBED = Symbol.for("pecans.embed");
 const STRINGIFY = Symbol.for("pecans.stringify");
+const TRANSFORM = Symbol.for("pecans.transform");
 
 const FLOAT = new Set(["float", "float32", "float64", "numeric", "decimal", "decimal128"]);
 const INT = new Set([
@@ -47,6 +48,25 @@ export type IrType =
     | { kind: "nullable"; inner: IrType }
     | { kind: "dict" }
     | { kind: "unknown" };
+
+/**
+ * A generalized, language-neutral wire-value transform primitive. Backends
+ * implement each `kind` as a reusable pack/unpack pair; nothing is
+ * domain-specific.
+ */
+export type IrTransformPrimitive =
+    | { kind: "bitfield"; components: { name: string; offset: number; width: number }[] }
+    | { kind: "tuple"; fields: string[] };
+
+/**
+ * How a field is normalized to/from its wire form in each direction. `encode`
+ * and `decode` may differ, so one field type can serve an asymmetric API (e.g.
+ * a request that sends a packed int and a response that returns a tuple).
+ */
+export interface IrTransform {
+    encode: IrTransformPrimitive;
+    decode: IrTransformPrimitive;
+}
 
 export interface IrField {
     name: string;
@@ -83,6 +103,11 @@ export interface IrParam {
     joinSep?: string;
     embed?: string;
     stringify?: boolean;
+    /** Set when the param is a model (or array of one) that needs a generated encoder. */
+    encodeModel?: string;
+    encodeArray?: boolean;
+    /** A direct transform on a scalar param value. */
+    transform?: IrTransform;
     doc?: string;
 }
 
@@ -121,6 +146,7 @@ export interface IrModule {
     responses: string[];
     enums: string[];
     decoderModels: string[];
+    encoderModels: string[];
 }
 
 export interface IrDecodeField {
@@ -128,11 +154,25 @@ export interface IrDecodeField {
     wireName: string;
     decodeModel?: string;
     isArray: boolean;
+    transform?: IrTransform;
 }
 
 export interface IrDecoder {
     model: string;
     fields: IrDecodeField[];
+}
+
+export interface IrEncodeField {
+    name: string;
+    wireName: string;
+    encodeModel?: string;
+    isArray: boolean;
+    transform?: IrTransform;
+}
+
+export interface IrEncoder {
+    model: string;
+    fields: IrEncodeField[];
 }
 
 export interface IrProgram {
@@ -141,6 +181,8 @@ export interface IrProgram {
     enums: IrEnum[];
     decoders: IrDecoder[];
     hasDecoders: boolean;
+    encoders: IrEncoder[];
+    hasEncoders: boolean;
 }
 
 function jsValue(program: any, value: any): unknown {
@@ -272,14 +314,18 @@ function propModel(type: any): { model: any | undefined; isArray: boolean } {
     };
 }
 
-/** A model needs a decoder if any field is renamed on the wire, transitively. */
-function needsDecode(program: any, model: any, memo: Map<any, boolean>): boolean {
+/**
+ * A model needs a decoder/encoder if any field is renamed on the wire, carries
+ * a transform, or nests a model that does transitively.
+ */
+function needsConvert(program: any, model: any, memo: Map<any, boolean>): boolean {
     if (memo.has(model)) {
         return memo.get(model)!;
     }
 
     memo.set(model, false);
 
+    const transformMap = program.stateMap(TRANSFORM);
     let result = false;
 
     for (const p of collectProps(model)) {
@@ -288,9 +334,14 @@ function needsDecode(program: any, model: any, memo: Map<any, boolean>): boolean
             break;
         }
 
+        if (transformMap.get(p)) {
+            result = true;
+            break;
+        }
+
         const { model: m } = propModel(p.type);
 
-        if (m && needsDecode(program, m, memo)) {
+        if (m && needsConvert(program, m, memo)) {
             result = true;
             break;
         }
@@ -322,6 +373,7 @@ export async function buildIr(specPath: string): Promise<IrProgram> {
     const fromResultMap = program.stateMap(FROM_RESULT);
     const embedMap = program.stateMap(EMBED);
     const stringifyMap = program.stateMap(STRINGIFY);
+    const transformMap = program.stateMap(TRANSFORM);
 
     const ns = program.getGlobalNamespaceType().namespaces.get("Pecans");
 
@@ -331,6 +383,7 @@ export async function buildIr(specPath: string): Promise<IrProgram> {
 
     const modules: IrModule[] = [];
     const responseTypes = new Set<any>();
+    const paramTypes = new Set<any>();
     const scratch = new Set<string>();
 
     for (const iface of ns.interfaces.values()) {
@@ -341,6 +394,7 @@ export async function buildIr(specPath: string): Promise<IrProgram> {
             responses: [],
             enums: [],
             decoderModels: [],
+            encoderModels: [],
         };
 
         const responses = new Set<string>();
@@ -361,6 +415,7 @@ export async function buildIr(specPath: string): Promise<IrProgram> {
                 const joinSep = joinMap.get(prm) as string | undefined;
                 const embed = embedMap.get(prm) as string | undefined;
                 const stringify = stringifyMap.get(prm) as boolean | undefined;
+                const transform = transformMap.get(prm) as IrTransform | undefined;
 
                 return {
                     name: prm.name,
@@ -373,13 +428,27 @@ export async function buildIr(specPath: string): Promise<IrProgram> {
                     joinSep,
                     embed,
                     stringify,
+                    transform,
                     doc: getDoc(program, prm),
                 };
             });
 
-            // Param model types must be imported by the generated module too.
+            // Param model types must be imported by the generated module too, and
+            // are the roots for encoder generation.
             for (const prm of params) {
                 modelNamesIn(prm.type, responses);
+            }
+
+            // Only non-zip ops route params through the encoding payload builder,
+            // so only they seed encoder generation.
+            if (!zipCfg) {
+                for (const prm of op.parameters.properties.values()) {
+                    const { model } = propModel((prm as any).type);
+
+                    if (model) {
+                        paramTypes.add(model);
+                    }
+                }
             }
 
             if (zipCfg) {
@@ -467,56 +536,104 @@ export async function buildIr(specPath: string): Promise<IrProgram> {
     modules.sort((a, b) => a.name.localeCompare(b.name));
 
     const memo = new Map<any, boolean>();
-    const decoders: IrDecoder[] = [];
-    const decodable = new Set<string>();
-    const seen = new Set<any>();
-    const queue = [...responseTypes];
 
-    while (queue.length) {
-        const model = queue.pop();
+    // Walk a model graph, generating a converter (decoder or encoder) for every
+    // model that needs one. Decode and encode share this shape; only the per-field
+    // build differs, so it is passed in.
+    function collectConverters<F>(
+        roots: Iterable<any>,
+        buildField: (p: any, m: any, isArray: boolean) => F,
+    ): { converters: { model: string; fields: F[] }[]; convertible: Set<string> } {
+        const converters: { model: string; fields: F[] }[] = [];
+        const convertible = new Set<string>();
+        const seen = new Set<any>();
+        const queue = [...roots];
 
-        if (!model || seen.has(model)) {
-            continue;
-        }
+        while (queue.length) {
+            const model = queue.pop();
 
-        seen.add(model);
+            if (!model || seen.has(model)) {
+                continue;
+            }
 
-        if (!needsDecode(program, model, memo)) {
-            continue;
-        }
+            seen.add(model);
 
-        decodable.add(model.name);
+            if (!needsConvert(program, model, memo)) {
+                continue;
+            }
 
-        const fields: IrDecodeField[] = collectProps(model).map((p: any) => {
-            const wireName = resolveEncodedName(program, p, "application/json");
-            const { model: m, isArray } = propModel(p.type);
-            const decodeModel = m && needsDecode(program, m, memo) ? m.name : undefined;
+            convertible.add(model.name);
 
-            return { name: p.name, wireName, decodeModel, isArray };
-        });
+            const fields = collectProps(model).map((p: any) => {
+                const { model: m, isArray } = propModel(p.type);
+                return buildField(p, m, isArray);
+            });
 
-        decoders.push({ model: model.name, fields });
+            converters.push({ model: model.name, fields });
 
-        for (const p of collectProps(model)) {
-            const { model: m } = propModel(p.type);
+            for (const p of collectProps(model)) {
+                const { model: m } = propModel(p.type);
 
-            if (m) {
-                queue.push(m);
+                if (m) {
+                    queue.push(m);
+                }
             }
         }
+
+        return { converters, convertible };
     }
 
+    const { converters: decoders, convertible: decodable } = collectConverters<IrDecodeField>(
+        responseTypes,
+        (p, m, isArray) => ({
+            name: p.name,
+            wireName: resolveEncodedName(program, p, "application/json"),
+            decodeModel: m && needsConvert(program, m, memo) ? m.name : undefined,
+            isArray,
+            transform: transformMap.get(p) as IrTransform | undefined,
+        }),
+    );
+
+    const { converters: encoders, convertible: encodable } = collectConverters<IrEncodeField>(
+        paramTypes,
+        (p, m, isArray) => ({
+            name: p.name,
+            wireName: resolveEncodedName(program, p, "application/json"),
+            encodeModel: m && needsConvert(program, m, memo) ? m.name : undefined,
+            isArray,
+            transform: transformMap.get(p) as IrTransform | undefined,
+        }),
+    );
+
     for (const mod of modules) {
-        const used = new Set<string>();
+        const usedDecoders = new Set<string>();
+        const usedEncoders = new Set<string>();
 
         for (const op of mod.ops) {
             if (decodable.has(op.response)) {
                 op.decodeModel = op.response;
-                used.add(op.response);
+                usedDecoders.add(op.response);
+            }
+
+            // Zip ops don't build an encoding payload, so their params are never encoded.
+            for (const p of op.zip ? [] : op.params) {
+                const modelName =
+                    p.type.kind === "model"
+                        ? p.type.name
+                        : p.type.kind === "array" && p.type.element.kind === "model"
+                          ? p.type.element.name
+                          : undefined;
+
+                if (modelName && encodable.has(modelName)) {
+                    p.encodeModel = modelName;
+                    p.encodeArray = p.type.kind === "array";
+                    usedEncoders.add(modelName);
+                }
             }
         }
 
-        mod.decoderModels = [...used];
+        mod.decoderModels = [...usedDecoders];
+        mod.encoderModels = [...usedEncoders];
     }
 
     const models: IrModel[] = [...ns.models.values()].map((model: any) => ({
@@ -545,5 +662,7 @@ export async function buildIr(specPath: string): Promise<IrProgram> {
         enums,
         decoders,
         hasDecoders: decoders.length > 0,
+        encoders,
+        hasEncoders: encoders.length > 0,
     };
 }

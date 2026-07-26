@@ -44,6 +44,16 @@ TCUser = TypedDict(
 )
 
 
+Rgb = TypedDict(
+    "Rgb",
+    {
+        "r": "int",
+        "g": "int",
+        "b": "int",
+    },
+)
+
+
 ForumCategory = TypedDict(
     "ForumCategory",
     {
@@ -956,5 +966,74 @@ SettingsGetResponse = TypedDict(
         "email": "str",
         "msgNotify": "bool",
         "msgHideAnon": "bool",
+    },
+)
+
+
+StoryLine = TypedDict(
+    "StoryLine",
+    {
+        "value": "str",
+        "color": "Rgb",
+    },
+)
+
+
+StoryText = TypedDict(
+    "StoryText",
+    {
+        "top": "StoryLine",
+        "middle": "StoryLine",
+        "bottom": "StoryLine",
+    },
+)
+
+
+StoryBackgroundInput = TypedDict(
+    "StoryBackgroundInput",
+    {
+        "type": "str",
+        "image": NotRequired["str"],
+    },
+)
+
+
+StoryBackground = TypedDict(
+    "StoryBackground",
+    {
+        "isImage": "bool",
+        "imageId": NotRequired["str"],
+    },
+)
+
+
+Story = TypedDict(
+    "Story",
+    {
+        "userId": "str",
+        "background": "StoryBackground",
+        "text": "StoryText",
+    },
+)
+
+
+StoriesViewListResponse = TypedDict(
+    "StoriesViewListResponse",
+    {
+        "ok": "bool",
+        "error": NotRequired["str"],
+        "profiles": NotRequired["list[TCProfile]"],
+        "stories": "list[Story]",
+    },
+)
+
+
+FerrytellCreateResponse = TypedDict(
+    "FerrytellCreateResponse",
+    {
+        "ok": "bool",
+        "error": NotRequired["str"],
+        "profiles": NotRequired["list[TCProfile]"],
+        "storyId": "int",
     },
 )

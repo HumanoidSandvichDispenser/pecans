@@ -18,6 +18,7 @@ export interface Backend {
     renderTypes(ir: IrProgram): Promise<string> | string;
     renderEnums(ir: IrProgram): string;
     renderDecoders(ir: IrProgram): string;
+    renderEncoders(ir: IrProgram): string;
     renderClient(ir: IrProgram): string;
     renderIndex(ir: IrProgram): string;
     renderModule(mod: IrModule, ir: IrProgram): string;
@@ -35,6 +36,10 @@ export async function emit(ir: IrProgram, backend: Backend): Promise<void> {
 
     if (ir.hasDecoders) {
         files.push({ path: `decoders.${backend.ext}`, content: backend.renderDecoders(ir) });
+    }
+
+    if (ir.hasEncoders) {
+        files.push({ path: `encoders.${backend.ext}`, content: backend.renderEncoders(ir) });
     }
 
     for (const mod of ir.modules) {

@@ -2,6 +2,7 @@
 from .client import Client
 from .enums import *  # noqa: F401,F403
 from .decoders import *  # noqa: F401,F403
+from .encoders import *  # noqa: F401,F403
 from .types import *  # noqa: F401,F403
 from .modules.account import AccountModule
 from .modules.answer import AnswerModule
@@ -18,3 +19,4 @@ from .modules.notify import NotifyModule
 from .modules.profile import ProfileModule
 from .modules.qa import QaModule
 from .modules.settings import SettingsModule
+from .modules.stories import StoriesModule
