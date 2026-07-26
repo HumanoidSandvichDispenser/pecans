@@ -49,9 +49,31 @@ model AnswerQuestion extends Question {
   poll?: Poll;
 }
 
+/**
+ * A question the user has saved for later, as shown on the
+ * Saved Questions page.
+ */
+model SavedQuestion {
+  /** The question id. */
+  id: safeint;
+
+  /** Short preview of the question body. */
+  preview: string;
+}
+
+model SavedQuestionsResponse extends TCResponse {
+  questions: SavedQuestion[];
+}
+
 interface Answer {
   @rpc("answer.getnext")
   fetchNext(): AnswerQuestion;
+
+  @rpc("answer.listsavedquestions")
+  listSavedQuestions(): SavedQuestionsResponse;
+
+  @rpc("answer.flagquestion")
+  flagQuestion(questionId: safeint): TCResponse;
 
   @rpc("answer.dismissquestion")
   dismissQuestion(questionId: safeint, action: DismissAction): TCResponse;

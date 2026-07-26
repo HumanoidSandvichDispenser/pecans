@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from ...runtime import Call, MethodCall, Module
-from ..types import AnswerQuestion, AnswerReplyResponse, TCResponse
+from ..types import AnswerQuestion, AnswerReplyResponse, SavedQuestionsResponse, TCResponse
 from ..enums import DismissAction
 
 
@@ -13,6 +13,26 @@ class AnswerModule(Module):
             MethodCall(
                 fn="answer.getnext",
                 payload={},
+            ),
+        )
+
+    def listSavedQuestions(self) -> Call[SavedQuestionsResponse]:
+        return Call(
+            self.client,
+            MethodCall(
+                fn="answer.listsavedquestions",
+                payload={},
+            ),
+        )
+
+    def flagQuestion(self, questionId: int) -> Call[TCResponse]:
+        return Call(
+            self.client,
+            MethodCall(
+                fn="answer.flagquestion",
+                payload={
+                    "questionId": questionId,
+                },
             ),
         )
 

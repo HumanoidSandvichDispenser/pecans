@@ -185,6 +185,9 @@ export type AnswerQuestion = Question & {
     author?: string;
     poll?: Poll1;
 };
+export type SavedQuestionsResponse = TCResponse & {
+    questions: SavedQuestion[];
+};
 export type ListDataResponse = TCResponse & {
     /**
      * Question headers, without their body text.
@@ -481,6 +484,20 @@ export interface Poll {
 export interface Poll1 {
     options: PollOption[];
     answered: boolean;
+}
+/**
+ * A question the user has saved for later, as shown on the
+ * Saved Questions page.
+ */
+export interface SavedQuestion {
+    /**
+     * The question id.
+     */
+    id: number;
+    /**
+     * Short preview of the question body.
+     */
+    preview: string;
 }
 export interface PollOptionRaw {
     /**

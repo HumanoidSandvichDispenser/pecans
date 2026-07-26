@@ -563,6 +563,26 @@ AnswerQuestion = TypedDict(
 )
 
 
+SavedQuestion = TypedDict(
+    "SavedQuestion",
+    {
+        "id": "int",
+        "preview": "str",
+    },
+)
+
+
+SavedQuestionsResponse = TypedDict(
+    "SavedQuestionsResponse",
+    {
+        "ok": "bool",
+        "error": NotRequired["str"],
+        "profiles": NotRequired["list[TCProfile]"],
+        "questions": "list[SavedQuestion]",
+    },
+)
+
+
 PollOptionRaw = TypedDict(
     "PollOptionRaw",
     {
