@@ -156,6 +156,11 @@ export type ExistingCookieResponse = TCResponse & {
     success: boolean;
     yourId: string;
 };
+export type LogoutResponse = TCResponse & {
+    success: boolean;
+    ripToken: string;
+    user: string;
+};
 export type AnswerReplyResponse = TCResponse & {
     id: number;
     time: number;

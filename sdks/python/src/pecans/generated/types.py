@@ -502,6 +502,19 @@ ExistingCookieResponse = TypedDict(
 )
 
 
+LogoutResponse = TypedDict(
+    "LogoutResponse",
+    {
+        "ok": "bool",
+        "error": NotRequired["str"],
+        "profiles": NotRequired["list[TCProfile]"],
+        "success": "bool",
+        "ripToken": "str",
+        "user": "str",
+    },
+)
+
+
 PollOption = TypedDict(
     "PollOption",
     {

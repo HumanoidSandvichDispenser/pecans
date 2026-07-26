@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from ...runtime import Call, MethodCall, Module
-from ..types import ExistingCookieResponse, LoginResponse
+from ..types import ExistingCookieResponse, LoginResponse, LogoutResponse
 
 
 class AuthModule(Module):
@@ -27,5 +27,14 @@ class AuthModule(Module):
                 payload={
                     "cookie": cookie,
                 },
+            ),
+        )
+
+    def logout(self) -> Call[LogoutResponse]:
+        return Call(
+            self.client,
+            MethodCall(
+                fn="auth.logout",
+                payload={},
             ),
         )

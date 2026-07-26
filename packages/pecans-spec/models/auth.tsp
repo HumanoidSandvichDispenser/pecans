@@ -13,6 +13,14 @@ model ExistingCookieResponse extends TCResponse {
   yourId: string;
 }
 
+model LogoutResponse extends TCResponse {
+  success: boolean;
+
+  @fromResult("RIPtoken") ripToken: string;
+
+  @fromResult("usr") user: string;
+}
+
 interface Auth {
   @rpc("auth.login")
   login(
@@ -23,4 +31,7 @@ interface Auth {
 
   @rpc("auth.existingcookie")
   existingCookie(cookie: string): ExistingCookieResponse;
+
+  @rpc("auth.logout")
+  logout(): LogoutResponse;
 }
