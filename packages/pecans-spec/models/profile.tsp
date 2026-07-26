@@ -15,6 +15,29 @@ model ProfileDetailsResponse extends TCResponse {
   value: unknown;
 }
 
+/** One entry in a follower/following list. */
+model FollowEntry {
+  /** The other user's id. */
+  id: string;
+
+  /** True if the follow relationship is reciprocated. */
+  mutual: boolean;
+}
+
+/** An entry in your followers list; adds block state. */
+model FollowerEntry extends FollowEntry {
+  /** True if you have blocked this follower. */
+  blocked: boolean;
+}
+
+model ListFollowersResponse extends TCResponse {
+  followers: FollowerEntry[];
+}
+
+model ListFollowsResponse extends TCResponse {
+  follows: FollowEntry[];
+}
+
 interface Profile {
   /**
    * Check whether a profile exists and resolve its canonical id.
@@ -52,4 +75,16 @@ interface Profile {
    */
   @rpc("profile.togglefollow")
   toggleFollow(id: string, follow: boolean): TCResponse;
+
+  /**
+   * List the users who follow you.
+   */
+  @rpc("profile.listfollowers")
+  listFollowers(): ListFollowersResponse;
+
+  /**
+   * List the users you follow (your subscriptions).
+   */
+  @rpc("profile.listfollows")
+  listFollows(): ListFollowsResponse;
 }

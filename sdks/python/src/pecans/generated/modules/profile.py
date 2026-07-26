@@ -2,7 +2,13 @@
 from __future__ import annotations
 
 from ...runtime import Call, MethodCall, Module
-from ..types import ProfileDetailsResponse, ProfileGetResponse, TCResponse
+from ..types import (
+    ListFollowersResponse,
+    ListFollowsResponse,
+    ProfileDetailsResponse,
+    ProfileGetResponse,
+    TCResponse,
+)
 
 
 class ProfileModule(Module):
@@ -79,5 +85,25 @@ class ProfileModule(Module):
                     "id": id,
                     "follow": follow,
                 },
+            ),
+        )
+
+    def listFollowers(self) -> Call[ListFollowersResponse]:
+        """List the users who follow you."""
+        return Call(
+            self.client,
+            MethodCall(
+                fn="profile.listfollowers",
+                payload={},
+            ),
+        )
+
+    def listFollows(self) -> Call[ListFollowsResponse]:
+        """List the users you follow (your subscriptions)."""
+        return Call(
+            self.client,
+            MethodCall(
+                fn="profile.listfollows",
+                payload={},
             ),
         )

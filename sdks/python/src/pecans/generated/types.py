@@ -798,6 +798,47 @@ ProfileDetailsResponse = TypedDict(
 )
 
 
+FollowEntry = TypedDict(
+    "FollowEntry",
+    {
+        "id": "str",
+        "mutual": "bool",
+    },
+)
+
+
+FollowerEntry = TypedDict(
+    "FollowerEntry",
+    {
+        "id": "str",
+        "mutual": "bool",
+        "blocked": "bool",
+    },
+)
+
+
+ListFollowersResponse = TypedDict(
+    "ListFollowersResponse",
+    {
+        "ok": "bool",
+        "error": NotRequired["str"],
+        "profiles": NotRequired["list[TCProfile]"],
+        "followers": "list[FollowerEntry]",
+    },
+)
+
+
+ListFollowsResponse = TypedDict(
+    "ListFollowsResponse",
+    {
+        "ok": "bool",
+        "error": NotRequired["str"],
+        "profiles": NotRequired["list[TCProfile]"],
+        "follows": "list[FollowEntry]",
+    },
+)
+
+
 PinnedQuestion = TypedDict(
     "PinnedQuestion",
     {

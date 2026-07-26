@@ -293,6 +293,21 @@ export type ProfileDetailsResponse = TCResponse & {
         [k: string]: unknown;
     };
 };
+/**
+ * An entry in your followers list; adds block state.
+ */
+export type FollowerEntry = FollowEntry & {
+    /**
+     * True if you have blocked this follower.
+     */
+    blocked: boolean;
+};
+export type ListFollowersResponse = TCResponse & {
+    followers: FollowerEntry[];
+};
+export type ListFollowsResponse = TCResponse & {
+    follows: FollowEntry[];
+};
 export type QaGetPinnedResponse = TCResponse & {
     /**
      * The questions the user has pinned to their profile.
@@ -674,6 +689,19 @@ export interface PostQuestionBody {
  */
 export interface NewPoll1 {
     choices: NewPollChoice[];
+}
+/**
+ * One entry in a follower/following list.
+ */
+export interface FollowEntry {
+    /**
+     * The other user's id.
+     */
+    id: string;
+    /**
+     * True if the follow relationship is reciprocated.
+     */
+    mutual: boolean;
 }
 export interface PinnedQuestion {
     id: number;
