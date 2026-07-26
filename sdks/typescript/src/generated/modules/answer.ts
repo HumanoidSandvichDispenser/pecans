@@ -4,6 +4,10 @@ import { AnswerQuestion, AnswerReplyResponse, SavedQuestionsResponse, TCResponse
 import { DismissAction } from "../enums";
 
 export class AnswerModule extends Module {
+    /**
+     * Get the next question to answer. `error` will `"END_REACHED"` if there are
+     * no questions to answer.
+     */
     public fetchNext(): Call<AnswerQuestion> {
         return new Call<AnswerQuestion>(this.client, {
             fn: "answer.getnext",
@@ -11,6 +15,9 @@ export class AnswerModule extends Module {
         });
     }
 
+    /**
+     * Get the list of questions the user has saved for later.
+     */
     public listSavedQuestions(): Call<SavedQuestionsResponse> {
         return new Call<SavedQuestionsResponse>(this.client, {
             fn: "answer.listsavedquestions",
@@ -18,6 +25,9 @@ export class AnswerModule extends Module {
         });
     }
 
+    /**
+     * Flag a question for review by the moderators.
+     */
     public flagQuestion(questionId: number): Call<TCResponse> {
         return new Call<TCResponse>(this.client, {
             fn: "answer.flagquestion",
@@ -27,6 +37,10 @@ export class AnswerModule extends Module {
         });
     }
 
+    /**
+     * Dismiss a question from the answer queue. The `action` parameter
+     * determines whether the question is snoozed, discarded, or unsaved.
+     */
     public dismissQuestion(questionId: number, action: DismissAction): Call<TCResponse> {
         return new Call<TCResponse>(this.client, {
             fn: "answer.dismissquestion",
@@ -37,6 +51,10 @@ export class AnswerModule extends Module {
         });
     }
 
+    /**
+     * Vote on a poll question. The `optionNum` parameter is the index of the
+     * option to vote for, starting at 0.
+     */
     public pollVote(questionId: number, optionNum: number): Call<TCResponse> {
         return new Call<TCResponse>(this.client, {
             fn: "answer.pollvote",
@@ -47,6 +65,10 @@ export class AnswerModule extends Module {
         });
     }
 
+    /**
+     * Queue a question for answering. The question will queued to be answered by
+     * the user, and will be returned by the next call to `fetchNext()`.
+     */
     public queueQuestion(questionId: number): Call<AnswerQuestion> {
         return new Call<AnswerQuestion>(this.client, {
             fn: "answer.queuequestion",
@@ -56,6 +78,9 @@ export class AnswerModule extends Module {
         });
     }
 
+    /**
+     * Reply to a question. The `text` parameter is the reply text (UCP markup).
+     */
     public reply(questionId: number, text: string): Call<AnswerReplyResponse> {
         return new Call<AnswerReplyResponse>(this.client, {
             fn: "answer.reply",

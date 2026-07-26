@@ -8,6 +8,9 @@ from ..enums import DismissAction
 
 class AnswerModule(Module):
     def fetchNext(self) -> Call[AnswerQuestion]:
+        """Get the next question to answer. `error` will `"END_REACHED"` if there are
+        no questions to answer.
+        """
         return Call(
             self.client,
             MethodCall(
@@ -17,6 +20,7 @@ class AnswerModule(Module):
         )
 
     def listSavedQuestions(self) -> Call[SavedQuestionsResponse]:
+        """Get the list of questions the user has saved for later."""
         return Call(
             self.client,
             MethodCall(
@@ -26,6 +30,7 @@ class AnswerModule(Module):
         )
 
     def flagQuestion(self, questionId: int) -> Call[TCResponse]:
+        """Flag a question for review by the moderators."""
         return Call(
             self.client,
             MethodCall(
@@ -37,6 +42,9 @@ class AnswerModule(Module):
         )
 
     def dismissQuestion(self, questionId: int, action: DismissAction) -> Call[TCResponse]:
+        """Dismiss a question from the answer queue. The `action` parameter
+        determines whether the question is snoozed, discarded, or unsaved.
+        """
         return Call(
             self.client,
             MethodCall(
@@ -49,6 +57,9 @@ class AnswerModule(Module):
         )
 
     def pollVote(self, questionId: int, optionNum: int) -> Call[TCResponse]:
+        """Vote on a poll question. The `optionNum` parameter is the index of the
+        option to vote for, starting at 0.
+        """
         return Call(
             self.client,
             MethodCall(
@@ -61,6 +72,9 @@ class AnswerModule(Module):
         )
 
     def queueQuestion(self, questionId: int) -> Call[AnswerQuestion]:
+        """Queue a question for answering. The question will queued to be answered by
+        the user, and will be returned by the next call to `fetchNext()`.
+        """
         return Call(
             self.client,
             MethodCall(
@@ -72,6 +86,7 @@ class AnswerModule(Module):
         )
 
     def reply(self, questionId: int, text: str) -> Call[AnswerReplyResponse]:
+        """Reply to a question. The `text` parameter is the reply text (UCP markup)."""
         return Call(
             self.client,
             MethodCall(
