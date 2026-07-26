@@ -3,6 +3,14 @@ import { Call, Module } from "../../runtime";
 import { ExistingCookieResponse, LoginResponse, LogoutResponse } from "../types";
 
 export class AuthModule extends Module {
+    /**
+     * Log in to the Two Cans & String service.
+     *
+     * @param username - The username or email address of the user.
+     * @param password - The password of the user.
+     * @param client - The client type, defaulting to "web".
+     * @returns A LoginResponse object containing the result of the login attempt.
+     */
     public login(username: string, password: string, client: string = "web"): Call<LoginResponse> {
         return new Call<LoginResponse>(this.client, {
             fn: "auth.login",
@@ -14,6 +22,13 @@ export class AuthModule extends Module {
         });
     }
 
+    /**
+     * Check if an existing authentication cookie is valid and refresh it if
+     * necessary.
+     *
+     * @param cookie - The authentication cookie to check.
+     * @returns An ExistingCookieResponse object indicating whether the cookie is valid.
+     */
     public existingCookie(cookie: string): Call<ExistingCookieResponse> {
         return new Call<ExistingCookieResponse>(this.client, {
             fn: "auth.existingcookie",
@@ -23,6 +38,11 @@ export class AuthModule extends Module {
         });
     }
 
+    /**
+     * Log out of the Two Cans & String service.
+     *
+     * @returns A LogoutResponse object indicating the result of the logout attempt.
+     */
     public logout(): Call<LogoutResponse> {
         return new Call<LogoutResponse>(this.client, {
             fn: "auth.logout",

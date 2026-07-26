@@ -7,6 +7,16 @@ from ..types import ExistingCookieResponse, LoginResponse, LogoutResponse
 
 class AuthModule(Module):
     def login(self, username: str, password: str, client: str = "web") -> Call[LoginResponse]:
+        """Log in to the Two Cans & String service.
+
+        Args:
+            username: The username or email address of the user.
+            password: The password of the user.
+            client: The client type, defaulting to "web".
+
+        Returns:
+            A LoginResponse object containing the result of the login attempt.
+        """
         return Call(
             self.client,
             MethodCall(
@@ -20,6 +30,15 @@ class AuthModule(Module):
         )
 
     def existingCookie(self, cookie: str) -> Call[ExistingCookieResponse]:
+        """Check if an existing authentication cookie is valid and refresh it if
+        necessary.
+
+        Args:
+            cookie: The authentication cookie to check.
+
+        Returns:
+            An ExistingCookieResponse object indicating whether the cookie is valid.
+        """
         return Call(
             self.client,
             MethodCall(
@@ -31,6 +50,11 @@ class AuthModule(Module):
         )
 
     def logout(self) -> Call[LogoutResponse]:
+        """Log out of the Two Cans & String service.
+
+        Returns:
+            A LogoutResponse object indicating the result of the logout attempt.
+        """
         return Call(
             self.client,
             MethodCall(

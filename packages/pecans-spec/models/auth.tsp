@@ -22,6 +22,14 @@ model LogoutResponse extends TCResponse {
 }
 
 interface Auth {
+  /**
+   * Log in to the Two Cans & String service.
+   *
+   * @param username The username or email address of the user.
+   * @param password The password of the user.
+   * @param client The client type, defaulting to "web".
+   * @returns A LoginResponse object containing the result of the login attempt.
+   */
   @rpc("auth.login")
   login(
     @encodedName("application/json", "nameOrEmail") username: string,
@@ -29,9 +37,21 @@ interface Auth {
     client?: string = "web",
   ): LoginResponse;
 
+  /**
+   * Check if an existing authentication cookie is valid and refresh it if
+   * necessary.
+   *
+   * @param cookie The authentication cookie to check.
+   * @returns An ExistingCookieResponse object indicating whether the cookie is valid.
+   */
   @rpc("auth.existingcookie")
   existingCookie(cookie: string): ExistingCookieResponse;
 
+  /**
+   * Log out of the Two Cans & String service.
+   *
+   * @returns A LogoutResponse object indicating the result of the logout attempt.
+   */
   @rpc("auth.logout")
   logout(): LogoutResponse;
 }
