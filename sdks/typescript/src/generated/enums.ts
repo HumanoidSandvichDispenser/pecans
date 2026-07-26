@@ -9,4 +9,5 @@ export enum Feature {
 export enum DismissAction {
     SNOOZE = "SNOOZE",
     DISCARD = "DISCARD",
+    UNSAVE = "UNSAVE",
 }

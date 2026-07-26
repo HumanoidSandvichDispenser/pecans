@@ -12,3 +12,4 @@ class Feature(str, Enum):
 class DismissAction(str, Enum):
     SNOOZE = "SNOOZE"
     DISCARD = "DISCARD"
+    UNSAVE = "UNSAVE"
