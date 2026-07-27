@@ -45,6 +45,18 @@ class ForumModule(Module):
         reverse: bool = False,
         includePost: bool = True,
     ) -> Call[ViewPostsResponse]:
+        """View posts in a thread.
+
+        Args:
+            threadId: Id of the thread to view.
+            fetchType: "new" to fetch new posts, "backscroll" to fetch older posts.
+            postId: Id of the post to start fetching from. Defaults to 0 (the first post).
+            reverse: If true, fetch posts in reverse order (newest first). Defaults to false.
+            includePost: If true, include the post with id `postId` in the results. Defaults to true.
+
+        Returns:
+            A ViewPostsResponse object containing the requested posts and thread metadata.
+        """
         return Call(
             self.client,
             MethodCall(
@@ -61,6 +73,15 @@ class ForumModule(Module):
         )
 
     def replyThread(self, text: str, threadId: int) -> Call[TCResponse]:
+        """Reply to a thread with a new post.
+
+        Args:
+            text: Body text of the reply (UCP markup).
+            threadId: Id of the thread to reply to.
+
+        Returns:
+            A TCResponse object indicating the result of the reply attempt.
+        """
         return Call(
             self.client,
             MethodCall(
@@ -73,6 +94,15 @@ class ForumModule(Module):
         )
 
     def readThread(self, postId: int, threadId: int) -> Call[TCResponse]:
+        """Mark a thread as read, clearing the new-post indicator for that thread.
+
+        Args:
+            postId: Id of the last post read in the thread.
+            threadId: Id of the thread to mark as read.
+
+        Returns:
+            A TCResponse object indicating the result of the operation.
+        """
         return Call(
             self.client,
             MethodCall(
@@ -85,6 +115,15 @@ class ForumModule(Module):
         )
 
     def editPost(self, postId: int, text: str) -> Call[TCResponse]:
+        """Edit a post's text.
+
+        Args:
+            postId: Id of the post to edit.
+            text: New body text for the post (UCP markup).
+
+        Returns:
+            A TCResponse object indicating the result of the edit attempt.
+        """
         return Call(
             self.client,
             MethodCall(
@@ -97,6 +136,14 @@ class ForumModule(Module):
         )
 
     def search(self, query: str) -> Call[ForumSearchResponse]:
+        """Search the forum for posts matching a query.
+
+        Args:
+            query: Search query string.
+
+        Returns:
+            A ForumSearchResponse object containing the search results.
+        """
         return Call(
             self.client,
             MethodCall(
@@ -108,6 +155,11 @@ class ForumModule(Module):
         )
 
     def categoriesGet(self) -> Call[ForumCategoriesResponse]:
+        """Get the list of forum categories.
+
+        Returns:
+            A ForumCategoriesResponse object containing the list of categories.
+        """
         return Call(
             self.client,
             MethodCall(
@@ -117,6 +169,15 @@ class ForumModule(Module):
         )
 
     def threadList(self, category: str, offset: int = 0) -> Call[ThreadListResponse]:
+        """Get the list of threads in a category.
+
+        Args:
+            category: Id of the category to fetch threads from.
+            offset: Number of threads to skip (for pagination). Defaults to 0.
+
+        Returns:
+            A ThreadListResponse object containing the list of threads in the category.
+        """
         return Call(
             self.client,
             MethodCall(

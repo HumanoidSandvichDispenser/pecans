@@ -3,6 +3,13 @@ import { Call, Module } from "../../runtime";
 import { FolderListResponse, FolderViewResponse, MessageViewResponse, TCResponse } from "../types";
 
 export class MessagesModule extends Module {
+    /**
+     * Get a list of messages in a folder.
+     *
+     * @param folder - The folder to view. Defaults to "inbox".
+     * @param page - The page number to view. Defaults to 1.
+     * @returns A FolderViewResponse object containing the messages in the folder.
+     */
     public folderView(folder: string = "inbox", page: number = 1): Call<FolderViewResponse> {
         return new Call<FolderViewResponse>(this.client, {
             fn: "messages.folderview",
@@ -13,6 +20,15 @@ export class MessagesModule extends Module {
         });
     }
 
+    /**
+     * View a conversation thread.
+     *
+     * @param conversationId - The id of the conversation to view.
+     * @param includeHeader - Whether to include the conversation header in the response. Defaults to true.
+     * @param markAsRead - Whether to mark the conversation as read. Defaults to true.
+     * @param page - The page number of messages to view. Defaults to 1.
+     * @returns A MessageViewResponse object containing the messages in the conversation and the header if requested.
+     */
     public view(
         conversationId: string,
         includeHeader: boolean = true,
@@ -30,6 +46,14 @@ export class MessagesModule extends Module {
         });
     }
 
+    /**
+     * Reply to a conversation thread.
+     *
+     * @param conversationId - The id of the conversation to reply to.
+     * @param text - The body text of the reply (UCP markup).
+     * @param unanonymize - Whether to send the reply as your real username instead of anonymously. Defaults to false.
+     * @returns A TCResponse object indicating the result of the reply attempt.
+     */
     public reply(
         conversationId: string,
         text: string,
@@ -45,6 +69,11 @@ export class MessagesModule extends Module {
         });
     }
 
+    /**
+     * Get a list of the user's message folders.
+     *
+     * @returns A FolderListResponse object containing the user's message folders.
+     */
     public folderList(): Call<FolderListResponse> {
         return new Call<FolderListResponse>(this.client, {
             fn: "messages.folderlist",

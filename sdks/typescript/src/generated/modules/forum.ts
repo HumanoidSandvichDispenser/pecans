@@ -30,6 +30,16 @@ export class ForumModule extends Module {
         });
     }
 
+    /**
+     * View posts in a thread.
+     *
+     * @param threadId - Id of the thread to view.
+     * @param fetchType - "new" to fetch new posts, "backscroll" to fetch older posts.
+     * @param postId - Id of the post to start fetching from. Defaults to 0 (the first post).
+     * @param reverse - If true, fetch posts in reverse order (newest first). Defaults to false.
+     * @param includePost - If true, include the post with id `postId` in the results. Defaults to true.
+     * @returns A ViewPostsResponse object containing the requested posts and thread metadata.
+     */
     public viewPosts(
         threadId: number,
         fetchType: string,
@@ -50,6 +60,13 @@ export class ForumModule extends Module {
         });
     }
 
+    /**
+     * Reply to a thread with a new post.
+     *
+     * @param text - Body text of the reply (UCP markup).
+     * @param threadId - Id of the thread to reply to.
+     * @returns A TCResponse object indicating the result of the reply attempt.
+     */
     public replyThread(text: string, threadId: number): Call<TCResponse> {
         return new Call<TCResponse>(this.client, {
             fn: "forum.replythread",
@@ -60,6 +77,13 @@ export class ForumModule extends Module {
         });
     }
 
+    /**
+     * Mark a thread as read, clearing the new-post indicator for that thread.
+     *
+     * @param postId - Id of the last post read in the thread.
+     * @param threadId - Id of the thread to mark as read.
+     * @returns A TCResponse object indicating the result of the operation.
+     */
     public readThread(postId: number, threadId: number): Call<TCResponse> {
         return new Call<TCResponse>(this.client, {
             fn: "forum.readthread",
@@ -70,6 +94,13 @@ export class ForumModule extends Module {
         });
     }
 
+    /**
+     * Edit a post's text.
+     *
+     * @param postId - Id of the post to edit.
+     * @param text - New body text for the post (UCP markup).
+     * @returns A TCResponse object indicating the result of the edit attempt.
+     */
     public editPost(postId: number, text: string): Call<TCResponse> {
         return new Call<TCResponse>(this.client, {
             fn: "forum.editpost",
@@ -80,6 +111,12 @@ export class ForumModule extends Module {
         });
     }
 
+    /**
+     * Search the forum for posts matching a query.
+     *
+     * @param query - Search query string.
+     * @returns A ForumSearchResponse object containing the search results.
+     */
     public search(query: string): Call<ForumSearchResponse> {
         return new Call<ForumSearchResponse>(this.client, {
             fn: "forum.search",
@@ -89,6 +126,11 @@ export class ForumModule extends Module {
         });
     }
 
+    /**
+     * Get the list of forum categories.
+     *
+     * @returns A ForumCategoriesResponse object containing the list of categories.
+     */
     public categoriesGet(): Call<ForumCategoriesResponse> {
         return new Call<ForumCategoriesResponse>(this.client, {
             fn: "forum.categoriesget",
@@ -96,6 +138,13 @@ export class ForumModule extends Module {
         });
     }
 
+    /**
+     * Get the list of threads in a category.
+     *
+     * @param category - Id of the category to fetch threads from.
+     * @param offset - Number of threads to skip (for pagination). Defaults to 0.
+     * @returns A ThreadListResponse object containing the list of threads in the category.
+     */
     public threadList(category: string, offset: number = 0): Call<ThreadListResponse> {
         return new Call<ThreadListResponse>(this.client, {
             fn: "forum.threadlist",

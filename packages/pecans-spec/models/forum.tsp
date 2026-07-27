@@ -102,6 +102,16 @@ interface Forum {
   @rpc("forum.newthread")
   newThread(category: string, title: string, text: string): NewThreadResponse;
 
+  /**
+   * View posts in a thread.
+   *
+   * @param threadId Id of the thread to view.
+   * @param fetchType "new" to fetch new posts, "backscroll" to fetch older posts.
+   * @param postId Id of the post to start fetching from. Defaults to 0 (the first post).
+   * @param reverse If true, fetch posts in reverse order (newest first). Defaults to false.
+   * @param includePost If true, include the post with id `postId` in the results. Defaults to true.
+   * @returns A ViewPostsResponse object containing the requested posts and thread metadata.
+   */
   @rpc("forum.viewposts")
   @constant(#{ includeThreadMetadata: true })
   viewPosts(
@@ -112,21 +122,60 @@ interface Forum {
     includePost?: boolean = true,
   ): ViewPostsResponse;
 
+  /**
+   * Reply to a thread with a new post.
+   *
+   * @param text Body text of the reply (UCP markup).
+   * @param threadId Id of the thread to reply to.
+   * @returns A TCResponse object indicating the result of the reply attempt.
+   */
   @rpc("forum.replythread")
   replyThread(text: string, threadId: safeint): TCResponse;
 
+  /**
+   * Mark a thread as read, clearing the new-post indicator for that thread.
+   *
+   * @param postId Id of the last post read in the thread.
+   * @param threadId Id of the thread to mark as read.
+   * @returns A TCResponse object indicating the result of the operation.
+   */
   @rpc("forum.readthread")
   readThread(postId: safeint, threadId: safeint): TCResponse;
 
+  /**
+    * Edit a post's text.
+    *
+    * @param postId Id of the post to edit.
+    * @param text New body text for the post (UCP markup).
+    * @returns A TCResponse object indicating the result of the edit attempt.
+    */
   @rpc("forum.editpost")
   editPost(postId: safeint, text: string): TCResponse;
 
+  /**
+    * Search the forum for posts matching a query.
+    *
+    * @param query Search query string.
+    * @returns A ForumSearchResponse object containing the search results.
+    */
   @rpc("forum.search")
   search(query: string): ForumSearchResponse;
 
+  /**
+    * Get the list of forum categories.
+    *
+    * @returns A ForumCategoriesResponse object containing the list of categories.
+    */
   @rpc("forum.categoriesget")
   categoriesGet(): ForumCategoriesResponse;
 
+  /**
+    * Get the list of threads in a category.
+    *
+    * @param category Id of the category to fetch threads from.
+    * @param offset Number of threads to skip (for pagination). Defaults to 0.
+    * @returns A ThreadListResponse object containing the list of threads in the category.
+    */
   @rpc("forum.threadlist")
   threadList(category: string, offset?: safeint = 0): ThreadListResponse;
 

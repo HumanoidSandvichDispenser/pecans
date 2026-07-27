@@ -7,6 +7,15 @@ from ..types import FolderListResponse, FolderViewResponse, MessageViewResponse,
 
 class MessagesModule(Module):
     def folderView(self, folder: str = "inbox", page: int = 1) -> Call[FolderViewResponse]:
+        """Get a list of messages in a folder.
+
+        Args:
+            folder: The folder to view. Defaults to "inbox".
+            page: The page number to view. Defaults to 1.
+
+        Returns:
+            A FolderViewResponse object containing the messages in the folder.
+        """
         return Call(
             self.client,
             MethodCall(
@@ -25,6 +34,17 @@ class MessagesModule(Module):
         markAsRead: bool = True,
         page: int = 1,
     ) -> Call[MessageViewResponse]:
+        """View a conversation thread.
+
+        Args:
+            conversationId: The id of the conversation to view.
+            includeHeader: Whether to include the conversation header in the response. Defaults to true.
+            markAsRead: Whether to mark the conversation as read. Defaults to true.
+            page: The page number of messages to view. Defaults to 1.
+
+        Returns:
+            A MessageViewResponse object containing the messages in the conversation and the header if requested.
+        """
         return Call(
             self.client,
             MethodCall(
@@ -39,6 +59,16 @@ class MessagesModule(Module):
         )
 
     def reply(self, conversationId: str, text: str, unanonymize: bool = False) -> Call[TCResponse]:
+        """Reply to a conversation thread.
+
+        Args:
+            conversationId: The id of the conversation to reply to.
+            text: The body text of the reply (UCP markup).
+            unanonymize: Whether to send the reply as your real username instead of anonymously. Defaults to false.
+
+        Returns:
+            A TCResponse object indicating the result of the reply attempt.
+        """
         return Call(
             self.client,
             MethodCall(
@@ -52,6 +82,11 @@ class MessagesModule(Module):
         )
 
     def folderList(self) -> Call[FolderListResponse]:
+        """Get a list of the user's message folders.
+
+        Returns:
+            A FolderListResponse object containing the user's message folders.
+        """
         return Call(
             self.client,
             MethodCall(
