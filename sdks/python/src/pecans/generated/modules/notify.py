@@ -8,6 +8,14 @@ from ..enums import Feature
 
 class NotifyModule(Module):
     def sync(self, feature: Feature) -> Call[NotifySyncResponse]:
+        """Synchronize notifications for a given feature.
+
+        Args:
+            feature: The feature for which to synchronize notifications.
+
+        Returns:
+            A NotifySyncResponse object containing the result of the synchronization.
+        """
         return Call(
             self.client,
             MethodCall(
@@ -19,6 +27,15 @@ class NotifyModule(Module):
         )
 
     def fetchOnlineUsers(self, feature: Feature) -> Call[WhosOnlineResponse]:
+        """Fetch a list of users currently online for a given feature. Currently
+        only supports the `Feature.FORUM` feature.
+
+        Args:
+            feature: The feature for which to fetch online users.
+
+        Returns:
+            A WhosOnlineResponse object containing the list of online users.
+        """
         return Call(
             self.client,
             MethodCall(

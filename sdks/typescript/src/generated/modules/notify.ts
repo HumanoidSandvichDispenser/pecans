@@ -4,6 +4,12 @@ import { NotifySyncResponse, TCResponse, WhosOnlineResponse } from "../types";
 import { Feature } from "../enums";
 
 export class NotifyModule extends Module {
+    /**
+     * Synchronize notifications for a given feature.
+     *
+     * @param feature - The feature for which to synchronize notifications.
+     * @returns A NotifySyncResponse object containing the result of the synchronization.
+     */
     public sync(feature: Feature): Call<NotifySyncResponse> {
         return new Call<NotifySyncResponse>(this.client, {
             fn: "notify.sync",
@@ -13,6 +19,13 @@ export class NotifyModule extends Module {
         });
     }
 
+    /**
+     * Fetch a list of users currently online for a given feature. Currently
+     * only supports the `Feature.FORUM` feature.
+     *
+     * @param feature - The feature for which to fetch online users.
+     * @returns A WhosOnlineResponse object containing the list of online users.
+     */
     public fetchOnlineUsers(feature: Feature): Call<WhosOnlineResponse> {
         return new Call<WhosOnlineResponse>(this.client, {
             fn: "notify.whosonline",

@@ -22,9 +22,22 @@ model WhosOnlineResponse extends TCResponse {
 }
 
 interface Notify {
+  /**
+    * Synchronize notifications for a given feature.
+    *
+    * @param feature The feature for which to synchronize notifications.
+    * @returns A NotifySyncResponse object containing the result of the synchronization.
+    */
   @rpc("notify.sync")
   sync(feature: Feature): NotifySyncResponse;
 
+  /**
+    * Fetch a list of users currently online for a given feature. Currently
+    * only supports the `Feature.FORUM` feature.
+    *
+    * @param feature The feature for which to fetch online users.
+    * @returns A WhosOnlineResponse object containing the list of online users.
+    */
   @rpc("notify.whosonline")
   fetchOnlineUsers(feature: Feature): WhosOnlineResponse;
 
