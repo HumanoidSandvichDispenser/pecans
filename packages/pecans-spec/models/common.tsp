@@ -11,6 +11,9 @@ model TCProfile {
   online: int32;
   avatar: string;
   subs: TCFollowInfo;
+
+  /** Only present on moderator/admin accounts. */
+  admin?: boolean;
 }
 
 model TCResponse {

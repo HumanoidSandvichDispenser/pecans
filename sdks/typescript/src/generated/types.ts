@@ -365,6 +365,10 @@ export interface TCProfile {
     online: number;
     avatar: string;
     subs: TCFollowInfo;
+    /**
+     * Only present on moderator/admin accounts.
+     */
+    admin?: boolean;
 }
 export interface TCResponse {
     ok: boolean;

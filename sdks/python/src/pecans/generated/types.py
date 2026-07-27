@@ -21,6 +21,7 @@ TCProfile = TypedDict(
         "online": "int",
         "avatar": "str",
         "subs": "TCFollowInfo",
+        "admin": NotRequired["bool"],
     },
 )
 
