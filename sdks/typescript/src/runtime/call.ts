@@ -7,10 +7,15 @@ import type { MethodCall } from "./types";
  */
 export class Call<T> implements PromiseLike<T> {
     public constructor(
-        private readonly client: BaseClient,
+        private readonly _client: BaseClient,
         public readonly methodCall: MethodCall,
         public readonly decode?: (raw: any) => T,
     ) {}
+
+    /** The client this call is sent through. */
+    public get client(): BaseClient {
+        return this._client;
+    }
 
     /** Turn a built response envelope into the typed value for this call. */
     public build(raw: any): T {
@@ -21,7 +26,7 @@ export class Call<T> implements PromiseLike<T> {
         onfulfilled?: ((value: T) => R1 | PromiseLike<R1>) | null,
         onrejected?: ((reason: unknown) => R2 | PromiseLike<R2>) | null,
     ): Promise<R1 | R2> {
-        return this.client
+        return this._client
             .sendOne(this.methodCall)
             .then((raw) => this.build(raw))
             .then(onfulfilled, onrejected);
