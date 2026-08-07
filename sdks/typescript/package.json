@@ -6,6 +6,7 @@
         "generate": "bun run --filter pecans-spec generate",
         "build": "tsc",
         "clean": "rm -rf dist || true",
+        "prepublishOnly": "bun run clean && bun run build",
         "test": "vitest run"
     },
     "keywords": [
