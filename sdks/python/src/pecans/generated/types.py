@@ -786,6 +786,15 @@ PostQuestionBody = TypedDict(
 )
 
 
+ProfileFollowState = TypedDict(
+    "ProfileFollowState",
+    {
+        "following": "bool",
+        "followsYou": "bool",
+    },
+)
+
+
 ProfileGetResponse = TypedDict(
     "ProfileGetResponse",
     {
@@ -793,6 +802,7 @@ ProfileGetResponse = TypedDict(
         "error": NotRequired["str"],
         "profiles": NotRequired["list[TCProfile]"],
         "id": "str",
+        "follow": NotRequired["ProfileFollowState"],
     },
 )
 

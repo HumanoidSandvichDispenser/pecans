@@ -280,6 +280,7 @@ export type ProfileGetResponse = TCResponse & {
      * The looked-up user's id. `ok` is false with error `NOT_FOUND` if no such user.
      */
     id: string;
+    follow?: ProfileFollowState1;
 };
 export type ProfileDetailsResponse = TCResponse & {
     /**
@@ -710,6 +711,29 @@ export interface PostQuestionBody {
  */
 export interface NewPoll1 {
     choices: NewPollChoice[];
+}
+export interface ProfileFollowState {
+    /**
+     * True if you are following the user.
+     */
+    following: boolean;
+    /**
+     * True if the user is following you.
+     */
+    followsYou: boolean;
+}
+/**
+ * The follow status of the user.
+ */
+export interface ProfileFollowState1 {
+    /**
+     * True if you are following the user.
+     */
+    following: boolean;
+    /**
+     * True if the user is following you.
+     */
+    followsYou: boolean;
 }
 /**
  * One entry in a follower/following list.

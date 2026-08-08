@@ -13,13 +13,15 @@ export class ProfileModule extends Module {
      * Check whether a profile exists and resolve its canonical id.
      *
      * @param id - Username to look up.
+     * @param followState - If true, also return the follow status of the user.
      * @returns The user's id, or `ok: false` with error `NOT_FOUND`.
      */
-    public get(id: string): Call<ProfileGetResponse> {
+    public get(id: string, followState: boolean = false): Call<ProfileGetResponse> {
         return new Call<ProfileGetResponse>(this.client, {
             fn: "profile.get",
             payload: {
                 id: id,
+                followState: followState,
             },
         });
     }

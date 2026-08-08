@@ -2,9 +2,20 @@ import "../lib/main.tsp";
 
 namespace Pecans;
 
+model ProfileFollowState {
+  /** True if you are following the user. */
+  following: boolean;
+
+  /** True if the user is following you. */
+  followsYou: boolean;
+}
+
 model ProfileGetResponse extends TCResponse {
   /** The looked-up user's id. `ok` is false with error `NOT_FOUND` if no such user. */
   id: string;
+
+  /** The follow status of the user. */
+  follow?: ProfileFollowState;
 }
 
 model ProfileDetailsResponse extends TCResponse {
@@ -43,10 +54,11 @@ interface Profile {
    * Check whether a profile exists and resolve its canonical id.
    *
    * @param id Username to look up.
+   * @param followState If true, also return the follow status of the user.
    * @returns The user's id, or `ok: false` with error `NOT_FOUND`.
    */
   @rpc("profile.get")
-  get(id: string): ProfileGetResponse;
+  get(id: string, followState?: boolean = false): ProfileGetResponse;
 
   /**
    * Fetch one field of a user's profile.

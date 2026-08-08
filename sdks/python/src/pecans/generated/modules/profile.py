@@ -12,11 +12,12 @@ from ..types import (
 
 
 class ProfileModule(Module):
-    def get(self, id: str) -> Call[ProfileGetResponse]:
+    def get(self, id: str, followState: bool = False) -> Call[ProfileGetResponse]:
         """Check whether a profile exists and resolve its canonical id.
 
         Args:
             id: Username to look up.
+            followState: If true, also return the follow status of the user.
 
         Returns:
             The user's id, or `ok: false` with error `NOT_FOUND`.
@@ -27,6 +28,7 @@ class ProfileModule(Module):
                 fn="profile.get",
                 payload={
                     "id": id,
+                    "followState": followState,
                 },
             ),
         )
