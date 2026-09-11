@@ -17,6 +17,7 @@ model Message {
   time: safeint;
   type: string;
   html: string;
+  text: string;
   `new`?: boolean;
 }
 
